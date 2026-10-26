@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 2,
+  "reviewDate": "2026-10-26",
+  "status": "reviewed-source-and-notices-complete",
+  "binaryPublicationReady": false,
+  "runtimeIntegrity": "Bundled PDF.js, PDF-lib and JSZip bytes matched the official versioned npm distributions; see vendor-inventory.json.",
+  "includedSourceArchives": 27,
+  "scope": "Technical source and notice preparation; not legal certification. No runtime library version or implementation update.",
+  "embeddedSourceMap": {
+    "file": "bundled-sources/pdf-lib.min.js.map",
+    "sourceContents": 179,
+    "allPresent": true,
+    "limitation": "standard-fonts entries are generated ES modules; original TypeScript, preparation inputs and underlying notices are supplied separately in the version-associated source archive."
+  },
+  "embeddedPackages": [
+    {
+      "package": "@pdf-lib/standard-fonts",
+      "version": "1.0.0",
+      "bundle": "pdf-lib",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/standard-fonts-1.0.0-41a6440-source.tar.gz; bundled-sources/pdf-lib.min.js.map; notices/standard-font-data/",
+      "sourceRevision": "41a6440267de5456042c7bcbac5ec65065e2ef69",
+      "evidence": "All 42 original revision files match Git blobs. All 15 decoded JSON and compressed payloads regenerate exactly and occur in shipped PDF-lib. Three published ES modules match its source-map contents exactly; original TypeScript behavior agrees across retained fonts and encodings.",
+      "revisionAssociation": "Version-bump commit preceding npm publication; package.json, README.md and LICENSE.md byte-identical to integrity-verified 1.0.0 package; all 15 generated compressed payloads reproduced exactly; original TypeScript behavior checked against published ES modules, which exactly match bundled source-map modules.",
+      "limitation": "Registry has no gitHead and repository has no 1.0.0 tag. Revision is version-associated, not a uniquely publisher-attested build commit. No original TypeScript 2.9.2 toolchain rebuild claimed."
+    },
+    {
+      "package": "@pdf-lib/upng",
+      "version": "1.0.1",
+      "bundle": "pdf-lib",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "pako",
+      "version": "1.0.10",
+      "bundle": "pdf-lib",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "pako",
+      "version": "1.0.11",
+      "bundle": "pdf-lib",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "tslib",
+      "version": "1.11.1",
+      "bundle": "pdf-lib",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "lie",
+      "version": "3.3.0",
+      "bundle": "jszip",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "immediate",
+      "version": "3.0.6",
+      "bundle": "jszip",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "pako",
+      "version": "1.0.5",
+      "bundle": "jszip",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "setimmediate",
+      "version": "1.0.5",
+      "bundle": "jszip",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz; bundled-sources/pdf-lib.min.js.map; bundled-sources/jszip.js",
+      "evidence": "Readable embedded inputs and standalone license texts retained; SOURCE-INDEX.json records exact module/package byte correspondence and scope."
+    },
+    {
+      "package": "browser-pack",
+      "version": "6.0.2",
+      "bundle": "jszip",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/browser-pack-6.0.2-loader-source.tar.gz",
+      "registryRecordedGitHead": "d8f408fd1408ad1fbe02830792caa1354bf48188",
+      "evidence": "Original readable prelude, generated prelude, MIT license, package metadata and generation/integration files from the exact npm 6.0.2 release; tarball matches the JSZip 3.10.1 release-lock SHA-1 and registry SHA-512. Generated prelude matches retained JSZip unminified bytes exactly. Complete readable/generated/shipped loader ASTs match after explicit lexical and minifier normalizations.",
+      "limitation": "Registry-recorded Git head is not independently Git-tree-verified; exact versioned registry package and direct source-to-runtime comparisons establish correspondence."
+    },
+    {
+      "package": "base64-arraybuffer",
+      "version": "0.1.5",
+      "bundle": "pdf-lib via standard-fonts",
+      "status": "closed-for-embedded-input",
+      "sourceMaterial": "upstream-sources/standard-fonts-1.0.0-41a6440-source.tar.gz",
+      "evidence": "standard-fonts explicitly attributes its chars/lookup/decodeFromBase64 helper to this project; versioned package matches its lock SHA-1 and registry integrity. Original source and MIT notice retained."
+    }
+  ],
+  "notEmbeddedInBrowserBundle": [
+    {
+      "package": "readable-stream",
+      "version": "2.3.6",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "core-util-is",
+      "version": "1.0.2",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "inherits",
+      "version": "2.0.3",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "isarray",
+      "version": "1.0.0",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "process-nextick-args",
+      "version": "2.0.0",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "safe-buffer",
+      "version": "5.1.1",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "string_decoder",
+      "version": "1.1.1",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    },
+    {
+      "package": "util-deprecate",
+      "version": "1.0.2",
+      "bundle": "jszip",
+      "status": "not-embedded-in-shipped-browser-bundle",
+      "evidence": "The 54-module browser bundle uses the JSZip stream adapter; this package body is not embedded."
+    }
+  ],
+  "pdfjsLibrary": {
+    "version": "5.6.205",
+    "release": "ada343803945d977b9a1be8e72184b0422f8e5d1",
+    "status": "source-input-gap-closed-static-review",
+    "releaseFilesVerifiedAgainstGitBlobs": 502,
+    "staticLibraryImportGraphFiles": 178,
+    "missingStaticImports": 0,
+    "material": [
+      "upstream-sources/pdfjs-5.6.205-source.tar.gz",
+      "upstream-sources/pdfjs-5.6.205-library-inputs.tar.gz",
+      "PDFJS_BUILD.md",
+      "build-support/pdfjs-library-task.mjs"
+    ],
+    "rebuildPerformed": false
+  },
+  "decoderSources": [
+    {
+      "component": "OpenJPEG",
+      "version": "2.5.4",
+      "sourceRevision": "6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
+      "wrapperRevision": "b47d31b8355a3863ab37282ceeb5183f7ac2761c",
+      "status": "source-patch-and-build-scripts-retained",
+      "uncertainty": "Original Emscripten version/container digest unknown; no byte-identical rebuild."
+    },
+    {
+      "component": "PDFium JBIG2/CCITT",
+      "sourceRevision": "0455e822ded1a5537d826703988e986a33d2d4a1",
+      "wrapperRevision": "1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
+      "status": "source-and-build-scripts-retained",
+      "sourceFilesVerifiedAgainstGitBlobs": 100,
+      "uncertainty": "Original Emscripten version/container digest unknown; no byte-identical rebuild."
+    },
+    {
+      "component": "qcms",
+      "version": "0.3.0",
+      "wrapperRevision": "fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
+      "status": "source-lock-and-build-scripts-retained",
+      "verifiedRegistryCrates": 15,
+      "binaryProducerVersions": {
+        "rustc": "1.87.0 (17067e9ac 2025-05-09)",
+        "walrus": "0.23.3",
+        "wasm-bindgen": "0.2.100"
+      },
+      "uncertainty": "Original wasm-pack version/container digest unknown; upstream Dockerfile runs cargo update; no byte-identical rebuild."
+    }
+  ],
+  "openItems": [],
+  "reproducibilityLimits": [
+    "PDF.js library task and source closure reviewed statically; no dependency installation or whole-library compilation performed.",
+    "Unknown original Emscripten/wasm-pack versions and byte-identical rebuilds are recorded separately from missing preferred source and notices.",
+    "Unmodified general-purpose build tools are distinct from covered source and runtime code incorporated into output.",
+    "standard-fonts data generation is byte-identical; original TypeScript 2.9.2/ES5 compiler output and whole PDF-lib build have not been reproduced. Its release-associated revision has no publisher gitHead/tag attestation."
+  ],
+  "distributionVerification": "Package current complete accompanying notices, verify extracted runtime vendor bytes against vendor-inventory.json and provide exact matching source for any distribution.",
+  "dependencySourceReady": true,
+  "binaryPublicationRequirement": "Package the current accompanying notices and verify extracted files against their matching source. A source-only update does not refresh any existing Windows package.",
+  "fontData": {
+    "status": "closed-source-provenance-and-notices",
+    "sourceRevision": "41a6440267de5456042c7bcbac5ec65065e2ef69",
+    "adobeAfmFiles": 14,
+    "encodingTables": 3,
+    "evidence": "Original AFMs and MustRead remain unchanged. All original font Notice fields are retained in generated data. Unicode mapping rows match their authoritative tables; all 256 PDFKit WinAnsi names match the exact cited source.",
+    "adobeNotice": "notices/standard-font-data/MustRead.html",
+    "unicodeNotices": [
+      "notices/standard-font-data/Unicode-Symbol-ZapfDingbats-NOTICE.txt",
+      "notices/standard-font-data/Unicode-LICENSE-v3.txt"
+    ],
+    "pdfkitRevision": "83f5f7243172a017adcf6a7faa5547c55982c57b",
+    "pdfkitNotice": "notices/standard-font-data/PDFKit-LICENSE.txt",
+    "transformationNotice": "THIRD_PARTY_NOTICES.md identifies the upstream field selection, format conversion, compression and encoding of the derived data. Original AFM/notice files are not modified.",
+    "scope": "Technical source and notice coverage; not legal certification of upstream or downstream compliance."
+  }
+}

@@ -1,0 +1,6 @@
+Synthetic JPEG2000 image-only PDF for PDF.js decoder regression tests.
+Generated locally with Pillow (lossless JPEG2000), using a 256x256 white RGB image
+with black line and ellipse geometry. No user file, transcription or score is
+included. A 600x600 PDF page draws that image through /JPXDecode at 500x500.
+The test must inspect canvas pixels: PDF.js reports a successfully rendered
+blank page when its worker cannot fetch the OpenJPEG decoder.

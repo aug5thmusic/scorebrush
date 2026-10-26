@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 96" role="img" aria-labelledby="title desc">
+  <title id="title">Send to AI — arrow entering a computer</title>
+  <desc id="desc">An indigo arrow curves into a lavender computer screen.</desc>
+  <rect x="55" y="24" width="55" height="41" rx="7" fill="#ddd9fb"/>
+  <g fill="none" stroke="#29228f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M55 35v-4a7 7 0 0 1 7-7h41a7 7 0 0 1 7 7v27a7 7 0 0 1-7 7H62a7 7 0 0 1-7-7v-4M82 65v12M69 78h27"/>
+  </g>
+  <path d="M17 64c2-17 13-24 27-22 10 2 18 4 28 2m-9-10 10 10-10 10" fill="none" stroke="#443dd0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

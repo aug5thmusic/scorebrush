@@ -1,0 +1,20 @@
+[
+  {
+    "family": "Sora",
+    "file": "sora.woff2",
+    "source": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+    "css_source": "https://fonts.googleapis.com/css2?family=Sora:wght@400..700&display=swap",
+    "license": "https://raw.githubusercontent.com/google/fonts/main/ofl/sora/OFL.txt",
+    "sha256": "811e11966d29f3a01fcb19b087b61ac067d380665a55aebb7fcdf2cda95e4a93",
+    "bytes": 25284
+  },
+  {
+    "family": "Bricolage Grotesque",
+    "file": "bricolagegrotesque.woff2",
+    "source": "https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2",
+    "css_source": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap",
+    "license": "https://raw.githubusercontent.com/google/fonts/main/ofl/bricolagegrotesque/OFL.txt",
+    "sha256": "a79fdb52d4a5c76552452f69202add96e287401fff03d3e8c0e38b4dcb5a99cd",
+    "bytes": 76888
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "Local score proofreading and manual AI correction handoffs. No production HTTP server.",
+  "license": "AGPL-3.0-or-later"
+}

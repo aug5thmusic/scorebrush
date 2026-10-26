@@ -1,0 +1,487 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2026 Auggie (@aug5thmusic).
+ * Additional permissions: see LICENSING.md at the source root. */
+/* Bundled fonts keep the private app independent of external font services. */
+@font-face{font-family:"Sora";font-style:normal;font-weight:400 700;font-display:swap;src:url("./vendor/fonts/sora.woff2") format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:400 800;font-display:swap;src:url("./vendor/fonts/bricolagegrotesque.woff2") format("woff2")}
+input,input::file-selector-button{font-family:inherit}
+:root{font-family:"Sora","Segoe UI","Segoe UI Symbol",sans-serif;color:#292c35;background:#f4f5f8;font-size:14px;--line:#d6d9e1;--ink:#292c35;--accent:#443dd0;--accent-hover:#332dac;--accent-soft:#f0effc;--accent-border:#c8c3ef;--accent-text:#3731a3}*{box-sizing:border-box}body{margin:0}h1{font-family:"Bricolage Grotesque","Sora",sans-serif;font-size:29px;margin:5px 0;font-weight:700;font-optical-sizing:auto;letter-spacing:-.035em}h1 span{font:13px "Sora","Segoe UI",sans-serif;color:#7d8592}details{background:#fff;padding:10px 26px;border-bottom:1px solid var(--line)}summary{font-weight:600;cursor:pointer;font-size:13px}.file-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:18px;margin-top:15px;align-items:end}label{display:flex;gap:7px;align-items:center} .file-grid label,#editor label{align-items:stretch;flex-direction:column;font-size:12px;font-weight:600}input[type=file]{max-width:100%;font-weight:normal;font-size:12px}input::file-selector-button{border:1px solid var(--line);background:#f4f5f8;padding:8px;margin-right:8px;color:var(--ink);border-radius:4px;cursor:pointer}button,select{font:inherit;border:1px solid #ccd1db;background:#fff;color:var(--ink);border-radius:5px;padding:7px 10px;cursor:pointer}button:hover:not(:disabled){background:#eeedf9}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.primary,button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}.primary:hover:not(:disabled){background:var(--accent-hover)}.saved-row{display:flex;gap:15px;align-items:center;margin-top:15px;flex-wrap:wrap}.saved-row label{font-size:12px}.saved-row select{max-width:310px}.hint,.footnote{font-size:12px;line-height:1.6;color:#687080;margin-bottom:5px}#storage{margin-left:auto}.toolbar{display:flex;gap:9px;align-items:center;padding:12px 20px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}.modes{display:flex;gap:3px}.toolbar label{font-size:12px}input[type=range]{width:85px;accent-color:var(--accent)}.spacer{flex:1}output{min-width:33px}main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 290px;height:calc(100vh - 350px);min-height:530px;gap:1px;background:var(--line)}.viewer{display:flex;flex-direction:column;min-width:0;background:#e3e5e9;overflow:hidden}.viewer-head{display:flex;gap:7px;flex-wrap:wrap;align-items:center;padding:12px;background:#f7f8fb;border-bottom:1px solid var(--line)}.viewer-head strong{font-size:13px;flex:1}.page-controls{display:flex;gap:4px;align-items:center;font-size:12px}.page-controls button{padding:4px 7px;font-size:17px}.page-controls select{padding:6px 3px;font-size:11px}.page-controls input{width:43px;padding:5px;border:1px solid var(--line);border-radius:3px}.scroller{overflow:auto;padding:18px;position:relative;flex:1;overscroll-behavior:contain}.paper{position:relative;background:#fff;box-shadow:0 3px 12px #20243625;width:max-content;isolation:isolate}.paper canvas{display:block}#overlay{position:absolute;inset:0;touch-action:auto;cursor:grab}body.drawing #overlay{touch-action:none;cursor:crosshair}.empty{text-align:center;line-height:2.4;padding:130px 10px;color:#687080;font-family:Georgia,serif;font-size:23px}.empty small{font:12px "Sora","Segoe UI",sans-serif}.scroller:has(.paper:not([hidden])) .empty{display:none}aside{background:#fff;padding:17px;overflow-y:auto}.aside-head h2{font-family:"Sora","Segoe UI",sans-serif;font-size:22px;margin:0 0 5px;font-weight:normal}.aside-head h2 span{font:12px "Sora","Segoe UI",sans-serif;background:#eef0f4;border-radius:14px;padding:3px 7px}.aside-head small,#editor small{font-size:11px;color:#687080;line-height:1.5}#editor{border:1px solid #c8ccda;background:#f7f8fa;margin:16px -4px;padding:12px;border-radius:7px}#editTitle{font-weight:600;margin-bottom:10px}#editor label{margin:10px 0}textarea{resize:vertical;width:100%;font:14px "Sora","Segoe UI","Segoe UI Symbol",sans-serif;padding:9px;border:1px solid #c8ccda;border-radius:5px}.editor-actions{display:flex;justify-content:space-between;margin:12px 0}.finding{border:1px solid var(--line);padding:12px 10px;margin-top:10px;border-radius:6px;cursor:pointer;white-space:pre-wrap;overflow-wrap:anywhere}.finding:hover,.finding.active{border-color:var(--accent);background:var(--accent-soft)}.finding b{font-size:12px}.finding p{margin:8px 0;font-size:13px;line-height:1.5}.finding small{font-size:10px;color:#747c8a}.footnote{border-top:1px solid var(--line);margin-top:24px;padding-top:13px}dialog{width:680px;max-width:90vw;max-height:85vh;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 90px #20243655;padding:25px;color:var(--ink)}dialog::backdrop{background:#20243665}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head h2{font:25px "Sora","Segoe UI",sans-serif;margin:0}dialog p{line-height:1.6}dialog label{margin:18px 0}.download{display:block;padding:7px 0;color:var(--accent);overflow-wrap:anywhere}.zip{display:block;padding:12px;background:var(--accent-soft);border-radius:5px;margin:10px 0;font-weight:600;color:var(--accent)}[hidden]{display:none!important}@media(max-width:1100px){main{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 245px}.file-grid{grid-template-columns:1fr 1fr}.toolbar{gap:5px}.viewer-head{padding:8px}.scroller{padding:10px}}@media(max-width:760px){main{grid-template-columns:1fr 1fr;height:auto}aside{grid-column:1/-1;min-height:300px}.viewer{height:65vh}.file-grid{grid-template-columns:1fr}.toolbar{padding:10px}details{padding:12px}}#colorSwatch{width:17px;height:17px;border:1px solid #858b99;border-radius:50%}.finding{border-left-width:5px}.finding-open{display:block;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}.finding-open:hover{background:transparent}.finding-comment{display:block;margin:8px 0;font-size:13px;line-height:1.5}
+.finding[data-finding-id]{border-left-width:5px}
+.handoff-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 26px;background:#f4f5f8;border-bottom:1px solid var(--line)}.handoff-actions span{margin-left:auto;font-size:12px;color:#5c6472}#handoffHistory{max-width:70vw}#handoffDialog{width:860px}#promptFallback label{display:block}#aiPrompt{display:block;margin-top:10px;font:12px ui-monospace,monospace;line-height:1.5}.response-finding{border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:6px;padding:15px;margin:20px 0}.response-finding h3{margin-top:0}.response-finding p{white-space:pre-wrap;overflow-wrap:anywhere}.response-finding img{display:block;width:100%;height:auto;margin:12px 0}.response-banner{background:#fff0d8;padding:15px;border-radius:5px;font-weight:600}#responsePreview pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}#handoffStatus{font-size:12px;line-height:1.5}
+.returned-bar{background:#f0f1f6;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.returned-bar strong{flex:1;min-width:250px}.returned-bar span{font-size:12px}.returned-bar p{width:100%;margin:0;font-size:11px;color:#5c6472}.returned-review main{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 350px;min-height:650px}#returnedPanel{font-size:12px;line-height:1.6}#returnedPanel h3{font:20px "Sora","Segoe UI",sans-serif;margin:12px 0}.round-navigation,.round-decisions{display:flex;flex-wrap:wrap;gap:5px}#returnedPanel label{display:block;margin:12px 0}#returnedPanel details{padding:10px 0}#returnedPanel img{max-width:100%;display:block}#returnedPanel pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px}.round-decisions button{font-size:12px}#roundState{font-weight:600;color:var(--accent)}@media(max-width:900px){.returned-review main{grid-template-columns:1fr 1fr}.returned-review aside{grid-column:1/-1;max-height:none}.returned-review .viewer{height:65vh}}
+#finishDialog{max-width:700px}@media(max-width:1000px){}
+
+/* The viewport is a desk: chrome has its own rows; only scores/comments scroll. */
+body{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+#message,#storage{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#message{flex:1}#storage{flex:0 1 35%}
+.toolbar{flex:none;padding:6px 12px;gap:7px;flex-wrap:wrap}
+.toolbar button,.toolbar select{padding:5px 8px;font-size:12px}
+.toolbar input[type=range]{width:66px}.toolbar output{font-size:11px;min-width:30px}
+.color-control{gap:5px}#colorSwatch{width:12px;height:12px;flex:none}
+.score-switch{display:none;margin-left:auto;gap:4px}.score-switch button{padding:3px 9px;font-size:12px}
+main,.returned-review main{flex:1;min-height:0;height:auto;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;position:relative;overflow:hidden}
+.viewer,.returned-review .viewer{min-height:0;height:auto}
+.viewer-head{padding:6px 9px;gap:5px;min-height:40px}
+.viewer-head strong{font-size:12px}.scroller{min-height:0;padding:10px;overflow-anchor:none}
+#overlay{touch-action:none}
+.empty{padding:40px 10px;line-height:1.8;font-size:20px}
+.rendered-state{display:flex;align-items:center;gap:8px;min-height:27px;padding:3px 9px;background:#f3f4f7;font-size:11px}
+.rendered-state strong{font-size:12px;flex:none}
+#sourceViewer>.rendered-state,#renderedViewer>.rendered-state{height:27px;flex:none;white-space:nowrap;overflow:auto}
+
+#comparisonControl{padding:4px 9px;background:#fff2d9;font-size:11px}#comparisonControl select{max-width:100%;padding:3px;font-size:11px}
+#commentsPanel,.returned-review aside{min-height:0;max-height:none;padding:10px;grid-column:auto;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.aside-head{flex:none;display:flex;align-items:center;gap:6px}.aside-head h2{font-size:19px;margin:0}
+#editor{flex:none;max-height:85%;overflow:auto;margin:0;padding:8px;border-radius:5px}
+#editor label{margin:5px 0}#editTitle{margin:0;font-size:12px}
+#editor textarea{min-height:60px;max-height:160px;padding:6px;font-size:13px}
+.editor-actions{gap:5px;margin:6px 0;justify-content:flex-start}.editor-actions button{padding:5px 9px;font-size:12px}
+.finding-options{padding:3px 0;background:transparent;border:0}.finding-options summary{font-size:11px;font-weight:400}
+.finding-options button{padding:4px 7px;font-size:11px}
+#findings{flex:1;min-height:40px;overflow:auto;overscroll-behavior:contain}
+.finding{padding:8px;margin-top:5px}.finding-comment{margin:5px 0}
+#commentsPanel>.footnote{flex:none;margin:0;padding:4px 0 0;font-size:10px;line-height:1.4}
+#returnedPanel{min-height:100px;overflow:auto;flex:1}#returnedPanel:not([hidden])~#findings{flex:0 1 100px}
+#toggleComments,#closeComments{display:none}#shortcutHelp{margin-left:auto;padding:1px 7px;font-size:12px}
+#workspaceDialog details{padding:10px 0}#workspaceDialog .handoff-actions{padding:10px 0}#workspaceDialog .file-grid{grid-template-columns:1fr;gap:12px}
+#workspaceDialog .saved-row{gap:10px}#workspaceDialog .saved-row label{flex-wrap:wrap}
+#workspaceDialog .returned-bar{padding:10px;font-size:12px}
+#shortcutsDialog dl{display:grid;grid-template-columns:140px 1fr;gap:12px}#shortcutsDialog dt{font-weight:600}#shortcutsDialog dd{margin:0;line-height:1.5}
+@media(max-width:1000px){
+  main,.returned-review main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  body:not([data-score=both]) main,body:not([data-score=both]).returned-review main{grid-template-columns:minmax(0,1fr)}
+  body[data-score=rendered] #sourceViewer,body[data-score=source] #renderedViewer{display:none}
+  .score-switch{display:flex}#toggleComments,#closeComments{display:block}
+  #closeComments{order:2;margin-left:auto;padding:2px 8px}
+  #commentsPanel{display:none}body.comments-open #commentsPanel{display:flex;position:absolute;inset:0 0 0 auto;width:min(320px,90%);z-index:2;box-shadow:-5px 0 15px #20243633}
+  .toolbar{gap:5px;padding:5px 10px}.toolbar button,.toolbar select{padding:4px 6px}
+  .toolbar label{gap:4px}.toolbar input[type=range]{width:48px}
+}
+@media(max-width:600px){
+  .toolbar{gap:4px}.toolbar output,#colorSwatch{display:none}
+  body.comments-open #commentsPanel{position:absolute;inset:0 0 0 auto;width:min(320px,90%);z-index:2;box-shadow:-5px 0 15px #20243633}#storage{max-width:35%}
+  dialog{padding:14px;max-width:96vw}#shortcutsDialog dl{grid-template-columns:100px 1fr}
+}
+@media(max-height:500px){
+  #editor small,#commentsPanel>.footnote{display:none}
+  #editor textarea{min-height:46px;height:54px}#editor{max-height:90%}
+  .aside-head h2{font-size:17px}.viewer-head{min-height:34px;padding:4px 8px}
+}
+
+/* An automatic editor dock keeps repeated comments one action away from paint. */
+main,.returned-review main{grid-template-rows:auto minmax(0,1fr)}
+.viewer{grid-row:1 / 3}
+#sourceViewer{grid-column:1}#renderedViewer{grid-column:2}
+#commentsPanel{grid-column:3;grid-row:2}
+#commentDock{grid-column:3;grid-row:1;background:#fff;padding:10px 10px 0;min-width:0;max-height:50vh;overflow:auto}
+#commentDock #editor{max-height:none;overflow:visible}
+.page-controls button{display:inline-grid;place-items:center;flex:none;width:28px;height:28px;padding:0;line-height:1}
+.page-controls button svg{display:block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.viewer{container-type:inline-size;container-name:score-pane}
+.viewer-head{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;align-content:start}
+.viewer-head strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:17px}
+.page-controls{min-width:0;flex-wrap:wrap}
+#comparisonControl{flex:none}
+@container score-pane (min-width:420px){.viewer-head{grid-template-columns:minmax(0,1fr) auto;align-items:center}}
+@container score-pane (max-width:270px){
+  .page-controls{display:grid;grid-template-columns:28px minmax(0,1fr) auto 28px;width:100%}
+  .page-controls label{font-size:0;gap:0}.page-controls input{width:100%;max-width:60px;font:12px "Sora","Segoe UI",sans-serif}
+  .page-controls select{grid-column:1/-1;width:100%;height:27px}
+}
+@media(max-width:1000px){
+  main,.returned-review main{grid-template-rows:minmax(0,1fr) auto}
+  .viewer{grid-row:1}
+  body[data-score=rendered] #renderedViewer{grid-column:1}
+  #commentDock{grid-column:1/-1;grid-row:2;max-height:42vh;padding:5px 9px;border-top:1px solid var(--line)}
+  #commentDock #editor{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;border:0;padding:0;background:transparent}
+  #editTitle{grid-column:1;grid-row:1;line-height:18px}
+  #editor>label{grid-column:1;grid-row:2;margin:0;font-size:0}
+  #editor textarea{height:48px;min-height:48px;max-height:110px;font-size:13px;resize:vertical}
+  .editor-actions{grid-column:2;grid-row:2;margin:0;align-items:center}
+  .finding-options{grid-column:2;grid-row:1;justify-self:end;max-width:210px}
+  #editor small{display:none}
+  #commentsPanel{grid-row:1;grid-column:auto}
+  body.comments-open #commentsPanel{bottom:auto;max-height:100%;height:100%}
+  main:has(#commentDock:not([hidden])) #commentsPanel{max-height:calc(100% - 84px)}
+}
+.toolbar u{text-underline-offset:1px;text-decoration-thickness:1px;text-decoration-color:color-mix(in srgb,currentColor 65%,transparent)}
+.toolbar #shortcutHelp{margin-left:auto}
+.toolbar .score-switch{margin-left:0;align-items:center}
+
+
+#doneNext kbd{display:block;font:10px "Sora","Segoe UI",sans-serif;opacity:.85;white-space:nowrap}
+#copyPrompt{margin-bottom:8px}
+@media(max-width:1000px){
+  .toolbar .score-switch{display:flex}
+}
+@media(max-width:650px){
+  .toolbar{padding:4px 8px;gap:4px}
+  .toolbar #shortcutHelp{margin-left:0}
+}
+
+#handoffDownloads>.download{display:inline-block;font-weight:600;margin:0 0 8px}
+#handoffDownloads .task-download{background:var(--accent);color:white;padding:10px 16px;border-radius:5px;text-decoration:none;text-align:center}
+#handoffDownloads .task-download:hover{filter:brightness(.9)}
+#handoffDownloads .task-download:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#handoffDownloads>details{padding:4px 0;margin:0 0 8px}
+#aiPrompt{height:140px;min-height:100px}
+button.icon-close{display:inline-grid;place-items:center;flex:none;width:30px;height:30px;min-width:30px;padding:0;line-height:1}
+button.icon-close svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+#notices #dismissMessage.icon-close{padding:0;font-size:inherit}
+#closeComments.icon-close{display:none}
+@media(max-width:1000px){#closeComments.icon-close{display:inline-grid;padding:0}}
+#workspaceDialog .handoff-actions{padding:10px 12px;gap:12px}
+#finishDialog{max-width:min(700px,calc(100vw - 28px))}
+#finishDownloads>.download{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:5px;text-decoration:none;font-weight:600}
+
+/* Review one reported problem, with scores as the primary workspace. */
+#historicalOverlay{position:absolute;inset:0;pointer-events:none}.corrections-open>.toolbar,.corrections-open #comparisonControl{display:none!important}
+.correction-comparison{flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 20px;position:relative;z-index:5;padding:8px 16px;border-bottom:1px solid #c8ccda;background:#f7f8fb}
+.correction-navigation{display:flex;align-items:center;gap:12px;flex:none}
+.correction-navigation>.problem-picker{font-size:14px;font-weight:600;padding:4px 8px;background:white;white-space:nowrap}
+#correctionProgress{font-size:13px;color:#5b6372;white-space:nowrap}
+.correction-comparison .quiet{background:transparent;border:0;color:#535c6b;text-decoration:underline;text-underline-offset:3px;padding:4px;font-size:13px}
+.correction-report{position:relative;display:flex;align-items:center;gap:10px;min-width:0}
+.correction-copy{min-width:0;flex:1}
+.correction-state{font-size:12px;padding:3px 6px;border:1px solid #d4d5bd;border-radius:4px;color:#645e37;white-space:nowrap;background:#fffdf2}
+.correction-state[data-checked=true][data-attention=false]{background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent-border)}
+.correction-report>.review-disclosure{flex:none}
+#correctionOriginal{font-size:16px;line-height:1.4;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;max-height:5.6em;overflow:auto}
+.report-expanded #correctionOriginal{max-height:30vh}
+#expandCorrectionReport{margin:0 0 4px}
+.correction-actions{display:flex;gap:8px;align-items:center}
+.correction-end{font-size:12px;max-width:120px;line-height:16px;color:#5b6372}
+.correction-actions button{font-size:14px;line-height:20px;min-height:36px;padding:7px 14px;white-space:nowrap}
+@media(min-width:701px) and (max-width:1000px){
+ .correction-comparison{column-gap:10px;padding-inline:10px}
+ .correction-report{gap:6px}
+ .correction-actions{gap:6px}
+ .correction-actions button{padding-inline:8px}
+}
+.correction-history-hint{font-size:13px;line-height:1.4;color:#687080;margin:3px 0 7px}
+.review-disclosure,.review-view-options{padding:0;background:transparent;border:0;position:relative}
+.review-disclosure>summary,.review-view-options>summary{font-size:13px;line-height:20px;font-weight:400;cursor:pointer;color:#414955;padding:5px 8px;border-radius:5px}
+.review-disclosure>summary:focus-visible,.review-view-options>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.review-popover{position:absolute;top:100%;right:0;width:300px;max-width:calc(100vw - 24px);max-height:60vh;overflow:auto;padding:14px;background:white;border:1px solid #c8ccda;border-radius:6px;box-shadow:0 8px 22px #20243629;z-index:20;font-size:14px;line-height:1.5}
+.review-popover>button{display:block;width:100%;text-align:left;margin:4px 0;font-size:14px}
+.review-popover p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 12px}
+.review-popover label{margin:12px 0;font-size:14px}
+.review-popover small{color:#626a79;display:block}
+.correction-response{display:grid;grid-column:1/-1;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+.correction-response>label:first-child{display:block;font-size:14px;font-weight:600}
+.correction-response textarea{height:48px;min-height:48px;max-height:100px;font-size:15px;line-height:20px;margin-top:4px;padding:4px 6px;resize:vertical}
+.response-actions{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-width:75px}
+.response-actions button{font-size:14px;padding:5px 12px;min-height:31px}
+.response-actions button:first-child{background:var(--accent);color:white}
+.correction-response .source-unclear{grid-column:1;align-items:center;font-size:14px;gap:7px}
+.source-unclear input{width:17px;height:17px;accent-color:var(--accent)}
+.response-draft{grid-column:1/-1;font-size:12px;color:#626a79;min-height:16px}
+.correction-missing{grid-column:1/-1;font-size:14px;line-height:1.4;margin:8px 0 0}
+.correction-comparison>.score-switch{display:none}
+.corrections-open main,.corrections-open.returned-review main{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;overflow:visible}
+.corrections-open .viewer{grid-row:1;overflow:visible}
+.corrections-open .viewer-head{position:relative;z-index:3;display:flex;flex-wrap:nowrap;align-items:center;gap:12px;min-height:44px;padding:6px 12px}
+.corrections-open .viewer-head>strong{font-size:15px;line-height:20px;flex:1;min-width:0;white-space:normal}
+.review-pane-actions{display:flex;gap:6px;align-items:center}
+.review-pane-actions>button{font-size:13px;padding:5px 8px;line-height:20px;white-space:nowrap}
+.corrections-open .page-controls{display:flex;flex-wrap:wrap;gap:5px;width:auto;font-size:14px}
+.corrections-open .page-controls label{font-size:13px}
+.corrections-open .page-controls input{width:45px;font-size:14px}
+.corrections-open .page-controls select{font-size:14px;width:auto;max-width:none;grid-column:auto;height:auto}
+.review-page-navigation{flex:none;padding:3px 8px;border-top:1px solid var(--line);background:#f7f8fb}
+.review-page-navigation .page-controls{width:100%;justify-content:center;flex-wrap:nowrap;gap:6px}
+.review-page-navigation .page-controls button{height:30px;min-width:30px;padding:5px}
+.review-page-navigation .page-controls input,.review-page-navigation .page-controls select{height:30px;padding:3px 5px}
+.review-page-navigation .page-controls label{margin:0}
+#correctionProblems{width:660px;max-height:90vh;padding:20px}
+#correctionProblems .dialog-head{margin-bottom:14px}
+#correctionProblemSearch{width:100%;font:inherit;padding:10px;border:1px solid #c8ccda;border-radius:5px}
+#correctionProblems>label{margin:12px 0;gap:8px}
+#correctionProblemCount{font-size:13px;color:#5b6372;margin:10px 0}
+#correctionProblemList{max-height:52vh;overflow:auto;display:grid;gap:8px;padding:3px}
+.problem-list-item{display:block;width:100%;text-align:left;padding:12px;white-space:normal}
+.problem-list-item[aria-current=true]{border:2px solid var(--accent);background:var(--accent-soft)}
+.problem-list-context{display:block;color:#5b6372;font-size:12px;margin-bottom:5px}
+.problem-list-comment{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;font-size:15px;line-height:1.4}
+#comparisonLeft{max-width:100%;font-size:14px;margin-top:10px}
+.correction-context{padding:8px 0;background:transparent;border:0}
+.correction-context .review-popover{position:static;width:auto;padding:8px 0;box-shadow:none;border:0;max-height:none}
+.correction-context img{display:block;max-width:100%;height:auto;margin:6px 0}
+.corrections-open #commentsPanel{display:none}
+.corrections-open.comments-open #commentsPanel{display:flex;position:absolute;inset:0 0 0 auto;width:min(330px,90%);z-index:4;height:100%;grid-column:auto;grid-row:1}
+.corrections-open #commentDock{grid-column:1/-1;grid-row:2;max-height:35vh;overflow:auto}
+#correctionFiles{width:760px;max-width:94vw}
+
+#correctionFiles .dialog-head{position:sticky;top:-25px;background:white;z-index:1;padding-bottom:10px}
+.corrections-open.corrections-annotating>.toolbar{display:flex!important;flex-wrap:wrap;padding:5px 12px}
+.corrections-open.corrections-annotating #toggleComments{display:inline-flex}
+.corrections-open #doneNext{display:none}
+.corrections-open #saveFinding{background:white;color:#414955}
+.corrections-annotating .correction-comparison:not(.response-open){padding-block:0;border:0}
+.corrections-annotating .correction-comparison:not(.response-open) .correction-report,.corrections-annotating .correction-comparison:not(.response-open) .correction-actions{display:none}
+@media(min-width:701px){
+ .corrections-open[data-score=source] #renderedViewer,.corrections-open[data-score=rendered] #sourceViewer{display:flex}
+ .corrections-open[data-score=rendered] #renderedViewer{grid-column:2}
+ .corrections-open #commentDock #editor{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:8px;margin:0}
+ .corrections-open #editor>label{grid-column:1;grid-row:2;margin:0}
+ .corrections-open .editor-actions{grid-column:2;grid-row:2;margin:0;align-items:center}
+ .corrections-open .finding-options{grid-column:2;grid-row:1}
+ .corrections-open #editor small{display:none}
+}
+@media(max-width:700px){
+ .correction-navigation{display:contents}
+ .correction-navigation>.problem-picker{justify-self:start;grid-column:1/3;grid-row:1}
+ #correctionProgress{grid-column:1;grid-row:2;font-size:12px;min-width:140px;justify-self:start}
+ .correction-comparison{grid-template-columns:minmax(0,1fr);gap:7px;padding:5px 10px 7px}
+ .correction-navigation{gap:8px}
+ .correction-navigation>.problem-picker{padding:3px 6px}
+ .correction-report{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 8px}
+ .correction-copy{grid-column:1/-1;grid-row:2}
+ .correction-state{justify-self:start;padding-block:1px}
+ .correction-report>.review-disclosure{justify-self:end}
+ .correction-report .review-disclosure>summary{font-size:13px;padding:0}
+ #correctionOriginal{font-size:15px;line-height:20px;max-height:80px}
+ .report-expanded #correctionOriginal{max-height:180px}
+ .correction-actions{gap:6px;justify-content:flex-start}
+ .correction-actions button{font-size:14px;min-height:34px;padding:6px 10px}
+ .correction-comparison>.score-switch{grid-column:1/-1;display:flex;margin:0 -10px -7px;border-top:1px solid #d6d9e2;gap:0}
+ .correction-comparison>.score-switch #showBoth{display:none}
+ .correction-comparison>.score-switch button{flex:1;min-height:32px;border-radius:0;border:0;font-size:14px;padding:5px}
+ .corrections-open main,.corrections-open.returned-review main{grid-template-columns:minmax(0,1fr)}
+ .corrections-open[data-score=rendered] #sourceViewer,.corrections-open[data-score=source] #renderedViewer{display:none}
+ .corrections-open[data-score=rendered] #renderedViewer{grid-column:1}
+ .corrections-open .viewer-head{min-height:38px;padding:4px 8px;gap:6px}
+ .corrections-open .viewer-head>strong{font-size:14px}
+ .review-pane-actions{gap:2px}
+ .review-pane-actions>button,.review-view-options>summary{font-size:13px;padding:4px 5px}
+ .response-draft{grid-column:2;grid-row:2;align-self:center;line-height:15px}
+ .correction-response .source-unclear{font-size:13px}
+ .review-popover{width:285px;max-height:55vh}
+ .corrections-open.corrections-annotating .toolbar{flex-wrap:nowrap;overflow-x:auto}
+ .corrections-open.corrections-annotating .toolbar>*{flex-shrink:0}
+}
+@media(max-height:500px){
+ .correction-comparison{padding-top:1px;padding-bottom:1px}
+ .correction-navigation>.problem-picker{padding-block:2px}
+ .correction-response textarea{height:42px;min-height:42px}
+ .correction-response{row-gap:3px}
+ .correction-comparison>.score-switch{margin-top:5px;margin-bottom:-3px}
+}
+/* A short, medium-width panel has room for score tabs beside the view actions.
+   Share their row instead of repeating the selected tab as a pane heading. */
+@media(min-width:320px) and (max-width:700px) and (max-height:600px){
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch{position:absolute;top:100%;left:0;width:224px;height:38px;margin:0;border:0;align-items:stretch}
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch button{flex:auto;padding:5px 8px}
+ .corrections-open:not(.corrections-annotating) .viewer-head{padding-left:230px}
+ .corrections-open:not(.corrections-annotating) .viewer-head>strong{display:none}
+ .corrections-open:not(.corrections-annotating) .review-pane-actions{margin-left:auto}
+}
+@media(max-width:430px){
+ .correction-navigation{gap:6px}
+ .correction-navigation .quiet{padding-inline:2px}
+ .correction-actions{gap:4px}
+ .correction-actions button{padding-inline:6px}
+}
+@media(min-width:320px) and (max-width:430px) and (max-height:600px){
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch{width:154px}
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch button{font-size:13px;padding-inline:6px}
+ .corrections-open:not(.corrections-annotating) .viewer-head{padding-left:160px;padding-right:5px}
+ .review-pane-actions>button,.review-view-options>summary{padding-inline:3px}
+}
+
+/* Private setup stays within the file dialog, leaving the scores unobstructed. */
+.private-intro{padding:0 0 8px;color:#414955}
+.private-intro p{margin:10px 0}
+.private-intro ol{padding-left:22px;margin:10px 0;line-height:1.6}
+.private-intro li{margin:5px 0}
+.private-intro .local-note{font-size:12px;color:#626a79}
+.folder-status{font-size:12px;line-height:1.4;min-width:0;flex:1;max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#626a79}
+.folder-status[data-state=error]{color:#9a3023;font-weight:600}
+@media(max-width:650px){.folder-status{max-width:none;flex:1 1 60px;font-size:11px;min-height:16px}}
+#workspaceDialog .handoff-actions{padding:0 0 12px}
+#workspaceDialog .file-grid{margin-top:12px}
+#workspaceDialog #load{justify-self:start}
+
+
+.setup-status{padding:8px 10px;border-radius:4px;background:#fff0df;color:#874411;font-size:13px}
+
+/* Shared page navigation for ordinary and correction review. */
+.review-page-navigation{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px 8px;min-height:38px}
+.review-page-navigation .page-controls{display:flex;width:auto;flex-wrap:nowrap;gap:5px}
+.review-page-navigation .page-controls label{font-size:12px;gap:4px}
+.review-page-navigation .page-controls input{width:43px;font-size:13px}
+.review-page-navigation .page-controls select{width:auto;max-width:100px;font-size:12px;grid-column:auto}
+.findings-visibility{font-size:12px;white-space:nowrap;gap:4px;cursor:pointer}
+.findings-visibility:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+#deletePreview,#folderFileNames,#roundSummaryFiles{white-space:pre-wrap;overflow-wrap:anywhere}
+#deletePreview{max-height:30vh;overflow:auto;padding:10px;background:#f3f4f7}
+#folderPromptText{font-family:ui-monospace,monospace}
+#folderPromptButton{white-space:nowrap}
+.round-summary{position:fixed;inset:12vh auto auto 50%;transform:translateX(-50%);width:560px;max-width:94vw;max-height:76vh;overflow:auto;border:1px solid #b9b3e6;border-radius:10px;background:#f7f8fb;color:var(--ink);box-shadow:0 12px 50px #20243655;padding:22px;z-index:20}
+.round-summary h2{margin:0 0 10px;font:25px "Sora","Segoe UI",sans-serif}.round-summary p{line-height:1.5}
+#roundSummaryFiles,#roundSummaryStatus{font-size:13px}#roundSummaryStatus{font-weight:600}
+@media(max-width:700px){}
+@media(max-width:430px){.review-page-navigation{gap:2px 5px}.review-page-navigation .page-controls{gap:3px}.review-page-navigation .page-controls select{max-width:83px}}
+
+.review-page-navigation{height:63px;min-height:63px;align-content:center}.review-page-navigation .page-controls{flex:0 0 100%}.review-page-navigation .findings-visibility{height:18px;line-height:18px}.review-page-navigation:not(:has(.findings-visibility))::after{content:"";height:18px;width:1px}
+
+.review-page-navigation{height:38px;min-height:38px;flex-wrap:nowrap;gap:5px;padding:3px 6px}.review-page-navigation .page-controls{flex:0 1 auto;gap:3px}.review-page-navigation .page-controls button{height:28px;width:26px;min-width:26px}.review-page-navigation .page-controls input{width:35px}.review-page-navigation .page-controls select{max-width:80px}.review-page-navigation:not(:has(.findings-visibility))::after{display:none}
+@container score-pane (max-width:430px){.review-page-navigation .page-controls label{font-size:0;gap:0}.findings-visibility .full-findings{display:none}.findings-visibility{font-size:12px}.review-page-navigation .page-controls{gap:3px}}
+
+@media(max-width:430px){}
+
+#folderFilesLocation,#folderFilesStatus{overflow-wrap:anywhere}.folder-file-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}.folder-file-open{text-align:left;overflow-wrap:anywhere}.folder-file-row small{grid-column:1;grid-row:2}.folder-file-row>button:last-child{grid-column:2;grid-row:1 / span 2}#folderFilePreview h3{overflow-wrap:anywhere}#folderFilePreview textarea{font:13px ui-monospace,monospace}
+
+/* Page navigation shares the score heading; controls wrap within narrow panes. */
+.viewer-head,.corrections-open .viewer-head{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;padding:5px 9px;min-height:40px}
+.viewer-head>strong,.corrections-open .viewer-head>strong{flex:1 1 96px;min-width:0;font-size:12px;line-height:18px;white-space:nowrap}
+.viewer-head .review-page-navigation{flex:0 1 auto;height:auto;min-height:28px;padding:0;border:0;background:transparent;justify-content:flex-end}
+.viewer-head .page-controls{display:flex;flex-wrap:nowrap;width:auto;gap:3px}
+.viewer-head .page-controls label{margin:0;font-size:12px;gap:3px}
+.viewer-head .page-controls input{width:35px;font-size:12px}
+.viewer-head .page-controls select{width:auto;max-width:80px;height:28px;grid-column:auto;font-size:11px}
+.viewer-head .review-pane-actions{flex:0 1 auto;margin-left:auto;gap:5px}
+.review-pane-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:5px 8px;flex:0 1 auto;max-width:100%;min-width:0}
+.corrections-open .viewer-head .review-pane-actions{flex:0 0 auto;margin-left:0;justify-content:flex-end}
+.corrections-open .review-pane-actions>button,.corrections-open .review-pane-actions summary{font-size:12px;padding:4px 7px;line-height:18px}
+@container score-pane (max-width:500px){
+ .review-pane-controls .page-controls label{font-size:0;gap:0}
+}
+@container score-pane (max-width:430px){
+ .review-pane-controls{column-gap:4px}
+ .review-pane-controls .page-controls button{width:24px;min-width:24px}
+ .corrections-open .review-pane-controls .page-controls select{max-width:66px;padding-inline:2px}
+ .corrections-open .review-pane-controls .review-pane-actions>button{padding-inline:4px}
+ .corrections-open .review-pane-controls .review-pane-actions summary{padding-inline:2px}
+}
+@container score-pane (max-width:360px){
+ .viewer-head .page-controls label{font-size:0;gap:0}
+ .viewer-head .page-controls select{max-width:72px}
+ .viewer-head>strong,.corrections-open .viewer-head>strong{flex-basis:84px}
+}
+@container score-pane (max-width:280px){
+ .viewer-head .review-page-navigation{flex-basis:100%;justify-content:flex-start}
+}
+@container score-pane (max-width:210px){
+ .viewer-head .page-controls{width:100%;flex-wrap:wrap}
+ .viewer-head .page-controls select{flex:1 1 100%;max-width:none}
+}
+@media(max-width:430px){
+ .review-pane-controls{column-gap:3px}
+ .review-pane-controls .page-controls{gap:2px}
+ .review-pane-controls .page-controls input{width:32px}
+}
+/* Direct deletion remains separate from the finding's main open target. */
+.finding{position:relative;padding-right:37px;cursor:default}
+.finding .finding-delete{position:absolute;top:4px;right:4px}
+button.finding-delete{width:25px;height:25px;min-width:25px;border-color:transparent;background:transparent;color:#687080}
+button.finding-delete:hover{color:#8b352a;background:#f9eae6;border-color:#e5c7c0}
+button.finding-delete svg{width:14px;height:14px;stroke-width:1.4}
+.finding-open{cursor:pointer}
+#commentDock{padding-bottom:10px}
+#commentDock #editor{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:8px;border:1px solid #c8ccda;background:#f7f8fa}
+.finding-editor-head{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+#editTitle{flex:1;min-width:0;grid-column:auto;grid-row:auto;line-height:18px}
+#editor .finding-type{flex-direction:row;align-items:center;gap:8px;margin:0;font-size:12px;grid-column:1/-1;grid-row:auto}
+#findingType{min-width:0;flex:1;padding:4px 6px;font-size:12px}
+#editor .finding-note{grid-column:1/-1;grid-row:auto;margin:0;font-size:12px;gap:4px}
+#editor .finding-options{grid-column:1/-1;grid-row:auto;justify-self:stretch;max-width:none;padding:0}
+#findingState{max-width:100%;padding:4px 6px;font-size:12px}
+#editor .hint{grid-column:1/-1;font-size:11px;line-height:1.4;margin:0}
+#editor .editor-actions{grid-column:1/-1;grid-row:auto;gap:8px;margin:0}
+#editor .editor-actions button{white-space:nowrap}
+.dialog-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar .cycle-colors,.toolbar .findings-visibility{gap:4px;white-space:nowrap;cursor:pointer}
+.toolbar input[type=checkbox]{margin:0;accent-color:var(--accent)}
+@media(min-width:601px) and (max-width:1000px){
+ #commentDock #editor{grid-template-columns:minmax(0,1fr) auto;gap:5px 12px}
+ #editor .finding-type{grid-column:1;grid-row:2;justify-self:start}
+ #editor .finding-options{grid-column:2;grid-row:2;max-width:230px;justify-self:end}
+ #editor .finding-note{grid-column:1;grid-row:3}
+ #editor .editor-actions{grid-column:2;grid-row:3;align-self:end}
+ #editor .hint{grid-row:4}
+}
+@media(max-width:600px){
+ #commentDock{max-height:46vh;padding:8px}
+ #editor .finding-type{justify-self:start}
+ #editor .finding-note{font-size:0;gap:0}
+ #editor .finding-options{grid-row:auto}
+ #editor .editor-actions{justify-content:flex-end}
+ #editor textarea{height:48px;min-height:48px}
+ #editor #editTitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media(min-width:440px) and (max-width:1000px) and (max-height:500px){
+ #commentDock{padding-block:4px}
+ #commentDock #editor{padding:6px}
+ #editor .finding-editor-head .finding-delete{top:6px;right:6px}
+ #editor .hint{font-size:10px;line-height:14px}
+}
+
+@media(min-width:320px) and (max-width:700px) and (max-height:600px){
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch{position:static;width:auto;height:28px;margin:0 -10px -1px;border-top:1px solid #d6d9e2}
+ .corrections-open:not(.corrections-annotating) .correction-comparison>.score-switch button{min-height:28px;padding-block:3px}
+ .corrections-open:not(.corrections-annotating) .viewer-head{padding:3px 9px;gap:4px 8px;min-height:34px}
+ .corrections-open:not(.corrections-annotating) .review-pane-controls{flex:1 1 auto;justify-content:center}
+}
+@media(min-width:320px) and (max-width:430px) and (max-height:600px){
+ .corrections-open:not(.corrections-annotating) .viewer-head .review-pane-actions{margin-left:0;gap:3px}
+ .corrections-open:not(.corrections-annotating) .viewer-head .review-pane-actions>button{max-width:91px;overflow:hidden;text-overflow:ellipsis}
+ .corrections-open:not(.corrections-annotating) .review-view-options>summary{font-size:11px;padding-inline:3px}
+}
+/* A horizontal editor uses two rows so a short window still shows the score. */
+@media(min-width:440px) and (max-width:1000px){
+ #commentDock #editor{position:relative;grid-template-columns:minmax(0,1fr) auto auto;gap:5px 12px}
+ #editor .finding-editor-head{grid-column:1;grid-row:1;min-width:0}
+ #editor .finding-editor-head .finding-delete{position:absolute;top:8px;right:8px}
+ #editor .finding-type{grid-column:2;grid-row:1;justify-self:start}
+ #editor .finding-options{grid-column:3;grid-row:1;max-width:230px;justify-self:end;padding-right:30px}
+ #editor .finding-note{grid-column:1/3;grid-row:2;font-size:0;gap:0}
+ #editor .editor-actions{grid-column:3;grid-row:2;align-self:end}
+ #editor .hint{grid-row:3}
+ #editor textarea{height:48px;min-height:48px}
+}
+
+/* Plain current status; recovery actions appear only for unresolved warnings. */
+#statusControl{display:flex;align-items:center;justify-content:center;gap:8px;flex:0 1 220px;min-width:135px;width:220px;margin-right:auto}
+#statusSummary{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:30px;font-size:12px;line-height:18px;color:#565e6d;text-align:center}
+#statusSummary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+#statusButton{flex:none;min-height:30px;padding:5px 9px;font-size:12px;line-height:18px}
+#statusLabel{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status-symbol{flex:none;width:12px;text-align:center;font-weight:600}
+#statusControl[data-state=saved] .status-symbol::before{content:'✓'}
+#statusControl:is([data-state=idle],[data-state=saving]) .status-symbol{display:none}
+.status-warning{display:none}
+#statusControl[data-state=attention] .status-symbol{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px}
+#statusControl[data-state=attention] .status-warning{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round}
+#statusControl[data-state=attention] .warning-dot{fill:currentColor;stroke:none}
+#statusControl[data-state=attention] #statusSummary{color:#b42332;font-weight:600}
+#statusControl[data-state=attention] #statusButton{background:#fff0f1;border-color:#e3a1a7;color:#b42332;font-weight:600}
+#notices{position:fixed;inset:auto;top:60px;left:12px;margin:0;width:390px;max-width:calc(100vw - 24px);height:auto;min-height:0;max-height:calc(100dvh - 24px);padding:14px;border:1px solid #b6bccc;border-radius:8px;background:#fff;color:var(--ink);box-shadow:0 10px 35px #20243633;overflow:auto;overscroll-behavior:contain}
+#notices:popover-open{display:block}
+#notices.error{border-color:#d49b78}
+.status-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.status-panel-head h2{font:20px "Sora","Segoe UI",sans-serif;font-weight:normal;margin:0;min-width:0}
+#notices #dismissMessage{margin:0;flex:none}
+.status-details{font-size:12px;line-height:1.5}
+#notices #storage,#notices #folderStatus{display:block;flex:none;min-width:0;max-width:none;white-space:normal;overflow-wrap:anywhere;overflow:visible;margin:4px 0;color:#565e6d}
+#notices #storage.unsaved,#notices #folderStatus[data-state=error],#notices #folderStatus.status-problem{color:#933d20;font-weight:600}
+#noticeCopy{min-width:0;max-height:40vh;overflow:auto;font-size:13px;line-height:1.5}
+#noticeCopy:empty{display:none}
+#notices #message,#notices #storageProblem{display:block;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;max-width:none;margin:10px 0;font-size:13px;line-height:1.5}
+#notices #message[data-error=true],#notices #storageProblem{color:#933d20}
+.status-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.status-actions button{padding:6px 9px;font-size:12px;line-height:18px;white-space:normal;max-width:100%;overflow-wrap:anywhere}
+#notices #emergency{margin:0;background:#fff0df;border-color:#e3b995;color:#933d20}
+@media(max-width:1000px){#statusControl{flex-basis:165px;width:165px;min-width:125px}}
+@media(max-width:700px){}
+@media(max-width:650px){}
+@media(max-width:430px){.status-actions button{min-height:32px}#notices{padding:12px}}
+
+/* Primary workspace actions stay visible and separate from optional imports. */
+.workspace-backups{margin:16px 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.workspace-backups .hint{margin:9px 0 0}
+#finishOverview{font-size:12px;color:#687080}
+#finishDownloads .download{display:inline-block;padding:10px 14px;border:1px solid var(--accent-border);border-radius:6px;background:var(--accent-soft);color:var(--accent-text);text-decoration:none}
+
+#finishDownloads .download:hover{background:#dddaf9;border-color:var(--accent)}

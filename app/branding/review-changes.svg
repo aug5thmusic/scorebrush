@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 96" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Review Changes — highlighted and corrected notes</title>
+  <desc id="desc">A highlighted note on the middle staff line is shown beside a corrected note in the space above.</desc>
+  <path d="M8 48C22 42 36 35 52 31L59 58C44 65 31 72 17 78L14 72L11 73L10 62L7 63Z" fill="#ddd9fb"/>
+  
+  <g stroke="#443dd0" stroke-opacity=".30" stroke-width="1.7" stroke-linecap="round">
+    <path d="M12 36H60M12 56H60M12 76H60"/>
+    <path d="M100 36H148M100 56H148M100 76H148"/>
+  </g>
+  <g fill="#29228f">
+    <ellipse cx="36" cy="56" rx="8" ry="5" transform="rotate(-22 36 56)"/>
+    <ellipse cx="124" cy="46" rx="8" ry="5" transform="rotate(-22 124 46)"/>
+  </g>
+  <g stroke="#29228f" stroke-width="2.8" stroke-linecap="round">
+    <path d="M43 54V23"/>
+    <path d="M131 44V13"/>
+  </g>
+  <path d="M70 57C76 57 82 54 88 51M80 47L89 51L85 60" stroke="#443dd0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

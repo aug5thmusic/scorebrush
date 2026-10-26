@@ -1,0 +1,132 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2026 Auggie (@aug5thmusic).
+ * Additional permissions: see LICENSING.md at the source root. */
+/* Application chrome has one owner: shared header, workflow/tools, menus and
+   onboarding. Score panes, drawing and finding layouts live in their own files. */
+header{display:flex;align-items:center;flex:none;position:relative;gap:16px;min-height:46px;padding:5px 16px;background:#fff;border-bottom:1px solid var(--line)}
+.desk-brand{flex:none}.desk-brand h1{font-size:24px;margin:0;white-space:nowrap}.desk-brand h1 .brand-accent{font:inherit;letter-spacing:inherit;color:var(--accent)}.wordmark span{color:var(--accent)}
+#workspaceIdentity{display:flex;align-items:center;gap:4px;min-width:0;max-width:calc(50% - 270px);margin-left:6px}
+#workspaceIdentity #chooseFolder{display:flex;align-items:center;gap:7px;min-width:0;border-color:transparent;background:transparent;padding:5px 6px;font-size:12px;font-weight:500;text-align:left}
+#workspaceIdentity #chooseFolder.primary{color:var(--accent)}
+#workspaceName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.workspace-chevron{display:flex;flex:none;color:#777a88}.workspace-chevron svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+#workspaceExplorer{flex:none;width:28px;height:28px;padding:5px;border-color:transparent;background:transparent}
+#workspaceExplorer svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+header>#statusControl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:220px;max-width:220px;min-width:0;margin:0}
+.primary-actions{margin-left:auto;display:flex;gap:6px;align-items:center}.primary-actions button{font-size:12px;padding:5px 9px;background:transparent;border-color:transparent}
+.native-host #workspaceTools{display:none}
+#workbar{display:flex;align-items:center;gap:14px;flex:none;min-height:44px;padding:4px 12px;background:#fafafd;border-bottom:1px solid var(--line);position:relative;z-index:8}
+#workflowNavigation{display:flex;align-items:center;gap:3px;flex:none}
+#workflowNavigation>span{display:flex;align-items:center;justify-content:center;flex:none;width:7px;height:20px;color:#a4a1b7;margin:0 2px}
+#workflowNavigation>span svg{display:block;width:6px;height:10px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+#workflowNavigation>button{font-size:12px;line-height:20px;font-weight:600;padding:5px 10px;border:1px solid transparent;background:transparent;color:#626477;white-space:nowrap}
+#workflowNavigation>button[aria-current=step]{color:var(--accent);background:#edeafa;border-color:#d7d2f3}
+#workflowNavigation>#folderPromptButton{color:var(--accent)}
+#workflowNavigation>button:hover:not(:disabled){background:#e6e1f6;border-color:#beb5e4}
+#workbar>.toolbar{border:0;background:transparent;gap:8px;padding:0;flex:1;flex-wrap:wrap;min-width:0}
+#workbar .toolbar-group+.toolbar-group{border-left:1px solid var(--line);padding-left:9px}
+#workbar .tool-icon{width:27px}.toolbar-history{gap:0}
+#workbar .workflow-load{margin-left:auto;white-space:nowrap;font-size:12px;background:white;padding:5px 9px}
+.correction-header{display:flex;align-items:center;min-width:0;gap:12px;padding:0;border:0}
+.correction-navigation{display:flex;align-items:center;gap:8px;min-width:0}
+.correction-header button{padding:5px 8px;font-size:12px;white-space:nowrap}
+#correctionProgress{font-size:11px}
+#correctionBack,#correctionMore{display:none}
+#comparisonComments{border-color:transparent;background:transparent}
+.corrections-open .toolbar{display:none!important}
+body:not(.corrections-open) .review-pane-actions{display:none}
+.corrections-open.corrections-annotating #workbar>.toolbar{display:flex!important}
+
+#appMenu{display:flex;align-items:center;gap:1px;flex:none;height:28px;padding:0 10px;background:#fff;border-bottom:1px solid #ecebf2;position:relative;z-index:20}
+.native-host #appMenu{display:none}
+#appMenu>div{position:relative}
+#appMenu>div>button{padding:3px 9px;font-size:12px;border:0;border-radius:3px;background:transparent}
+#appMenu>div>button[aria-expanded=true]{background:var(--accent-soft);color:var(--accent)}
+.application-menu{position:absolute;top:100%;left:0;min-width:270px;padding:5px;border:1px solid #c9c6d7;background:white;border-radius:5px;box-shadow:0 6px 20px #201c4430}
+.application-menu button{display:flex;align-items:center;gap:24px;justify-content:space-between;width:100%;text-align:left;border:0;border-radius:3px;font-size:12px;padding:7px 10px 7px 24px;position:relative;background:transparent}
+.application-menu button[aria-checked=true]::before{content:'✓';position:absolute;left:6px;color:var(--accent)}
+.application-menu kbd{font:10px Sora,sans-serif;color:#737083;white-space:nowrap}
+.application-menu button:focus{outline:none;background:#edeafa}
+#startupScreen{font:400 13.333333px/18px "Segoe UI",sans-serif;position:fixed;inset:0;background:#f8f7fb;display:grid;place-items:center;z-index:1000;padding:12px;overflow:auto}
+/* Match BuildStartup's native 620 x 440 layout. Only this loading composition
+   compensates for WebView2's device scale; workspace typography is unchanged. */
+.startup-content{zoom:var(--startup-scale,1);width:620px;max-width:100%;height:440px;display:grid;grid-template-rows:88px 80px 35px 181px 8px 48px;text-align:center}
+.wordmark{font:700 44px/1.2 'Bricolage Grotesque',Sora,sans-serif;letter-spacing:-.035em;color:#292c35}
+.app-mark{grid-row:1;align-self:center;justify-self:center;margin:0;display:block;width:72px;height:72px;object-fit:contain}
+[data-build-info]{font-size:11px;color:#6c687d;line-height:1.8}
+.startup-content>[data-build-info]{grid-row:3;display:grid;place-items:center;width:calc(100% - 6px);justify-self:center;font:400 11px/15px "Segoe UI",sans-serif;margin:0}
+.startup-rule{grid-row:5;align-self:center;justify-self:center;margin:0;height:2px;width:calc(100% - 6px);background:#dfdaef}
+#startupStatus{grid-row:4;display:grid;place-items:center;width:calc(100% - 6px);justify-self:center;margin:0;font:inherit;color:#443dd0}
+#startupError{color:#943d20;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}#startupError:empty{display:none}#startupRecovery{grid-row:6;justify-self:center;align-self:center}
+.startup-advice{display:none;font-size:12px;line-height:1.6;color:#666172}
+#startupScreen[data-state=error] .startup-advice{display:block}
+#startupScreen[data-state=error] .startup-content{display:flex;flex-direction:column;align-items:center;height:auto;gap:16px;max-width:520px}
+#startupScreen[data-state=error] :is(.app-mark,.startup-wordmark){flex:none}#startupScreen[data-state=error] p{margin:0}
+#workspaceDialog{width:760px;max-width:calc(100vw - 40px);padding:24px 28px}
+#workspaceDialog .dialog-head h2{font-size:17px;font-weight:600}
+#workspaceDialog[data-page=welcome] .dialog-head h2{font-size:12px;color:#6b6778;font-weight:500}
+.welcome-brand{display:flex;gap:18px;align-items:center;justify-content:center;margin:8px auto 4px;max-width:100%}
+.welcome-brand-text{min-width:0}.welcome-name{margin:0;font-size:clamp(28px,7.8vw,44px);line-height:1.2}
+.welcome-version{text-align:center;margin:4px 0 0;overflow-wrap:anywhere}
+#workspaceDialog .private-intro{padding:0;border:0;background:transparent}
+#welcomeHeading{font-size:1rem;line-height:1.5;font-weight:400;margin:0;max-width:28em;overflow-wrap:anywhere}
+#welcomeWorkflowHeading{text-align:center;color:var(--accent);font-size:1.2rem;line-height:1.4;margin:14px 0 4px}
+.private-intro .welcome-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;padding:0;margin:0 auto 14px;gap:8px 14px;max-width:760px}
+.private-intro .welcome-steps li{position:relative;display:grid;grid-template-rows:64px 1fr;justify-items:center;gap:12px;padding:12px 16px;margin:0;min-width:0;font-size:1rem;line-height:1.65}
+.welcome-steps li:not(.welcome-first)>.welcome-step-number{position:absolute;left:calc(50% - 70px - 2rem - 8px);top:calc(44px - 1rem)}
+.welcome-step-number{display:grid;place-items:center;width:2rem;height:2rem;border:1px solid #b6adeb;border-radius:50%;background:#ddd9fb;color:#443dd0;font-weight:600;line-height:1;flex:none}
+.private-intro .welcome-steps .welcome-first{grid-column:1/-1;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto;align-items:start;gap:14px;padding-block:6px}
+.welcome-first p{max-width:66ch}.welcome-step-icon{display:block;width:140px;max-width:100%;height:64px;object-fit:contain;object-position:center}
+.welcome-app-icon{flex:none;object-fit:contain;width:104px;height:104px}
+.welcome-step-copy{max-width:30ch;width:100%}.welcome-step-copy>b{display:block;font-size:1rem;text-align:center;margin:0 0 7px}
+.welcome-steps p{font-size:.9rem;line-height:1.7;margin:0;color:#403b56;overflow-wrap:anywhere}.welcome-steps .welcome-first p{font-size:1rem}
+.welcome-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0 10px}.welcome-actions button{font-size:.93rem;padding:8px 12px;min-height:36px}
+#workspaceDialog .local-note{font-size:10px;color:#777183;line-height:1.7;margin:8px 0 18px}
+#workspaceDialog[data-page=files] :is(.welcome-brand,.welcome-version,#welcomeWorkflowHeading,.welcome-steps){display:none}
+#workspaceDialog[data-page=files] .welcome-actions{margin-top:14px}
+#workspaceDialog[data-page=welcome] :is(.workspace-backups,#manualHandoffPanel,#handoffHistoryPanel,.folder-tools-row,#filesPanel,#returnedBar){display:none}
+#workspaceDialog details{padding:11px 0;background:transparent}.workspace-backups{border-top:1px solid var(--line)}
+#aboutDialog{width:480px;padding:24px}#aboutDialog .wordmark{margin:30px 0 8px;font-size:40px}#aboutDialog .dialog-head h2{font-size:16px}#aboutCredit{font-size:12px;line-height:1.8;margin:24px 0 0;overflow-wrap:anywhere}#creatorLink{color:var(--accent)}#creatorLinkStatus{font-size:12px;color:#943d20}
+#folderPromptDialog{width:620px;padding:24px;max-width:calc(100vw - 32px)}
+#folderPromptDialog .dialog-head h2{font-size:20px;font-weight:600}.folder-handoff-summary{margin:22px 0 18px}
+#folderPromptCount{font-size:18px;font-weight:600}#folderPromptState{font-size:12px;line-height:1.7;color:#625e70;margin-top:10px}
+#folderPromptDialog[data-state=ready] #folderPromptState{color:var(--accent)}#folderPromptDialog[data-state=error] #folderPromptState{color:#943d20}
+.folder-handoff-actions,.folder-path-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#copyFolderPrompt{min-width:170px;padding:10px 16px;font-weight:600}.folder-handoff-hint{font-size:12px;line-height:1.7;color:#625e70;margin:12px 0 24px}
+#folderPromptText{display:block;width:100%;margin:12px 0 0;font:12px/1.6 Consolas,monospace;min-height:140px;height:30vh;max-height:40vh;resize:vertical}
+.folder-prompt-options,.folder-manual-handoff{padding:12px 0 0;border-top:1px solid var(--line);font-size:12px}
+.folder-prompt-options label{display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+.folder-prompt-options input{flex:none;margin-top:3px}.folder-prompt-options .hint,.folder-manual-handoff .hint{font-size:11px;line-height:1.6;margin:6px 0 12px}
+.folder-manual-handoff button{font-size:12px}
+@media(max-width:1200px){
+ header{gap:8px;padding-inline:12px}.desk-brand h1{font-size:22px}#workspaceIdentity{max-width:calc(50% - 250px);margin-left:4px}header>#statusControl{width:200px;max-width:200px}
+ #workflowNavigation>button{padding-inline:7px;font-size:11px}#workflowNavigation{gap:1px}#workflowNavigation>span{margin:0}
+ #workbar{gap:8px;padding-inline:10px}.correction-header{gap:8px}.correction-navigation{gap:6px}
+ #workbar>.toolbar{gap:5px}#workbar .toolbar-group+.toolbar-group{padding-left:7px}#workbar .toolbar button{padding-inline:6px}#workbar .toolbar .tool-icon{width:25px}
+}
+@media(max-width:1000px){
+ header{padding-inline:8px;gap:6px}.desk-brand h1{font-size:21px}#workspaceIdentity{max-width:calc(50% - 235px);margin-left:2px}header>#statusControl{width:180px;max-width:180px}
+ #workflowNavigation>button{font-size:10px;padding-inline:5px}
+ #workbar{flex-wrap:wrap}#workbar .workflow-load{font-size:11px;padding-inline:6px}.toolbar .modes button{padding-inline:5px}
+ .corrections-open.corrections-annotating #workbar>.toolbar{display:contents!important}
+}
+@media(max-width:700px){
+ header{flex-wrap:wrap;min-height:78px;align-content:center;gap:3px 10px}#workspaceIdentity{max-width:calc(100% - 150px);flex:1;margin-left:auto;justify-content:flex-end}
+ header>#statusControl{position:static;transform:none;width:180px;max-width:180px;margin:0;flex:0 1 180px}
+ header>.primary-actions{margin-left:auto}#workflowNavigation>button{font-size:11px;padding-inline:6px}
+ #workbar{padding:3px 8px}.correction-header{border:0;padding:0}#workbar .workflow-load{margin-left:auto}
+ #correctionProgress{min-width:0}
+ .private-intro .welcome-steps{grid-template-columns:1fr;gap:12px}.welcome-brand{gap:12px}.welcome-app-icon{width:72px;height:72px}
+ .private-intro .welcome-steps li:not(.welcome-first){grid-template-columns:auto 96px minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:12px}.welcome-steps li:not(.welcome-first)>.welcome-step-number{position:static}.welcome-step-copy>b{text-align:left}
+ #workspaceDialog{padding:18px;max-width:calc(100vw - 24px)}.welcome-actions{gap:6px}.welcome-actions button{padding:7px 9px}#appMenu{height:28px}
+}
+@media(max-width:420px){.private-intro .welcome-steps li:not(.welcome-first){grid-template-columns:auto minmax(0,1fr)}.welcome-step-icon{width:112px}.welcome-step-copy{grid-column:1/-1;max-width:none}.welcome-step-copy>b{text-align:center}.welcome-steps li{padding:14px}}
+@media(max-height:500px){
+ header{min-height:42px;padding-block:3px}#workflowNavigation>button{padding-block:3px}#workbar{min-height:38px;padding-block:1px}#workbar>.toolbar{row-gap:1px}
+}
+
+#recentProjects{display:grid;gap:8px;margin-block:12px}.recent-project{display:grid;gap:5px;text-align:left;overflow-wrap:anywhere}.recent-project span{font-size:12px;color:#686278}
+
+.startup-wordmark{grid-row:2;display:block;width:calc(100% - 6px);height:74px;max-width:100%;object-fit:contain;margin:0;align-self:center;justify-self:center}#startupScreen button{font-family:inherit}
+
+#workspaceConnectFolder{flex:none;max-width:112px;padding:3px 5px;font-size:11px;line-height:1.3;white-space:normal}

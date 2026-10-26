@@ -1,0 +1,78 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2026 Auggie (@aug5thmusic).
+ * Additional permissions: see LICENSING.md at the source root. */
+/* The action track precedes variable report text. Neither a long report nor
+   the last/unchecked message can move a review button under the pointer. */
+.correction-comparison{grid-template-columns:minmax(0,1fr);align-items:start;gap:6px;padding:7px 12px}
+.correction-actions{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:150px 140px 95px 140px;gap:8px;align-items:start;justify-content:start}
+.correction-actions button{height:36px;min-height:36px;padding:5px 9px;font-size:13px;line-height:22px}
+.correction-report{grid-column:1;grid-row:2;align-items:start}
+.correction-end{grid-column:1;grid-row:3;max-width:none;height:16px;line-height:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.correction-response{grid-row:2}
+.correction-comparison.response-open .correction-end{display:none}
+.corrections-annotating .correction-comparison:not(.response-open){display:none}
+.correction-comparison>.score-switch{grid-row:4}
+#correctionOriginal{max-height:4.2em}
+.correction-comparison.report-expanded #correctionOriginal{max-height:24vh}
+#comparisonFindings{font-size:12px}
+.correction-navigation{min-width:0;flex-shrink:0}
+.problem-picker{width:135px;overflow:hidden;text-overflow:ellipsis}
+#correctionProgress{width:100px;font-variant-numeric:tabular-nums}
+.round-summary[open]{display:flex;flex-direction:column;gap:16px;inset:0;transform:none;margin:auto;width:520px;max-width:calc(100vw - 32px);height:fit-content;max-height:calc(100dvh - 32px);padding:24px;overflow:auto}
+.round-summary::backdrop{background:#20243655}
+.round-summary p{overflow-wrap:anywhere;margin:8px 0 0}
+.round-summary h2{margin:0;font-size:23px}
+.round-summary h2:focus{outline:none}
+.round-summary>.action-row{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin:0}
+.round-summary>.action-row button{min-height:38px;margin:0;font-size:13px}
+#roundSummaryContent{flex:none;min-height:0}
+#roundSummaryStatus{font-size:13px;font-weight:500}
+#roundSummaryPrompt{min-height:80px;flex:1 0 100%;display:flex}
+#nextAIPrompt{min-height:80px;height:240px;max-height:35dvh;width:100%;margin:0;font-size:12px;line-height:1.5;resize:none}
+@media(max-height:500px){.round-summary[open]{gap:10px;padding:16px}.round-summary h2{font-size:20px}#nextAIPrompt{height:100px;max-height:30dvh}}
+.finding-current-note{display:block;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px}
+#renderedViewer>.viewer-head{position:relative}
+@media(max-width:1000px) and (max-height:600px){
+ .corrections-open.corrections-annotating #workbar>.toolbar{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding:3px 0}
+ .corrections-annotating #workbar>.toolbar>*{flex-shrink:0}
+ .corrections-annotating #workbar>.correction-header,.corrections-annotating #workbar>.workflow-load{display:none}
+}
+@media(max-width:700px){
+ .correction-actions{grid-template-columns:1.1fr 1fr .65fr 1fr;gap:4px}
+ .correction-actions button{font-size:12px;padding-inline:4px}
+ .correction-report{grid-template-columns:auto minmax(0,1fr)}
+ #correctionOriginal{font-size:15px;line-height:20px;max-height:60px}
+ .correction-end{font-size:11px}
+ #comparisonComments{display:none}
+ .correction-header{gap:5px}
+ #correctionProgress{width:80px}
+ .problem-picker{width:115px}
+}
+@media(max-width:430px){
+ .correction-actions{grid-template-columns:1.4fr 1.2fr .65fr .8fr}
+ .correction-actions button{height:34px;min-height:34px;font-size:11px;padding-inline:3px}
+ .corrections-open #workbar>.workflow-load{display:none}
+}
+@media(max-width:700px) and (max-height:600px){
+ .corrections-open.corrections-annotating .viewer-head>strong{display:none}
+ .correction-comparison.response-open>.score-switch{display:none!important}
+ .correction-comparison{padding-block:3px;row-gap:3px}
+ .correction-response>label:first-child{font-size:13px;line-height:16px}
+ .correction-response textarea{height:38px;min-height:38px}
+ .correction-response .response-actions{gap:2px}
+ .correction-response .response-actions button{min-height:28px;padding:3px 6px;line-height:20px}
+ .correction-actions button{height:34px;min-height:34px}
+ .correction-end{height:14px;line-height:14px;max-width:calc(100% - 220px)}
+ .corrections-open #workbar{min-height:36px}
+ .correction-report{display:flex;gap:6px}
+ .correction-copy{min-width:0}
+ #correctionOriginal{max-height:40px}
+ .correction-report>.review-disclosure{position:absolute;right:0;top:auto;bottom:-20px}
+ #expandCorrectionReport{position:absolute;right:110px;bottom:-20px;margin:0;padding:0;font-size:11px;line-height:18px;max-width:120px}
+ .correction-report>.correction-copy{margin-left:106px}
+ .correction-state{position:absolute;top:0;left:0;max-width:100px;overflow:hidden;text-overflow:ellipsis}
+}
+
+.correction-note-actions{display:flex;float:right;gap:6px;margin:0 0 2px 6px}
+.correction-note-actions button{font-size:12px;line-height:18px;min-height:26px;padding:2px 8px}
+@media(max-height:600px) and (min-width:701px){.correction-comparison{padding-block:4px;row-gap:3px}}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Proofread — highlighted note and brush</title>
+  <desc id="desc">A highlighted note on a staff beside a broad, flat brush.</desc>
+  <g transform="scale(1.25)">
+    <g transform="translate(4 0)">
+      <path d="M8 48C22 42 36 35 52 31L59 58C44 65 31 72 17 78L14 72L11 73L10 62L7 63Z" fill="#ddd9fb"/>
+      
+      <path d="M12 36H60M12 56H60M12 76H60" stroke="#443dd0" stroke-opacity=".30" stroke-width="1.7" stroke-linecap="round"/>
+      <ellipse cx="36" cy="56" rx="8" ry="5" transform="rotate(-22 36 56)" fill="#29228f"/>
+      <path d="M43 54V23" stroke="#29228f" stroke-width="2.8" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(81.77 38.74) rotate(75.5)" data-brush="broad-flat" stroke="#443dd0" stroke-width="2.4" stroke-linejoin="round">
+      <path d="M-6-31C-6-39 6-39 6-31V-25C6-19 9-16 15-12H-15C-9-16-6-19-6-25Z" fill="#fff"/>
+      <path d="M-17-3H17V23H-17Z" fill="#ddd9fb"/>
+      <path d="M-6 7V22M6 7V22" stroke-width="1.6"/>
+      <rect x="-19" y="-12" width="38" height="9" rx="2" fill="#443dd0" stroke="none"/>
+    </g>
+  </g>
+</svg>

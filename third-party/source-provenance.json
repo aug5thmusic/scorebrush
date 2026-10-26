@@ -1,0 +1,624 @@
+{
+  "schemaVersion": 1,
+  "sourceArchives": [
+    {
+      "component": "pdfjs-5.6.205",
+      "archive": "upstream-sources/pdfjs-5.6.205-source.tar.gz",
+      "sha256": "c1c7341279802db62db95e054b7d093a4e25a373ddcdc23c15ddd5a435317ff9",
+      "bytes": 2986178,
+      "sourceFileCount": 502,
+      "gitTree": "ada343803945d977b9a1be8e72184b0422f8e5d1",
+      "verification": "Every selected file matched its upstream Git blob ID; unrelated test PDF corpus omitted.",
+      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v5.6.205"
+    },
+    {
+      "component": "pdf-lib-1.17.1",
+      "archive": "upstream-sources/pdf-lib-1.17.1-source.tar.gz",
+      "sha256": "1658e5afe32f7cede9191854410be0c4c4b8ce059ce79bdb871bc8f7f80d1779",
+      "bytes": 238409,
+      "sourceFileCount": 155,
+      "downloadSHA256": "a898ae50665ee03db57d0998e8c70ae214f671e787e330f17af3e0e957570ee5",
+      "verification": "Read a complete upstream tag archive; test/demo corpora omitted.",
+      "sourceURL": "https://github.com/Hopding/pdf-lib/tree/v1.17.1"
+    },
+    {
+      "component": "jszip-3.10.1",
+      "archive": "upstream-sources/jszip-3.10.1-source.tar.gz",
+      "sha256": "2cd2bc077d6d34c9fa85ecffcf36a8256d7f5a975b7eb1d69ad9e9c87c068130",
+      "bytes": 248041,
+      "sourceFileCount": 58,
+      "downloadSHA256": "e873e5d0d8549c78c0eafcab8fba40f4a1e27c5a9d48f4a6b2eb122470d0d88c",
+      "verification": "Read a complete upstream tag archive; test/demo corpora omitted.",
+      "sourceURL": "https://github.com/Stuk/jszip/tree/v3.10.1"
+    },
+    {
+      "component": "pdfjs-openjpeg-wrapper",
+      "archive": "upstream-sources/pdfjs-openjpeg-wrapper-b47d31b8355a3863ab37282ceeb5183f7ac2761c.tar.gz",
+      "sha256": "6a56c058c188ff2211cf0ac4a3f6309277ae8b4d522d832860494b451a8e27ea",
+      "bytes": 28030,
+      "sourceFileCount": 13,
+      "gitRevision": "b47d31b8355a3863ab37282ceeb5183f7ac2761c",
+      "sourceURL": "https://github.com/mozilla/pdf.js.openjpeg/tree/b47d31b8355a3863ab37282ceeb5183f7ac2761c",
+      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
+    },
+    {
+      "component": "pdfjs-jbig2-wrapper",
+      "archive": "upstream-sources/pdfjs-jbig2-wrapper-1e945e7552561c9b45e6d2c7d1a359ea82afc5b7.tar.gz",
+      "sha256": "a5505e890089a49ab6ab54c874f5c461483e54276e44aa1c7f5cfcd1bcc681e2",
+      "bytes": 23688,
+      "sourceFileCount": 12,
+      "gitRevision": "1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
+      "sourceURL": "https://github.com/mozilla/pdf.js.jbig2/tree/1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
+      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
+    },
+    {
+      "component": "pdfjs-qcms-wrapper",
+      "archive": "upstream-sources/pdfjs-qcms-wrapper-fc23a407f1ed9ccfea15875d27e0936dcc798a1f.tar.gz",
+      "sha256": "c751e8f8ed90ecf573ed4fd3240d807429003756ff8751ffe1069b3a9306bb84",
+      "bytes": 6035,
+      "sourceFileCount": 11,
+      "gitRevision": "fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
+      "sourceURL": "https://github.com/mozilla/pdf.js.qcms/tree/fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
+      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
+    },
+    {
+      "component": "openjpeg-2.5.4",
+      "archive": "upstream-sources/openjpeg-6c4a29b00211eb0430fa0e5e890f1ce5c80f409f.tar.gz",
+      "sha256": "c2bb373d68286ef475713f251504f59be6e44980dc5c56314bd4a7681fc69fce",
+      "bytes": 2159835,
+      "sourceFileCount": 466,
+      "gitRevision": "6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
+      "sourceURL": "https://github.com/uclouvain/openjpeg/tree/6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
+      "verification": "Complete source archive at the commit pinned by the matching wrapper Dockerfile; the wrapper archive includes its buffer-stream patch."
+    },
+    {
+      "component": "bumpalo-3.17.0",
+      "archive": "upstream-sources/bumpalo-3.17.0.crate",
+      "sha256": "1628fb46dfa0b37568d12e5edd512553eccf6a22a78e8bde00bb4aed84d5bdbf",
+      "bytes": 91975,
+      "sourceFileCount": 19,
+      "sourceURL": "https://static.crates.io/crates/bumpalo/bumpalo-3.17.0.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "cfg-if-1.0.0",
+      "archive": "upstream-sources/cfg-if-1.0.0.crate",
+      "sha256": "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd",
+      "bytes": 7934,
+      "sourceFileCount": 10,
+      "sourceURL": "https://static.crates.io/crates/cfg-if/cfg-if-1.0.0.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "log-0.4.26",
+      "archive": "upstream-sources/log-0.4.26.crate",
+      "sha256": "30bde2b3dc3671ae49d8e2e9f044c7c005836e7a023ee57cffa25ab82764bb9e",
+      "bytes": 47022,
+      "sourceFileCount": 21,
+      "sourceURL": "https://static.crates.io/crates/log/log-0.4.26.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "once_cell-1.20.3",
+      "archive": "upstream-sources/once_cell-1.20.3.crate",
+      "sha256": "945462a4b81e43c4e3ba96bd7b49d834c6f61198356aa858733bc4acf3cbe62e",
+      "bytes": 33456,
+      "sourceFileCount": 29,
+      "sourceURL": "https://static.crates.io/crates/once_cell/once_cell-1.20.3.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "proc-macro2-1.0.93",
+      "archive": "upstream-sources/proc-macro2-1.0.93.crate",
+      "sha256": "60946a68e5f9d28b0dc1c21bb8a97ee7d018a8b322fa57838ba31cc878e22d99",
+      "bytes": 52388,
+      "sourceFileCount": 28,
+      "sourceURL": "https://static.crates.io/crates/proc-macro2/proc-macro2-1.0.93.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "qcms-0.3.0",
+      "archive": "upstream-sources/qcms-0.3.0.crate",
+      "sha256": "edecfcd5d755a5e5d98e24cf43113e7cdaec5a070edd0f6b250c03a573da30fa",
+      "bytes": 53550,
+      "sourceFileCount": 16,
+      "sourceURL": "https://static.crates.io/crates/qcms/qcms-0.3.0.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "quote-1.0.38",
+      "archive": "upstream-sources/quote-1.0.38.crate",
+      "sha256": "0e4dccaaaf89514f546c693ddc140f729f958c247918a13380cccc6078391acc",
+      "bytes": 31252,
+      "sourceFileCount": 34,
+      "sourceURL": "https://static.crates.io/crates/quote/quote-1.0.38.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "rustversion-1.0.19",
+      "archive": "upstream-sources/rustversion-1.0.19.crate",
+      "sha256": "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4",
+      "bytes": 20616,
+      "sourceFileCount": 39,
+      "sourceURL": "https://static.crates.io/crates/rustversion/rustversion-1.0.19.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "syn-2.0.98",
+      "archive": "upstream-sources/syn-2.0.98.crate",
+      "sha256": "36147f1a48ae0ec2b5b3bc5b537d267457555a10dc06f3dbc8cb11ba3006d3b1",
+      "bytes": 297807,
+      "sourceFileCount": 104,
+      "sourceURL": "https://static.crates.io/crates/syn/syn-2.0.98.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "unicode-ident-1.0.17",
+      "archive": "upstream-sources/unicode-ident-1.0.17.crate",
+      "sha256": "00e2473a93778eb0bad35909dff6a10d28e63f792f16ed15e404fca9d5eeedbe",
+      "bytes": 47704,
+      "sourceFileCount": 26,
+      "sourceURL": "https://static.crates.io/crates/unicode-ident/unicode-ident-1.0.17.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "wasm-bindgen-0.2.100",
+      "archive": "upstream-sources/wasm-bindgen-0.2.100.crate",
+      "sha256": "1edc8929d7499fc4e8f0be2262a241556cfc54a0bea223790e71446f2aab1ef5",
+      "bytes": 48288,
+      "sourceFileCount": 23,
+      "sourceURL": "https://static.crates.io/crates/wasm-bindgen/wasm-bindgen-0.2.100.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "wasm-bindgen-backend-0.2.100",
+      "archive": "upstream-sources/wasm-bindgen-backend-0.2.100.crate",
+      "sha256": "2f0a0651a5c2bc21487bde11ee802ccaf4c51935d0d3d42a6101f98161700bc6",
+      "bytes": 32111,
+      "sourceFileCount": 12,
+      "sourceURL": "https://static.crates.io/crates/wasm-bindgen-backend/wasm-bindgen-backend-0.2.100.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "wasm-bindgen-macro-0.2.100",
+      "archive": "upstream-sources/wasm-bindgen-macro-0.2.100.crate",
+      "sha256": "7fe63fc6d09ed3792bd0897b314f53de8e16568c2b3f7982f468c0bf9bd0b407",
+      "bytes": 9663,
+      "sourceFileCount": 9,
+      "sourceURL": "https://static.crates.io/crates/wasm-bindgen-macro/wasm-bindgen-macro-0.2.100.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "wasm-bindgen-macro-support-0.2.100",
+      "archive": "upstream-sources/wasm-bindgen-macro-support-0.2.100.crate",
+      "sha256": "8ae87ea40c9f689fc23f209965b6fb8a99ad69aeeb0231408be24920604395de",
+      "bytes": 26243,
+      "sourceFileCount": 8,
+      "sourceURL": "https://static.crates.io/crates/wasm-bindgen-macro-support/wasm-bindgen-macro-support-0.2.100.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "wasm-bindgen-shared-0.2.100",
+      "archive": "upstream-sources/wasm-bindgen-shared-0.2.100.crate",
+      "sha256": "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d",
+      "bytes": 8570,
+      "sourceFileCount": 10,
+      "sourceURL": "https://static.crates.io/crates/wasm-bindgen-shared/wasm-bindgen-shared-0.2.100.crate",
+      "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
+    },
+    {
+      "component": "pdfium-jbig2",
+      "archive": "upstream-sources/pdfium-0455e822-jbig2-source.tar.gz",
+      "sha256": "0ccf98d333d376ea981531021b60904dad974a3ebd0ce1d1cbc9cd945b04225b",
+      "bytes": 129937,
+      "sourceFileCount": 100,
+      "gitRevision": "0455e822ded1a5537d826703988e986a33d2d4a1",
+      "sourceURL": "https://github.com/chromium/pdfium/tree/0455e822ded1a5537d826703988e986a33d2d4a1",
+      "verification": "Compilation units named by the matching wrapper and recursively referenced available headers, plus notices. Each included file independently matches the upstream Git blob ID. Incomplete transport archive is not redistributed. Remaining nonlocal includes are the Emscripten toolchain header or guarded by PDF_USE_PARTITION_ALLOC/PDF_USE_SKIA, neither defined in the wrapper build.",
+      "toolchainIncludes": [
+        "emscripten.h (provided by Emscripten)"
+      ],
+      "disabledConditionalIncludes": {
+        "PDF_USE_PARTITION_ALLOC": [
+          "partition_alloc/partition_alloc_buildflags.h",
+          "partition_alloc/pointers/raw_ptr.h"
+        ],
+        "PDF_USE_SKIA": [
+          "third_party/skia/include/core/SkRefCnt.h"
+        ]
+      }
+    },
+    {
+      "component": "javascript-embedded-source-inputs",
+      "archive": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz",
+      "sha256": "a185d5cf5029346332833afd98c28d833720285fb985062d29890478b7fbd3ad",
+      "bytes": 559529,
+      "sourceFileCount": 165,
+      "verification": "Selected exact decoded PDF-lib source-map modules, JSZip pako module bodies, and versioned package inputs with direct embedded-byte comparisons; SOURCE-INDEX.json records the scope. This is not a complete original registry archive. standard-fonts preferred TypeScript and preparation inputs are outside this selected archive and are supplied by standard-fonts-1.0.0-41a6440-source.tar.gz.",
+      "sourceURL": "https://github.com/Hopding/pdf-lib/tree/v1.17.1",
+      "additionalSourceURLs": [
+        "https://github.com/Stuk/jszip/tree/v3.10.1",
+        "https://github.com/Hopding/standard-fonts",
+        "https://github.com/Hopding/upng",
+        "https://github.com/nodeca/pako",
+        "https://github.com/calvinmetcalf/lie",
+        "https://github.com/calvinmetcalf/immediate",
+        "https://github.com/YuzuJS/setImmediate",
+        "https://github.com/microsoft/tslib/tree/1.11.1"
+      ]
+    },
+    {
+      "component": "pdfjs-5.6.205-library-inputs",
+      "archive": "upstream-sources/pdfjs-5.6.205-library-inputs.tar.gz",
+      "sha256": "311608e384dedf77b1ee19df4fbaf9351d38bbd77b43aff30d58403b835c74b2",
+      "bytes": 7260,
+      "sourceFileCount": 1,
+      "gitTree": "ada343803945d977b9a1be8e72184b0422f8e5d1",
+      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v5.6.205",
+      "verification": "Supplemental l10n/en-US/viewer.ftl matches the release Git-tree blob; MPL-2.0 source notice retained. Library Webpack configuration reads this input."
+    },
+    {
+      "component": "standard-fonts-1.0.0",
+      "archive": "upstream-sources/standard-fonts-1.0.0-41a6440-source.tar.gz",
+      "sha256": "b0ce3a6f9dd30f81bd6132b2b50e1f80fb5cdd0880e841693fd3e9eb62dc4de0",
+      "bytes": 158984,
+      "sourceFileCount": 48,
+      "sourceRevision": "41a6440267de5456042c7bcbac5ec65065e2ef69",
+      "sourceURL": "https://github.com/Hopding/standard-fonts/tree/41a6440267de5456042c7bcbac5ec65065e2ef69",
+      "verification": "Version-bump commit preceding npm publication; package.json, README.md and LICENSE.md byte-identical to integrity-verified 1.0.0 package; all 15 generated compressed payloads reproduced exactly; original TypeScript behavior checked against published ES modules, which exactly match bundled source-map modules.",
+      "limitation": "Registry has no gitHead and repository has no 1.0.0 tag. Revision is version-associated, not a uniquely publisher-attested build commit. No original TypeScript 2.9.2 toolchain rebuild claimed.",
+      "upstreamSourceFiles": 42,
+      "base64Arraybuffer": {
+        "version": "0.1.5",
+        "url": "https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-0.1.5.tgz",
+        "tarballSha256": "1fa54c7c3ccce10f005415b6680df8015834c9614d7556a8220fecf2b7b45a62",
+        "lockfileSha1": "73926771923b5a19747ad666aa5cd4bf9c6e9ce8",
+        "licenseFile": "base64-arraybuffer-0.1.5/LICENSE-MIT",
+        "scope": "Original MIT notice and implementation underlying attributed chars/lookup/decodeFromBase64 in standard-fonts src/utils.ts."
+      },
+      "files": [
+        {
+          "path": "standard-fonts-1.0.0/.gitignore",
+          "bytes": 111,
+          "sha256": "84ec9625526467c4707c74d51d4b704260745f28c95e5d6da1341b5a10a071d9"
+        },
+        {
+          "path": "standard-fonts-1.0.0/.npmignore",
+          "bytes": 152,
+          "sha256": "b6b2d3b1a08a94f26e55db831bc1c8fbc8bfe18d9cd09313e16d0964e6313f24"
+        },
+        {
+          "path": "standard-fonts-1.0.0/.prettierrc.json",
+          "bytes": 184,
+          "sha256": "9596245bd8b57dbf7490cc4c9fcb97d279475fefdb75157e360d44d06874c32e"
+        },
+        {
+          "path": "standard-fonts-1.0.0/encoding_metrics/symbol.txt",
+          "bytes": 10803,
+          "sha256": "f1df222756a135a0a21e6ce995b24c6ff9cdace3c6916ade59f6ad7dfb6afd51"
+        },
+        {
+          "path": "standard-fonts-1.0.0/encoding_metrics/win1252.txt",
+          "bytes": 9681,
+          "sha256": "46c675bc5b248140232f183d53b675df671c6b202bd12b81a56d5d155da8fe42"
+        },
+        {
+          "path": "standard-fonts-1.0.0/encoding_metrics/zapfdingbats.txt",
+          "bytes": 12354,
+          "sha256": "39d84d440a79ad8d73527ef82fe3077064252929d7e520a01967d4747635cf46"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Courier-Bold.afm",
+          "bytes": 15675,
+          "sha256": "ad0150d4bedcc8877742bf94251fcec13e348dd599d4603f679d92027d1e6e99"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Courier-BoldOblique.afm",
+          "bytes": 15741,
+          "sha256": "cb82e69ef5f6d421e8f404fe00bb0d993425aae79725331d0ebf847e94e97e92"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Courier-Oblique.afm",
+          "bytes": 15783,
+          "sha256": "b27103b2a2ef6030c110626597e2ab47bb8279075a039ab9170facb0aa1f70e1"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Courier.afm",
+          "bytes": 15677,
+          "sha256": "521e0d7c7521efd4be78a5a9c5398e4c67d0771e396115b0346bc4ef74ada53d"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Helvetica-Bold.afm",
+          "bytes": 72096,
+          "sha256": "b880d96baf56d0cc059f258f60b4d764ef49b555ab9db294b959c0016dee41f2"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Helvetica-BoldOblique.afm",
+          "bytes": 72192,
+          "sha256": "69984a35ca26973a39f261cf83e0d367ea2e6517c590b0b030d4d4a219d9c269"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Helvetica-Oblique.afm",
+          "bytes": 77443,
+          "sha256": "b4609b71b660a392ac09df35060271a876c2ce66617dd83bf826f742bb9d9721"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Helvetica.afm",
+          "bytes": 77343,
+          "sha256": "da33f1870474c8e68bfe3e2353ff107ab6c6eea1f9836ce2aaf1e1a07b17982f"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/MustRead.html",
+          "bytes": 937,
+          "sha256": "b226bfc00e1b8b8a80c7b3cfbbc322d13b4b0401f94cdeafdd93b2210ad802eb"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Symbol.afm",
+          "bytes": 9953,
+          "sha256": "3d2128a820375a10de9bc8bf6cfb15ded482c01ca0f95cc0b3277f37ec8bde66"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Times-Bold.afm",
+          "bytes": 66839,
+          "sha256": "b4a000ed85cb22c6cdd985aa0fd3f6f78ed5079b7c6860dc4f0234e0d0e3c522"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Times-BoldItalic.afm",
+          "bytes": 62026,
+          "sha256": "93c4744ba955215de02c4aae0b777133442ada2f7ab5a2af30a040b792b3c55d"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Times-Italic.afm",
+          "bytes": 68995,
+          "sha256": "ed37fa2e6a67b5b17dfd47f36fc7e90df32891a4408860dbc8d4cbbe9959e242"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/Times-Roman.afm",
+          "bytes": 62879,
+          "sha256": "768e1cabea085d489a63da3e80b96bc5abf0ec98d3073c9b4d6ba76e7bccba64"
+        },
+        {
+          "path": "standard-fonts-1.0.0/font_metrics/ZapfDingbats.afm",
+          "bytes": 9752,
+          "sha256": "a32565c90afd1b57a7008fc567b78d95cf1c22adff5e086094d666d88b039859"
+        },
+        {
+          "path": "standard-fonts-1.0.0/LICENSE.md",
+          "bytes": 1070,
+          "sha256": "45cc2bb9957ed43f5c7f5eb1912f9f670730394d614079510477cae626194649"
+        },
+        {
+          "path": "standard-fonts-1.0.0/Makefile.js",
+          "bytes": 3350,
+          "sha256": "db25a5ff6f7210d70a47ad023be7688562d5f4186d410eeb1eb4f395767d3ea6"
+        },
+        {
+          "path": "standard-fonts-1.0.0/package.json",
+          "bytes": 1588,
+          "sha256": "55f26afbf621e1993e6e4828fd3ef4570acef13dcb8e3878b43a14adbb43f944"
+        },
+        {
+          "path": "standard-fonts-1.0.0/README.md",
+          "bytes": 2852,
+          "sha256": "3d90382b943272684c0387f6a25fc22ba93b823bbb5836b899a624b4a848450b"
+        },
+        {
+          "path": "standard-fonts-1.0.0/rollup.config.js",
+          "bytes": 455,
+          "sha256": "7068ec36cd76f1ec333d7b5734bca3738f2117d1cd8f87f8912c9e82911837b8"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/encodings/parse.ts",
+          "bytes": 1770,
+          "sha256": "51133b78362a6c3a0c76bacb0c45dfce971cabd8e61b6aa6d34adf1c5a2b3920"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/encodings/parseWin1252.ts",
+          "bytes": 4345,
+          "sha256": "bcc5cd4f2f7f0d254526950de61567b0dd9234f67d23b3d7d283cc38b418ee19"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/encodings/parseZapfDingbatsOrSymbol.ts",
+          "bytes": 759,
+          "sha256": "b280807bb0474a3c4d67adb9d3f323eeda2a0979de848ecbf59df6b1696e5457"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/fonts/parse.ts",
+          "bytes": 1999,
+          "sha256": "d530cf9ce20f7a09cd4db026cbd52e19615816b2f8876021572e9c2e562cbda5"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/fonts/parseCharacterMetrics.ts",
+          "bytes": 3203,
+          "sha256": "d10b1c280b9fdfc40b83d7e4033a9f9e1ec027eaca577d44224364e043ffb05f"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/fonts/parseFontMetrics.ts",
+          "bytes": 2115,
+          "sha256": "c51061e471e27f6e03dbd2ff0772140b9f92c5c7c8823bdbb612e7eba9e3d8a5"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/fonts/parseKernPairs.ts",
+          "bytes": 1031,
+          "sha256": "ae644779cab1989802fb5ad4acf1245ca1ab67199030fa70c77335370a3752b5"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/fonts/utils.ts",
+          "bytes": 1087,
+          "sha256": "44b04dc3744943ee57b9e7ed219ad4eb86d27f37c3b814a731866dcaf777ffa8"
+        },
+        {
+          "path": "standard-fonts-1.0.0/scripts/tsconfig.json",
+          "bytes": 99,
+          "sha256": "abf419a2195a4c046cff629e0f17ed01569b29bca4d5be8b454edb5cd535e670"
+        },
+        {
+          "path": "standard-fonts-1.0.0/src/Encoding.ts",
+          "bytes": 1756,
+          "sha256": "dba037c4c5f46fdc493beb8d41cc95f32915da5a7ed751476c71b78fc827e9a2"
+        },
+        {
+          "path": "standard-fonts-1.0.0/src/Font.ts",
+          "bytes": 5104,
+          "sha256": "966c9a6e6d70495dbd32712c70767afa42edf83d28ff22573f5536453db7a910"
+        },
+        {
+          "path": "standard-fonts-1.0.0/src/index.ts",
+          "bytes": 52,
+          "sha256": "3a58767eb60591d2c1558c74f57d47ac1dd1e283e3bde0283647b906eca1aebc"
+        },
+        {
+          "path": "standard-fonts-1.0.0/src/utils.ts",
+          "bytes": 1913,
+          "sha256": "61d146c93717b6a9cae3aab612b6c21a3db5371095595a8623d738e0e290cd8a"
+        },
+        {
+          "path": "standard-fonts-1.0.0/tsconfig.json",
+          "bytes": 378,
+          "sha256": "1cc3501426bdce2a66f05454eb4a0a4f26130b85b7f4d166cea8ada31001af74"
+        },
+        {
+          "path": "standard-fonts-1.0.0/tslint.json",
+          "bytes": 841,
+          "sha256": "c75c5f7d980331fe3eda9cbdddb553a859c2aa7a9c0c6f6c05f8b55fd81f1644"
+        },
+        {
+          "path": "standard-fonts-1.0.0/yarn.lock",
+          "bytes": 35039,
+          "sha256": "061cfbce2e3942d10502d9a84cfc2b3e8c16b5e04f62853ca3dc70743be063b6"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/.npmignore",
+          "bytes": 35,
+          "sha256": "3800ebe410db7921c40dd59bf083fd6d94d99fb7392f48ba9eb8146d5d81f706"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/.travis.yml",
+          "bytes": 472,
+          "sha256": "78662cc81d7f242849fc8b334dd6b1b3f801d291a95d0be5e65d22a68c5f3c10"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/lib/base64-arraybuffer.js",
+          "bytes": 1896,
+          "sha256": "f1749f1d4ac924264b74b5511385db93385398bb3c9668d6b91fece182558fd8"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/LICENSE-MIT",
+          "bytes": 1062,
+          "sha256": "f3eca6ff762533fa5a77caf954a143e48afa204668cf97dce758c45a9e006be3"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/package.json",
+          "bytes": 971,
+          "sha256": "42e3661764c66a43ed01ffc4bf8a4576927f84fd42e26a36db24dec3dfa6b5c0"
+        },
+        {
+          "path": "base64-arraybuffer-0.1.5/README.md",
+          "bytes": 792,
+          "sha256": "401541346e1b7e238a757e6707f9f6e02907e17b84af9f3337f392eba8b9107d"
+        }
+      ]
+    },
+    {
+      "component": "browser-pack-6.0.2-loader",
+      "archive": "upstream-sources/browser-pack-6.0.2-loader-source.tar.gz",
+      "sha256": "d7963cb64fd54fa7ba6af2ac9aed706b79d5aed262ce71984cfd529e5bff3881",
+      "bytes": 4636,
+      "sourceFileCount": 7,
+      "packageVersion": "6.0.2",
+      "registryRecordedGitHead": "d8f408fd1408ad1fbe02830792caa1354bf48188",
+      "downloadSHA256": "e5f61b93e21bb54f54b929ab2ac001af75601787e184476a6e4603b5191a2460",
+      "downloadSHA1": "f86cd6cef4f5300c8e63e07a4d512f65fbff4531",
+      "downloadIntegrity": "sha512-Az7JJd2VlHv+bIyzXvTunXn4lfwnQepL54nVHBhd8MRzmpo2sDcreO5i/UsZLuydOign0zK+CoBYO8YLiUYWlQ==",
+      "sourceURL": "https://registry.npmjs.org/browser-pack/-/browser-pack-6.0.2.tgz",
+      "metadataURL": "https://registry.npmjs.org/browser-pack/6.0.2",
+      "verification": "Original readable prelude, generated prelude, MIT license, package metadata and generation/integration files from the exact npm 6.0.2 release; tarball matches the JSZip 3.10.1 release-lock SHA-1 and registry SHA-512. Generated prelude matches retained JSZip unminified bytes exactly. Complete readable/generated/shipped loader ASTs match after explicit lexical and minifier normalizations.",
+      "notice": "browser-pack-6.0.2/LICENSE inside this archive",
+      "files": [
+        {
+          "path": "browser-pack-6.0.2/LICENSE",
+          "bytes": 1073,
+          "sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+        },
+        {
+          "path": "browser-pack-6.0.2/_prelude.js",
+          "bytes": 442,
+          "sha256": "ec94e594cc942627d3a40ffd17f8bc375d479882b29fd1a3ae7b4e46781a17bd"
+        },
+        {
+          "path": "browser-pack-6.0.2/bin/prepublish.js",
+          "bytes": 260,
+          "sha256": "763f22f649c170b2df9bce07c76dbabeb677d8fbfd3976e57535cc451399a89c"
+        },
+        {
+          "path": "browser-pack-6.0.2/index.js",
+          "bytes": 3895,
+          "sha256": "46ad0a5c680a5e9563adc2ec0719906282c991307defea74bfd19e5f49216340"
+        },
+        {
+          "path": "browser-pack-6.0.2/package.json",
+          "bytes": 1321,
+          "sha256": "c7e74d2dacd96c8334856564551b25e0d224b0e2a9631e40bc6303372ad9d3c0"
+        },
+        {
+          "path": "browser-pack-6.0.2/prelude.js",
+          "bytes": 1882,
+          "sha256": "5f782e58f052e192fb4a16ea771b750783c8787adc8a3541227657e94bf9e576"
+        },
+        {
+          "path": "browser-pack-6.0.2/readme.markdown",
+          "bytes": 2896,
+          "sha256": "dc2559462545c1a6eeb8f929db1b257fd0153789b6188f1901c9b04a67eca440"
+        }
+      ]
+    }
+  ],
+  "bundledSourceFiles": [
+    {
+      "file": "bundled-sources/jszip.js",
+      "bytes": 374191,
+      "sha256": "e2e1be5c22d3f15b0b89e676d3eede94644529996d9898a6b1587c9908a78506"
+    },
+    {
+      "file": "bundled-sources/pdf-lib.min.js.map",
+      "bytes": 2160323,
+      "sha256": "643d7f8cc311af4b84cf09c9e457a43029c9272c0bb4e2015e52bf55e38068e4"
+    },
+    {
+      "file": "PDFJS_BUILD.md",
+      "bytes": 5578,
+      "sha256": "e1df4be22dc3e720dc59dc3ad9ddcf288fd34040185e5f58c2b79f72f67c6039",
+      "verification": "Source build documentation/task; static review only, no dependency rebuild performed."
+    },
+    {
+      "file": "build-support/pdfjs-library-task.mjs",
+      "bytes": 1078,
+      "sha256": "1a59efc39d0b4ab4ce8fac78b3602210b361dc2baa5a20b06e3ab2312eb276e3",
+      "verification": "Source build documentation/task; static review only, no dependency rebuild performed."
+    },
+    {
+      "file": "notices/standard-font-data/MustRead.html",
+      "bytes": 937,
+      "sha256": "b226bfc00e1b8b8a80c7b3cfbbc322d13b4b0401f94cdeafdd93b2210ad802eb",
+      "verification": "Byte-identical Adobe accompanying notice from standard-fonts release-associated source commit 41a6440267de5456042c7bcbac5ec65065e2ef69."
+    },
+    {
+      "file": "notices/standard-font-data/Unicode-Symbol-ZapfDingbats-NOTICE.txt",
+      "bytes": 792,
+      "sha256": "5c77acb0ec336262054b3d4b50d275583fe0000950a6545774da7724fefab05b",
+      "verification": "Verbatim copyright, disclaimer, and permission comment block from encoding_metrics/symbol.txt; the same wording applies in zapfdingbats.txt."
+    },
+    {
+      "file": "notices/standard-font-data/Unicode-LICENSE-v3.txt",
+      "bytes": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "verification": "Byte-identical Unicode License v3 from https://www.unicode.org/license.txt; applies to the CP1252 Unicode data file through current Unicode Terms of Use."
+    },
+    {
+      "file": "notices/standard-font-data/PDFKit-LICENSE.txt",
+      "bytes": 1067,
+      "sha256": "5f0d5197d2b5d91f41de43143b0be42fb55515bc2b894f2a9b62de9f7056c0f8",
+      "verification": "Byte-identical PDFKit MIT license at 83f5f7243172a017adcf6a7faa5547c55982c57b for the copied WinAnsiCharNames table."
+    }
+  ]
+}

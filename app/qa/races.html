@@ -1,0 +1,5 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>ScoreBrush race regressions</title>
+<style>body{font:14px system-ui;margin:24px;line-height:1.5}button,a{margin-right:15px}pre{white-space:pre-wrap;color:#214d3b}.fail{color:#a13920}</style>
+<h1>Persistence and backup regression tests</h1><p>Use a separate test port. These tests refuse production port 8995 and older working origins, and create only disposable snapshots. Open both test tabs, then run.</p>
+<a id="openA" target="score-desk-test-A">Open test tab A</a><a id="openB" target="score-desk-test-B">Open test tab B</a><button id="run" disabled>Run race regressions</button><button id="continue" hidden>Continue after pressing Escape in tab A</button>
+<pre id="results" role="status">Waiting for both isolated test tabs…</pre><script type="module" src="races.js"></script></html>

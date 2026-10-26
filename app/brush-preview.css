@@ -1,0 +1,6 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2026 Auggie (@aug5thmusic).
+ * Additional permissions: see LICENSING.md at the source root. */
+#brushPreview{position:fixed;z-index:20;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);outline:1px solid #26313999;box-shadow:0 0 0 2px #ffffffb3}
+#brushPreview::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--brush-color);opacity:.392}
+body.drawing #overlay.brush-preview-visible{cursor:none}

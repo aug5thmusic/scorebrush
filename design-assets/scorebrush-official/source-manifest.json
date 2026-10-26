@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "brand": "ScoreBrush",
+  "assets": [
+    {
+      "file": "scorebrush-app.png",
+      "purpose": "Primary logo and Windows application icon source",
+      "format": "PNG",
+      "sha256": "272ece6be5f7cbe59ca30a50ed6161c673d410cf002408f7207b3d9c90de433d",
+      "width": 1254,
+      "height": 1254,
+      "pixelFormat": "RGBA"
+    },
+    {
+      "file": "proofread.svg",
+      "purpose": "Welcome: Proofread",
+      "format": "SVG",
+      "sha256": "62f9588ce72810ffe39f88e3a8e8d11ba243e50f03086f502b496746cd24ec93",
+      "viewBox": "0 0 160 120"
+    },
+    {
+      "file": "send-to-ai.svg",
+      "purpose": "Welcome: Send to AI",
+      "format": "SVG",
+      "sha256": "2bb1842f381e78a1183cc00aeee74b77b09a80de48db4034654fbfd421a927e6",
+      "viewBox": "0 0 128 96"
+    },
+    {
+      "file": "review-changes.svg",
+      "purpose": "Welcome: Review Changes",
+      "format": "SVG",
+      "sha256": "bfd9cae83904f7e08cce3ea0375ca8be30e2b6da664e13fca5b4d6774056e126",
+      "viewBox": "0 0 160 96"
+    }
+  ]
+}
