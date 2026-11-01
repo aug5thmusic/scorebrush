@@ -17,7 +17,7 @@ export async function seedReviewFocus(page,{candidatePdf='rendered.pdf'}={}){
     for(let i=1;i<=doc.numPages;i++){const p=await doc.getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}
     const review=newReview(identity,snapshotId,pages);
     review.findings=[1,2,3,4].map(number=>({id:'focus-'+number,number,page:number,color:'#ffd34d',comment:'SYNTHETIC keyboard correction '+number,state:'open',strokes:[],bounds:null}));review.nextNumber=5;
-    const issued=await makeTask(review,files,doc,'page',()=>{});await doc.destroy();await retain(issued);
+    const issued=await makeTask(review,files,doc,'page',()=>{});await doc.loadingTask.destroy();await retain(issued);
     const after=blob(candidatePdf),code=new Blob(['% SYNTHETIC focus revision '+crypto.randomUUID()]),response=JSON.parse(await issued.payloads.get('response-template.json').text());
     response.code={status:'changed',path:'proposed.ly'};response.rendering={status:'supplied',path:'proposed.pdf',producer:'SYNTHETIC keyboard test',compiler:null};response.files={'proposed.ly':await fileInfo(code),'proposed.pdf':await fileInfo(after)};
     response.results.forEach(f=>{f.status='changed';f.explanation='SYNTHETIC claimed correction for keyboard verification.';});

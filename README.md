@@ -3,7 +3,10 @@
 ScoreBrush is a music transcription workspace for Windows. It allows you to compare an AI's
 music transcription with a source PDF, mark corrections, and review changes.
 
-**[Download ScoreBrush 0.1.0 for Windows x64](https://github.com/aug5thmusic/scorebrush/releases/download/v0.1.0/ScoreBrush-0.1.0-Windows-x64.zip)**
+**Windows release: 0.1.1 (2026-11-01).** Its matching source archive is
+`scorebrush-0.1.1.zip`.
+
+**[Download ScoreBrush 0.1.1 for Windows x64](https://github.com/aug5thmusic/scorebrush/releases/download/v0.1.1/ScoreBrush-0.1.1-Windows-x64.zip)**
 
 [![ScoreBrush proofreading workspace with the original score on the left, marked transcription on the right, and findings beside it.](documentation/images/proofreading.png)](documentation/images/proofreading.png)
 
@@ -34,6 +37,17 @@ when you run it for the first time.
 Notes autosave. Use **File → Save backup** for a portable copy. More controls
 are under **Help → Keyboard shortcuts**.
 
+Use **Files & backups → Export research ZIP** for retained correction evidence.
+The ZIP is named after the captured score, with a timestamp. Extract it normally
+in Windows Explorer: `scores/current` separates the source PDF, transcription PDF
+and LilyPond file; `scores/history` contains shared historical files with readable
+names. Every retained revision and role maps through `score-files.json` to its
+exact captured bytes, reusing a current file or one shared historical copy when
+contents match. Research ZIPs use standard compression where beneficial and retain
+all original objects and PDF/image evidence. Python is optional for dataset processing;
+the included `README.txt` explains the reader and coverage limits. Use **Save backup**
+to restore a workspace; the Research ZIP serves a different purpose.
+
 ## Work through a correction round
 
 The ScoreBrush workflow is: **Proofread → Send to AI → Load latest → Review Changes**
@@ -49,9 +63,9 @@ The ScoreBrush workflow is: **Proofread → Send to AI → Load latest → Revie
 The [user guide](documentation/USER_GUIDE.md) covers backups, recovery, versions
 and storage limits. See also the [installation guide](documentation/INSTALLATION.md).
 
-* [Security policy](https://github.com/aug5thmusic/scorebrush/blob/v0.1.0/SECURITY.md),
-* [Development guide](https://github.com/aug5thmusic/scorebrush/blob/v0.1.0/DEVELOPMENT.md)
-* [Contribution guide](https://github.com/aug5thmusic/scorebrush/blob/v0.1.0/CONTRIBUTING.md).
+* [Security policy](https://github.com/aug5thmusic/scorebrush/blob/v0.1.1/SECURITY.md),
+* [Development guide](https://github.com/aug5thmusic/scorebrush/blob/v0.1.1/DEVELOPMENT.md)
+* [Contribution guide](https://github.com/aug5thmusic/scorebrush/blob/v0.1.1/CONTRIBUTING.md).
 
 Copyright (C) 2026 Auggie (@aug5thmusic). Licensed **AGPL-3.0-or-later**, with
 [additional permissions](LICENSING.md), without warranty. Read the

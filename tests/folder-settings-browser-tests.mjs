@@ -61,8 +61,20 @@ export async function runFolderSettings({browser,serve,evidence,root}){
         await folders.saveFolderSettings({...connection,pendingCheckpointId:'a'.repeat(64)});
         await folders.saveFolderSettings(connection);
       }finally{IDBDatabase.prototype.transaction=transaction;}
-      const final=await snapshot(),reopened=await folders.readFolderSettings();db.close();
-      return {before,afterClone,cloneFailure,afterRequestError,requestFailure:{name:asynchronousError?.name,scheduledConnection,scheduledCurrent,queuedDuplicate},afterAbort,abortFailure:{name:abortError?.name,triggered:abortTriggered},durability,final,reopened:{connectionId:reopened.connectionId,head:reopened.head.id,pendingHead:reopened.pendingHead.id},taskId:task.id,connectionId:connection.connectionId};
+      const final=await snapshot(),reopened=await folders.readFolderSettings();
+      const other={...connection,connectionId:crypto.randomUUID(),directory:{name:'SYNTHETIC unrelated project'},head:newTask,pendingHead:null};await folders.saveFolderConnection(other);
+      const headReads=[],get=IDBObjectStore.prototype.get;let listing;
+      IDBObjectStore.prototype.get=function(key,...args){if(this.name==='settings'&&String(key).startsWith('head:'))headReads.push(key);return get.call(this,key,...args);};
+      try{
+        const summaries=await folders.listFolderSettings({hydrate:false}),summaryReads=headReads.length,selected=summaries.find(row=>row.connectionId===connection.connectionId);
+        const hydrated=await folders.hydrateFolderConnection(selected),selectedReads=headReads.length-summaryReads;
+        await folders.saveFolderConnection({...selected,lastOpenedAt:17});
+        const metadataSaved=await folders.readFolderSettings(),all=await folders.listFolderSettings();
+        listing={count:summaries.length,summaryReads,selectedReads,deferred:!selected.head&&Boolean(selected.headRef),selectedHead:hydrated.head.id,sharedHead:hydrated.head===hydrated.pendingHead,
+          metadataPreserved:metadataSaved.head.id===task.id&&metadataSaved.pendingHead.id===task.id&&metadataSaved.lastOpenedAt===17,
+          defaultsHydrated:all.every(row=>row.head?.kind==='task'&&!row.headRef),unrelatedHead:all.find(row=>row.connectionId===other.connectionId).head.id,expectedOther:newTask.id};
+      }finally{IDBObjectStore.prototype.get=get;db.close();}
+      return {before,afterClone,cloneFailure,afterRequestError,requestFailure:{name:asynchronousError?.name,scheduledConnection,scheduledCurrent,queuedDuplicate},afterAbort,abortFailure:{name:abortError?.name,triggered:abortTriggered},durability,final,reopened:{connectionId:reopened.connectionId,head:reopened.head.id,pendingHead:reopened.pendingHead.id},taskId:task.id,connectionId:connection.connectionId,listing};
     });
     const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b),connectionIndex=result.before.keys.indexOf('folder:'+result.connectionId),currentIndex=result.before.keys.indexOf('current');
     check(result.cloneFailure.name==='DataCloneError'&&result.cloneFailure.originalErrorPreserved,'natural IndexedDB serialization failure preserves the original DataCloneError');
@@ -76,6 +88,10 @@ export async function runFolderSettings({browser,serve,evidence,root}){
     check(result.durability.length===3&&result.durability[0].requested==='strict'&&result.durability[0].actual==='strict','archive intent uses an actual strict-durability IndexedDB transaction');
     check(result.durability[1].requested==='strict'&&result.durability[1].actual==='strict'&&result.durability[2].requested===null,'checkpoint intent stays strict and ordinary metadata keeps default durability');
     check(equal(result.before,result.final)&&result.reopened.connectionId===result.connectionId&&result.reopened.head===result.taskId&&result.reopened.pendingHead===result.taskId,'valid saves and hydration remain usable after transaction failures');
+    check(result.listing.count===2&&result.listing.summaryReads===0&&result.listing.deferred,'lightweight recent-project listing does not read any retained task payloads');
+    check(result.listing.selectedReads===1&&result.listing.selectedHead===result.taskId&&result.listing.sharedHead,'selecting one connection reads only its head and shares an identical pending-head reference');
+    check(result.listing.metadataPreserved,'persisting lightweight connection metadata preserves both immutable handoff references');
+    check(result.listing.defaultsHydrated&&result.listing.unrelatedHead===result.listing.expectedOther,'the default listing remains compatible and returns fully hydrated connections');
     return {name:'folder-settings',assertions};
   }finally{await writeFile(resolve(evidence,'folder-settings.txt'),log.join('\n'));if(result)await writeFile(resolve(evidence,'folder-settings.json'),JSON.stringify(result,null,2));await context.close();await server.close();}
 }

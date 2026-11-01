@@ -28,7 +28,7 @@ export function installProjectEntries(api){
     if(api.status().busy||api.folder.getState().busy)return;
     $('workspaceDialog').close();list.textContent='Loading recent projects…';dialog.showModal();$('browseProjectFolder').focus();const token=++generation;
     try{
-      const entries=await api.folder.io.listSettings();if(token!==generation||!dialog.open)return;
+      const entries=await api.folder.io.listSettings({hydrate:false});if(token!==generation||!dialog.open)return;
       entries.sort((a,b)=>(b.lastOpenedAt??0)-(a.lastOpenedAt??0));list.replaceChildren();
       if(!entries.length){list.textContent='No recent project folders yet.';return;}
       const seen=new Set();for(const entry of entries){

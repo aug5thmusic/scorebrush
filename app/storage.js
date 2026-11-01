@@ -127,7 +127,7 @@ async function validatedLegacy(items,sourceHash){
     const declarations={};for(const [path,blob]of payloads)declarations[path]=await fileInfo(blob);
     if(canonical(declarations)!==canonical(bundle.payloads))throw legacyConflict();
     const manifest=strictJSON(await payloads.get('manifest.json').text());
-    if(manifest.schema!=='score-desk-package'||manifest.version!==1||manifest.inputs?.source?.sha256!==sourceHash)throw legacyConflict();
+    if(manifest.schema!=='score-desk-package'||![1,2].includes(manifest.version)||manifest.inputs?.source?.sha256!==sourceHash)throw legacyConflict();
     for(const [path,info]of Object.entries(declarations))if(path!=='manifest.json'&&canonical(info)!==canonical(manifest.payloads?.[path]))throw legacyConflict();
     const prior=result.get(bundle.id);if(prior&&canonical(prior.bundle)!==canonical(bundle))throw legacyConflict();
     if(!prior)result.set(bundle.id,item);
@@ -150,8 +150,8 @@ export async function checkLegacyImport(records){
 }
 // Restore missing records only. A concurrent tab can never be overwritten by
 // folder recovery; equality checks and additions share one transaction.
-export async function restoreMissing(records){
-  records=structuredClone(records);
+export async function restoreMissing(records,{projectIds=new Map()}={}){
+  records=structuredClone(records);projectIds=new Map(projectIds);
   const legacy=await checkLegacyImport(records);
   const inputs=new Map();for(const record of records)inputs.set(record.id,await inputRecord(record));
   const db=await database();
@@ -160,8 +160,9 @@ export async function restoreMissing(records){
     for(const record of records){const req=store.get(record.id);req.onsuccess=()=>{
       const merge=existing=>{
       if(existing){
-        if(recoveryIdentity(existing)!==recoveryIdentity(record)){failure=new StorageConflictError();tx.abort();return;}
+        if(existing.projectId&&projectIds.has(record.id)&&existing.projectId!==projectIds.get(record.id)||recoveryIdentity(existing)!==recoveryIdentity(record)){failure=new StorageConflictError();tx.abort();return;}
         const next={...existing};let changed=false;
+        if(!existing.projectId&&projectIds.has(record.id)){next.projectId=projectIds.get(record.id);changed=true;}
         const retained=legacy.get(record.id);
         if(retained){
           if(legacyStamp(existing.retainedLegacyEvidence)!==retained.observed){failure=legacyConflict();tx.abort();return;}

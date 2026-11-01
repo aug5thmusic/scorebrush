@@ -20,5 +20,5 @@ export async function renderCommentImage({asset,mark}) {
     const ctx=canvas.getContext('2d');await page.render({canvasContext:ctx,viewport,background:'#ffffff'}).promise;
     paint(ctx,viewport,[mark],mark.page);
     return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Original comment image could not be displayed.')),'image/png'));
-  } finally {canvas.width=canvas.height=1;await doc.destroy();}
+  } finally {canvas.width=canvas.height=1;await doc.loadingTask.destroy();}
 }

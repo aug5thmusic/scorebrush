@@ -7,6 +7,7 @@ import {SourceTextModule,SyntheticModule,createContext} from 'node:vm';
 import {readFile} from 'node:fs/promises';
 import {webcrypto} from 'node:crypto';
 import assert from 'node:assert/strict';
+import * as projectIdentity from '../app/project-identity.js';
 import * as projectDirectory from '../app/project-directory.js';
 import * as pdfNames from '../app/pdf-output-names.js';
 import {LIMITS} from '../app/workflow.js';
@@ -27,11 +28,13 @@ const scene=text=>({workspaceId:'1'.repeat(64),revisionId:'revision-'+text,revie
 async function profile(s,entries=[]){
   const record={...s,id:s.workspaceId},ctx=createContext({Blob,Map,Set,Error,Date,JSON,Object,Number,String,Array,Promise,crypto:webcrypto,navigator:{locks:{request:async(_key,cb)=>cb()}}});
   const bindings={
-    './model.js':{sha256,blobHash:blob=>blob.arrayBuffer().then(sha256)},
+    './project-identity.js':projectIdentity,
+    './folder-task-delivery.js':{retainedFolderDelivery:async()=>{throw new Error('No folder task projection expected in this fixture');}},
+ './model.js':{sha256,blobHash:blob=>blob.arrayBuffer().then(sha256)},
     './project-directory.js':projectDirectory,
     './pdf-output-names.js':pdfNames,
     './pdf-versions.js':{preparePdfOutput:async()=>({version:1,initialTranscriptionFilename:null,basename:pdfNames.UNKNOWN_TITLE,nameSource:'unknown',renderings:[]})},
-    './workflow.js':{json,strictJSON:JSON.parse,fileInfo,readPackagePayloads:null,hydrateTaskPayloads:null,readResponsePayloads:null,responseRevision:null,LIMITS},
+    './workflow.js':{localTaskDelivery:async()=>{throw new Error('No task projection expected in this fixture');},json,strictJSON:JSON.parse,fileInfo,readPackagePayloads:null,hydrateTaskPayloads:null,readResponsePayloads:null,responseRevision:null,LIMITS},
     './export.js':{makeRecovery:async review=>new Map([['annotations.json',json(review)],['manifest.json',json({schema:'score-desk-package',version:1,createdAt:new Date().toISOString()})]]),zipFiles:null},
     './returned.js':{makeReturnedBackup:null,restoreReturnedBackup:null},
     './completion.js':{addCompletionHistory:async(p,review,_round,revisionId,records)=>{p.set('completion-history.json',json({revisionId,records,stateSha256:canonical(review)}));return p;}},

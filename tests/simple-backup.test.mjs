@@ -25,6 +25,9 @@ installMemoryIndexedDB();
 Object.defineProperty(globalThis,'navigator',{value:{locks:{request:async(_key,fn)=>fn()}},configurable:true});
 globalThis.fetch=async url=>new Response(await readFile(url));
 const module={exports:{}};Function('module','exports',await readFile(new URL('../app/vendor/jszip.min.js',import.meta.url),'utf8'))(module,module.exports);globalThis.JSZip=module.exports;
+// Import rejection fixtures must bypass the production export preflight.
+// This helper only constructs deliberately invalid synthetic archives.
+async function uncheckedZip(payloads){const zip=new JSZip();for(const[path,blob]of payloads)zip.file(path,await blob.arrayBuffer(),{createFolders:false});return zip.generateAsync({type:'blob',compression:'STORE'});}
 const files={source:{name:'source.pdf',blob:new Blob(['%PDF-synthetic source'])},rendered:{name:'rendered.pdf',blob:new Blob(['%PDF-synthetic original rendering'])},ly:{name:'score.ly',blob:new Blob(['% Synthetic notation\n{ c4 des4 }'])}};
 const pages=[{page:1,view:[0,0,600,800],rotation:0,userUnit:1}],inspectPdf=async()=>pages;
 const {identity,snapshotId}=await identify(files),review=newReview(identity,snapshotId,pages);
@@ -71,6 +74,10 @@ test('ordinary backup preserves returned decisions, internal comments, and the e
   // task. Decoding must not replace the journal's exact immutable payloads.
   const delivery=await localTaskDelivery(issued);delivery.payloads.set('PROMPT.txt',new Blob(['SYNTHETIC folder delivery preamble.\n',delivery.payloads.get('PROMPT.txt')]));
   await seal(delivery.payloads,JSON.parse(await delivery.payloads.get('manifest.json').text()));store.set(issued.id,delivery);
+  const named={...current,projectId:crypto.randomUUID(),initialTranscriptionFilename:'SYNTHETIC-original-title.pdf',parentWorkspaceId:review.snapshotId};
+  const namedBackup=await prepareBackup(named,()=>{},packageMaker,{lookup}),namedParsed=await readPackage(await zipFiles(namedBackup.payloads),inspectPdf),namedRestored=await restoreReturnedBackup(namedParsed,inspectPdf);
+  assert.equal(issued.task.workspace,undefined,'legacy task fixture has no project scope');
+  assert.deepEqual(namedRestored.seed.lineage,{projectId:named.projectId,initialTranscriptionFilename:named.initialTranscriptionFilename,parentWorkspaceId:named.parentWorkspaceId},'nonportable recovery retains project lineage even when its original task predates project scoping');
   const deliveredBackup=await prepareBackup(current,()=>{},packageMaker,{lookup}),objects=new Map();
   async function declarations(payloads){const result={};for(const[path,blob]of payloads){const info=await fileInfo(blob);objects.set(info.sha256,blob);result[path]=info;}return result;}
   const snapshot={manifest:{sourceSha256:review.files.source.sha256,current:current.workspaceId,
@@ -103,15 +110,15 @@ test('compact exports preserve large metadata and legacy v1 imports enforce the 
     const record=await head('boundary '+offset),snapshot=await boundarySnapshot(record,LIMITS.json+offset),before=await currentState(record.id);
     const base=await prepareBackup(portableScene(record),()=>{},makeRecovery),original=[...base.payloads.keys()];
     const exported=await addPortableHistory(base,portableScene(record),{baseSnapshot:snapshot});
-    assert.equal(JSON.parse(await exported.payloads.get('History.json').text()).version,2);
+    assert.equal(JSON.parse(await exported.payloads.get('History.json').text()).version,3);
     assert(exported.payloads.get('History.json').size<LIMITS.json/4,'large original notes do not inflate the compact index');
     assert.equal(await importPortableHistory(await readPackage(await zipFiles(exported.payloads),portableInspect),portableInspect),record.id);
     const legacy=await legacyIndex(exported);assert.equal(legacy.size,LIMITS.json+offset);
     const v1={...exported,payloads:new Map(exported.payloads)};v1.payloads.set('History.json',legacy);await seal(v1.payloads,JSON.parse(await v1.payloads.get('manifest.json').text()));
     if(offset>0){
-      await assert.rejects(importPortableHistory(await readPackage(await zipFiles(v1.payloads),portableInspect),portableInspect),/History\.json exceeds.*25 MiB.*No history was discarded/);
+      await assert.rejects(importPortableHistory(await readPackage(await uncheckedZip(v1.payloads),portableInspect),portableInspect),/History\.json exceeds.*25 MiB.*No history was discarded/);
       const padded=exported.payloads.get('History.json');exported.payloads.set('History.json',new Blob([padded,' '.repeat(LIMITS.json+1-padded.size)]));await seal(exported.payloads,JSON.parse(await exported.payloads.get('manifest.json').text()));
-      await assert.rejects(importPortableHistory(await readPackage(await zipFiles(exported.payloads),portableInspect),portableInspect),/History\.json exceeds/);
+      await assert.rejects(importPortableHistory(await readPackage(await uncheckedZip(exported.payloads),portableInspect),portableInspect),/History\.json exceeds/);
     }else{
       const zip=await zipFiles(v1.payloads),parsed=await readPackage(zip,portableInspect);assert.equal(await importPortableHistory(parsed,portableInspect),record.id);
       console.log('Legacy portable history boundary round-trip:',legacy.size,'index bytes;',zip.size,'ZIP bytes');
@@ -125,7 +132,7 @@ test('36-state/120-note history round-trips without duplicated research metadata
   let record=await retainLegacyState(await head('SYNTHETIC large history'));
   for(let n=0;n<36;n++){const review=structuredClone(record.review);review.findings=Array.from({length:120},(_,i)=>note(i,n+':'+i+':'+('SYNTHETIC note text ').repeat(180)));review.nextNumber=121;record=await retainLegacyState(await putSaved({...record,review,revisionId:crypto.randomUUID()},record.storageRevision));}
   const before=await currentState(record.id),result=await addPortableHistory(await prepareBackup(portableScene(record),()=>{},makeRecovery),portableScene(record));
-  const index=JSON.parse(await result.payloads.get('History.json').text());assert.equal(index.version,2);assert.equal(index.events.length,37);
+  const index=JSON.parse(await result.payloads.get('History.json').text());assert.equal(index.version,3);assert.equal(index.events.length,37);
   assert(result.payloads.get('History.json').size<LIMITS.json/10);assert((await legacyIndex(result)).size>LIMITS.json);
   for(const event of index.events){const object=index.objects.find(o=>o.id===event.metadata.annotations);const annotations=JSON.parse(await result.payloads.get(object.path).text());assert.deepEqual(annotations.findings,before.journal.find(r=>r.id===event.id).review.findings);}
   const parsed=await readPackage(await zipFiles(result.payloads),portableInspect);assert.equal(await importPortableHistory(parsed,portableInspect),record.id);
@@ -153,7 +160,7 @@ test('nested portable ZIPs restore below and at 5,000 entries; overflow fails be
       if(target===LIMITS.count){
         const oversized=new Map(exported.payloads);oversized.set('synthetic/extra/deep/evidence.txt',new Blob(['SYNTHETIC overflow']));
         await seal(oversized,JSON.parse(await oversized.get('manifest.json').text()));
-        await assert.rejects(readPackage(await zipFiles(oversized),portableInspect),/excessive ZIP directory/,'importer retains its hard 5,000-entry bound');
+        await assert.rejects(readPackage(await uncheckedZip(oversized),portableInspect),/excessive ZIP directory/,'importer retains its hard 5,000-entry bound');
       }
     }
     assert.deepEqual(base.payloads,unchanged);assert.deepEqual(await currentState(record.id),before,'entry capacity never changes or prunes saved history');
@@ -173,7 +180,7 @@ test('250-state/1,989-finding backup restores with exactly 4,998 ZIP entries',as
 });
 
 
-test('frozen v1 transfer from the previously packaged app restores exact revisions and upgrades to v2',async()=>{
+test('frozen v1 transfer from the previously packaged app restores exact revisions and upgrades to v3',async()=>{
   const fixture=JSON.parse(await readFile(new URL('./fixtures/history-v1-transfer.json',import.meta.url),'utf8'));
   const payloads=new Map(fixture.payloads.map(([path,text])=>[path,new Blob([text])]));
   assert.equal(JSON.parse(await payloads.get('History.json').text()).version,1);
@@ -182,7 +189,7 @@ test('frozen v1 transfer from the previously packaged app restores exact revisio
   assert.deepEqual(restored.journal.map(r=>r.revisionId).sort(),[...fixture.revisionIds].sort());
   assert.equal(restored.head.review.findings[0].comment,'SYNTHETIC later correction');
   const exported=await addPortableHistory(await prepareBackup(portableScene(restored.head),()=>{},makeRecovery),portableScene(restored.head));
-  const index=JSON.parse(await exported.payloads.get('History.json').text());assert.equal(index.version,2);assert.deepEqual(index.events.map(e=>e.id).sort(),[...fixture.eventIds].sort());
+  const index=JSON.parse(await exported.payloads.get('History.json').text());assert.equal(index.version,3);assert.deepEqual(index.events.map(e=>e.id).sort(),[...fixture.eventIds].sort());
   // A structurally plausible index must still match the validated original
   // objects; changing a metadata link cannot relabel code as annotations.
   index.revisions[0].metadata.annotations=index.revisions[0].assetIds.ly;exported.payloads.set('History.json',json(index));await seal(exported.payloads,JSON.parse(await exported.payloads.get('manifest.json').text()));

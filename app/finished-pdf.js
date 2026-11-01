@@ -192,16 +192,29 @@ export async function syncFinishedPDF(directory,snapshot,{pdfVersions=null}={}){
     try{return await run();}finally{await writer.abort();}
   });
 }
-export async function checkFinishedPDF(directory,projectId){
+export async function checkFinishedPDF(directory,projectId,{expectedApproval=null}={}){
   try{
     const data=await readDataDirectory(directory),journal=data&&await receipt(data.directory,projectId);
     if(!journal?.current||journal.version!==2||journal.pending||journal.retiring.length)return {state:'unavailable',message:'The finished PDF is still being prepared. Retry saving.'};
     await validateApproval(journal.current);
+    if(expectedApproval&&['workspaceId','revisionId','snapshotId','sha256','size'].some(key=>journal.current[key]!==expectedApproval[key]))return {state:'unavailable',reason:'different-approval',message:'The finished PDF belongs to an earlier approved revision. Retry saving to publish this completed review.'};
     const dir=await destination(directory),file=(await contents(dir,journal,{fresh:true})).get(journal.current.name);
     if(!await matches(dir,file,journal.current,{fresh:true}))return {state:'unavailable',message:'The numbered finished PDF is missing or was changed. Move any changed copy out of Latest, then retry saving.'};
     const versions=await directory.getDirectoryHandle('Versions');
     if(!await matches(versions,await optional(versions,journal.current.name),journal.current,{fresh:true}))return {state:'unavailable',message:'The matching Versions copy is missing or changed. Retry saving.'};
     return {state:'match',path:LATEST_DIRECTORY+'/'+journal.current.name,number:journal.current.number,sha256:journal.current.sha256};
+  }catch(e){return {state:'unavailable',message:e.message};}
+}
+// Resume checks need only the current checkpoint's validated input closure.
+// An unfinished review leaves the previous approved copy alone. Once current
+// work is approved, a historical receipt cannot prove its publication finished.
+export async function checkCurrentFinishedPublication(directory,snapshot){
+  const current=snapshot?.manifest?.records?.find(record=>record.id===snapshot.manifest.current);
+  if(!current)return {state:'unavailable',message:'The current review could not be checked. Retry saving.'};
+  try{
+    const candidates=await approvedRenderings({...snapshot,manifest:{...snapshot.manifest,records:[current]}});
+    if(!candidates.length)return {state:'not-required'};
+    return checkFinishedPDF(directory,snapshot.manifest.projectId,{expectedApproval:candidates.at(-1)});
   }catch(e){return {state:'unavailable',message:e.message};}
 }
 export async function checkFinishedPublication(directory,snapshot,pdfVersions){

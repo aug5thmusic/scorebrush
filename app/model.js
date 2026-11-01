@@ -97,7 +97,7 @@ export function paint(ctx, viewport, findings, pageNumber, draft=null) {
     const box=bounds(f.strokes);
     if(!box) continue;
     const {x,y,radius}=markerPosition(viewport,f);
-    ctx.save();ctx.globalAlpha=1;ctx.beginPath();
+    ctx.save();ctx.beginPath();
     if(isComment(f)){
       // An outlined speech bubble stays distinct from correction circles even
       // in monochrome evidence. Keep its locator within the same marker bounds.
@@ -127,7 +127,7 @@ export function paint(ctx, viewport, findings, pageNumber, draft=null) {
 // Keep stored stroke opacity unchanged for old reviews and backup hashes.
 // The shared painter makes both live marks and new exported evidence 12% darker.
 export function drawStroke(ctx,viewport,s) {
-  ctx.save();ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.globalAlpha=Math.min(1,s.opacity*1.12);ctx.lineWidth=s.width*viewport.scale*viewport.userUnit;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+  ctx.save();ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.globalAlpha*=Math.min(1,s.opacity*1.12);ctx.lineWidth=s.width*viewport.scale*viewport.userUnit;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
   s.points.forEach((p,i)=>{const [x,y]=viewport.convertToViewportPoint(...p);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
   if(s.points.length===1){const [x,y]=viewport.convertToViewportPoint(...s.points[0]);ctx.arc(x,y,ctx.lineWidth/2,0,Math.PI*2);ctx.fill();}else ctx.stroke();ctx.restore();
 }

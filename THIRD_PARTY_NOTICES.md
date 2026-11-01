@@ -6,7 +6,7 @@ permission is in [LICENSING.md](LICENSING.md).
 
 | Component | Bundled version / scope | License and notice location |
 | --- | --- | --- |
-| Mozilla PDF.js | 5.6.205, build ada343803; library/worker, CMaps, fonts, profiles and decoders | Apache-2.0 for PDF.js; `app/vendor/PDFJS-LICENSE`; subcomponents below |
+| Mozilla PDF.js | 6.4.299, build d0991a0d5; library/worker, CMaps, fonts, profiles and decoders | Apache-2.0 for PDF.js; `app/vendor/PDFJS-LICENSE`; subcomponents below |
 | PDF-lib | 1.17.1 | MIT; `app/vendor/PDF-LIB-LICENSE.md`; embedded notices in the bundle |
 | JSZip | 3.10.1 | MIT option of its MIT/GPLv3 dual license; `app/vendor/JSZIP-LICENSE.md`; embedded dependency notices |
 | PDF.js CMaps | From the matching PDF.js distribution | `app/vendor/cmaps/LICENSE` |
@@ -15,7 +15,8 @@ permission is in [LICENSING.md](LICENSING.md).
 | ICC color profile | From the matching PDF.js distribution | CC0-1.0; `app/vendor/iccs/LICENSE` |
 | OpenJPEG and PDF.js wrapper | WASM and fallback decoder | BSD-2-Clause; `app/vendor/wasm/LICENSE_OPENJPEG` and `LICENSE_PDFJS_OPENJPEG` |
 | qcms and PDF.js wrapper | WASM color conversion | MIT; `app/vendor/wasm/LICENSE_QCMS` and `LICENSE_PDFJS_QCMS` |
-| PDFium JBIG2 and PDF.js wrapper | WASM decoder | BSD-style and Apache-2.0 notices; `app/vendor/wasm/LICENSE_JBIG2` and `LICENSE_PDFJS_JBIG2` |
+| PDFium JBIG2 and PDF.js wrapper | WASM and JavaScript fallback decoder | BSD-style and Apache-2.0 notices; `app/vendor/wasm/LICENSE_JBIG2` and `LICENSE_PDFJS_JBIG2` |
+| qcms Rust runtime inputs | wasm-bindgen 0.2.126, Rust 1.97.1 standard library and dlmalloc 0.2.13 | MIT/Apache-2.0 notices retained in `app/vendor/wasm/LICENSE_WASM_BINDGEN`, `LICENSE_RUST`, `LICENSE_DLMALLOC`, `LICENSE_QCMS_RUST_DEPENDENCIES`; original source notices retained in matching archives |
 | Sora | Bundled WOFF2 | SIL OFL-1.1; `app/vendor/fonts/sora-OFL.txt` |
 | Bricolage Grotesque | Bundled WOFF2 | SIL OFL-1.1; `app/vendor/fonts/bricolagegrotesque-OFL.txt` |
 | Microsoft WebView2 SDK | 1.0.4258.31; Core/WinForms assemblies and x64 loader | BSD-style Microsoft license; `licenses/WebView2-SDK-LICENSE.txt`; also `WebView2-LICENSE.txt` in binary ZIPs |
@@ -36,7 +37,7 @@ The source export does not install or bundle a complete Microsoft runtime.
 
 Upstream references:
 
-- https://github.com/mozilla/pdf.js/tree/v5.6.205
+- https://github.com/mozilla/pdf.js/tree/v6.4.299
 - https://github.com/Hopding/pdf-lib/tree/v1.17.1
 - https://github.com/Stuk/jszip/tree/v3.10.1
 - https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.4258.31/License

@@ -7,9 +7,10 @@ scope of verification. `vendor-inventory.json` pins the bundled runtime files.
 
 ## Included sources
 
-- PDF.js 5.6.205: `src/`, `external/`, license, authors, package/lock files and
-  build entry point. All 502 selected files match their upstream Git blob IDs.
-  The large test-PDF corpus and separate viewer application are omitted.
+- PDF.js 6.4.299: `src/`, matching `external/` library resources, license,
+  authors, package/lock, `pdfjs.config` and build entry point. All 520 selected
+  files (including the supplemental Fluent input) match their release Git blobs.
+  The large test-PDF corpus, separate viewer and unused QuickJS assets are omitted.
 - PDF-lib 1.17.1 and JSZip 3.10.1: library sources and build configuration from
   their tags, excluding test/demo corpora. PDF-lib's source map retains all
   179 source contents; the matching unminified JSZip bundle is also included.
@@ -34,30 +35,36 @@ scope of verification. `vendor-inventory.json` pins the bundled runtime files.
   CP1252 data, and the exact cited PDFKit MIT license for WinAnsi glyph names.
   The original inputs remain unchanged; THIRD_PARTY_NOTICES.md describes their
   upstream transformations and supplies the accompanying notices.
-- `pdfjs-5.6.205-library-inputs.tar.gz` supplements the PDF.js archive with the
-  original `l10n/en-US/viewer.ftl`, verified against the release Git blob. Its
-  MPL-2.0 source notice is retained. [PDFJS_BUILD.md](PDFJS_BUILD.md) documents
-  a library-only build task, retained scripts and toolchain information.
-- OpenJPEG: the complete 2.5.4 source at commit
-  `6c4a29b00211eb0430fa0e5e890f1ce5c80f409f`, plus PDF.js wrapper
-  `b47d31b8355a3863ab37282ceeb5183f7ac2761c`, including its buffer-stream patch.
-- JBIG2/CCITT: PDF.js wrapper `1e945e7552561c9b45e6d2c7d1a359ea82afc5b7`,
-  plus 100 PDFium source/header/notice files at its pinned commit
-  `0455e822ded1a5537d826703988e986a33d2d4a1`. The selection follows the wrapper's
-  compilation units and their quoted includes. Every selected file matches its
-  upstream Git blob ID. The partial transport archive is not redistributed.
-  Emscripten supplies `emscripten.h`; PartitionAlloc and Skia includes are
-  guarded by macros that this wrapper does not define.
-- qcms: PDF.js wrapper `fc23a407f1ed9ccfea15875d27e0936dcc798a1f` and all 15
-  registry source crates in its Cargo.lock, including qcms 0.3.0 and
-  wasm-bindgen 0.2.100. Each crate matches its Cargo.lock SHA-256 checksum.
+- `pdfjs-6.4.299-library-inputs.tar.gz` supplies the original
+  `l10n/en-US/viewer.ftl`, verified against the release Git blob. Its MPL-2.0
+  source notice is retained. [PDFJS_BUILD.md](PDFJS_BUILD.md) describes the
+  library-only build task and the omission of unused viewer scripting assets.
+- OpenJPEG: complete 2.5.4 development-revision source at
+  `8314119b067c0fc77834731168daaebd379fdb12`, plus wrapper
+  `13eaf130b252d748560569fffb83fd9432597840` and its buffer-stream patch.
+- JBIG2/CCITT: wrapper `15f6f9357c5e5e30285eb83aa08e5fe1a16ab77a`, plus
+  99 PDFium source/header/notice files at pinned commit
+  `bb1f9f71e7b15afdd5937adf8cfe5807522b882f`. Every selected file matches its
+  upstream Git blob. The selection follows compilation units and quoted
+  includes; Emscripten supplies its own headers. PartitionAlloc/Skia branches
+  are guarded by macros absent from the wrapper build.
+- qcms: wrapper `2ae4ee72334782928210ba4050e3e77d9b2d35be` and all 15
+  registry source crates from its checked-in Cargo.lock. That lock predates
+  the actual binary's wasm-bindgen 0.2.126 and is not claimed to be its
+  compilation lock. Supplemental `wasm-bindgen-0.2.126-source-inputs.tar.gz`
+  supplies the published crate and all 19 registry entries from its own
+  published lock, verified by registry/lock SHA-256. Source index retained.
+- `rust-src-1.97.1-source.tar.gz`: complete official Rust source component,
+  verified against its published SHA-256, with original file bytes retained.
+  This matches qcms WASM producer metadata and includes standard-library,
+  compiler-builtins and vendored dlmalloc 0.2.13 sources and notices.
 
-The wrapper revisions correspond to the decoder updates recorded in the
-PDF.js release history. This is source provenance, not a claim that rebuilding
-with those inputs has reproduced the shipped WASM bytes. Upstream Dockerfiles
-use floating toolchain tags, and the qcms Dockerfile runs `cargo update`.
-Rebuilders should preserve the supplied lock file and record their toolchain
-versions instead of silently resolving newer inputs.
+All wrapper sources match their Git blobs. Decoder update commits in PDF.js
+history associate those wrappers with the release. This is source provenance,
+not proof of a byte-identical decoder rebuild. Original Emscripten/wasm-pack
+versions and the exact qcms compilation lock remain unknown. Its Dockerfile
+runs `cargo update`; retained actual-version source inputs are distinguished
+from the outdated checked-in lock. See PDFJS_BUILD.md for rebuild limitations.
 
 The three runtime JavaScript libraries and PDF.js auxiliary files were compared
 with the matching npm distributions. Their bytes match. Ordinary ScoreBrush

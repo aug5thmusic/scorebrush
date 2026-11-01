@@ -3,11 +3,13 @@
 // Additional permissions: see LICENSING.md at the source root.
 import {clone,sha256,findingType,findingTypeLabel,isComment} from './model.js';
 import {makeRecovery} from './export.js';
+import {addWorkspaceIdentity} from './project-identity.js';
 import {readPackage,makeTask,readResponse,acceptResponse,taskFindings,contextPaths,localTaskDelivery,retainPortableTask} from './workflow.js';
 import {installReturned} from './returned-ui.js';
 import {restoreReturnedBackup} from './returned.js';
 import {retain,retained,retainedList} from './handoff-store.js';
 import {saveTaskFolder,readResponseFolder} from './folder-io.js';
+import {validateExportPayloads,validateExportZip} from './package-limits.js';
 const $=id=>document.getElementById(id);
 export function installHandoff(api){
   let job=false,resolving=false,pending=null,shown=null,links=[],prompt='',issuedStamp=null;
@@ -90,7 +92,8 @@ export function installHandoff(api){
     show(true);clear();$('responsePreview').replaceChildren();$('acceptResponse').hidden=true;$('handoffTitle').textContent='Send to AI';$('promptFallback').hidden=true;
     const s=api.capture(),token=++generation;job=true;$('closeHandoff').disabled=true;status('Preparing the exact baseline and visual context…');
     try{await api.lock(async()=>{
-      const prepared=api.corrections.summaryTask?.(),entry=prepared??(s.returned?await returnedUI.io.followupTask(s,'120',text=>status(text),api.packageMaker):await io.makeTask(s.review,s.files,s.doc,'120',text=>status(text),api.packageMaker)),zip=await api.zip(entry.payloads,text=>status(text));
+      const prepared=api.corrections.summaryTask?.(),entry=prepared??(s.returned?await returnedUI.io.followupTask(s,'120',text=>status(text),api.packageMaker):await io.makeTask(s.review,s.files,s.doc,'120',text=>status(text),api.packageMaker,s));
+      validateExportPayloads(entry.payloads);const zip=validateExportZip(await api.zip(entry.payloads,text=>status(text)));
       if(generation!==token)throw cancelled('Task export cancelled. Your review is retained.');
       if(!api.matches(s.stamp))throw new Error('The review changed during task export. Export again.');
       // Retain before publishing: a response must have an issued baseline here.
@@ -154,10 +157,10 @@ export function installHandoff(api){
     finally{job=false;$('acceptResponse').disabled=false;$('closeHandoff').disabled=false;}
   });
   $('inspectHandoff').onclick=guarded('handoff-inspect',async()=>{const entry=await retained($('handoffHistory').value);if(!entry)return false;clear();$('responsePreview').replaceChildren();$('acceptResponse').hidden=true;$('promptFallback').hidden=true;show(entry.kind==='task');
-    if(entry.kind==='task'){const delivery=await localTaskDelivery(entry);prompt=delivery.prompt;issuedStamp=null;$('handoffTitle').textContent='Saved AI task';$('aiPrompt').value=prompt;$('promptFallback').hidden=false;taskDownloads(delivery,await api.zip(delivery.payloads));}
+    if(entry.kind==='task'){const delivery=await localTaskDelivery(entry);validateExportPayloads(delivery.payloads);const zip=validateExportZip(await api.zip(delivery.payloads));prompt=delivery.prompt;issuedStamp=null;$('handoffTitle').textContent='Saved AI task';$('aiPrompt').value=prompt;$('promptFallback').hidden=false;taskDownloads(delivery,zip);}
     else if(entry.kind==='response'){const issued=await retained(entry.taskId);pending={issued,response:entry.response,payloads:entry.payloads};shown=entry;$('handoffTitle').textContent='Saved AI response';renderResponse(pending,entry);}
     else if(entry.kind==='render-attachment'){const responseEntry=await retained(entry.responseId);shown=responseEntry;$('handoffTitle').textContent='Saved rendering';await returnedUI.open(responseEntry,entry);}
-    else{ $('handoffTitle').textContent='Saved review';const payloads=await makeRecovery(entry.review,entry.files);downloadLink(await api.zip(payloads),'prior-review-recovery.zip','Download review backup');}
+    else{ $('handoffTitle').textContent='Saved review';const payloads=await addWorkspaceIdentity(await makeRecovery(entry.review,entry.files),entry);validateExportPayloads(payloads);downloadLink(validateExportZip(await api.zip(payloads)),'prior-review-recovery.zip','Download review backup');}
     status('Saved item opened. Your current workspace is unchanged.');
   });
   // Invalidate generated downloads as soon as the visible review changes.

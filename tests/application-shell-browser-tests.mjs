@@ -15,6 +15,30 @@ export async function runApplicationShell({browser,serve,evidence,root}){
   const settled=async()=>{await page.evaluate(async()=>window.shellApi=await import('./app.js'));await page.waitForFunction(()=>!window.shellApi.sessionStatus().busy&&['source','rendered'].every(k=>document.getElementById(k+'Paper').getAttribute('aria-busy')==='false'&&!['true','gesture'].includes(document.getElementById(k+'Paper').dataset.resizePending)));};
   const folderSaved=async()=>{await page.evaluate(async()=>window.shellApi=await import('./app.js'));await page.waitForFunction(()=>{const a=window.shellApi,f=a.folderWorkspace.getState();return Boolean(a.sessionStatus().snapshotId)&&f.bound&&f.ready&&!f.busy&&!a.sessionStatus().dirty;},null,{timeout:90000});};
   const shot=name=>page.screenshot({path:resolve(evidence,'shell-'+name+'.png')});
+  // Interpose only at the shell's public installer boundary. Other application
+  // components may still capture owned snapshots for saves and real actions.
+  await page.route('**/application-shell.js*',async route=>{
+    const url=new URL(route.request().url());if(url.searchParams.has('shell-capture-source')){await route.continue();return;}
+    await route.fulfill({contentType:'text/javascript',body:`
+      import {installApplicationShell as install} from './application-shell.js?shell-capture-source';
+      export function installApplicationShell(api,layout){
+        window.shellCaptureProbe={captures:0,returnedReads:0,rejectCapture:false};
+        return install(new Proxy(api,{get(target,key,receiver){
+          if(key==='capture')return(...args)=>{shellCaptureProbe.captures++;if(shellCaptureProbe.rejectCapture)throw Error('SYNTHETIC menu refresh captured full review');return target.capture(...args);};
+          if(key==='returnedState')return(...args)=>{shellCaptureProbe.returnedReads++;return target.returnedState(...args);};
+          return Reflect.get(target,key,receiver);
+        }}),layout);
+      }`});
+  });
+  const lightRefresh=async returned=>{
+    const observed=await page.evaluate(async()=>{
+      const probe=window.shellCaptureProbe,before={captures:probe.captures,returnedReads:probe.returnedReads};probe.rejectCapture=true;
+      try{document.dispatchEvent(new Event('score-desk-controls'));await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);
+        return {captures:probe.captures-before.captures,returnedReads:probe.returnedReads-before.returnedReads,summaryEnabled:!document.querySelector('#menuWorkflow [data-command="round-summary"]').disabled};
+      }finally{probe.rejectCapture=false;}
+    });
+    check(observed.captures===0&&observed.returnedReads>0&&observed.summaryEnabled===returned,'control refresh uses lightweight returned state and preserves '+(returned?'available':'unavailable')+' round-summary action');
+  };
   try{
     // Hold a genuinely pending module request, without adding a delay to the app.
     let release,seen;const gate=new Promise(r=>release=r),requested=new Promise(r=>seen=r);
@@ -49,6 +73,7 @@ export async function runApplicationShell({browser,serve,evidence,root}){
       await page.locator('#newFinding').click();await page.locator('#findingType').selectOption(type);await page.locator('#comment').fill(text);await page.locator('#saveFinding').click();
     }
     await folderSaved();const original=await capture();
+    await lightRefresh(false);
     for(const [width,height]of [[1440,900],[1024,768],[900,650]]){
       await page.setViewportSize({width,height});await settled();
       check(await page.evaluate(()=>{
@@ -68,6 +93,7 @@ export async function runApplicationShell({browser,serve,evidence,root}){
     await page.evaluate(async()=>{const a=await import('./app.js'),folder=await(await navigator.storage.getDirectory()).getDirectoryHandle(a.folderWorkspace.getState().directoryName),{fixtureBlob}=await import('./qa/fixtures.js');for(const [name,data]of [['rendered.pdf',await fixtureBlob('multipage.pdf')],['score.ly','% SYNTHETIC updated LilyPond']]){const w=await(await folder.getFileHandle(name)).createWritable();await w.write(data);await w.close();}});
     await page.locator('#workflowReview').click();await page.locator('#reviewLoadLatest').click();await page.waitForFunction(()=>document.body.classList.contains('corrections-open')&&document.querySelector('#correctionComparison').getAttribute('aria-busy')==='false');await folderSaved();await settled();
     const beforeStages=await capture(),baseline=await page.locator('#sourceViewer').getAttribute('data-render-sha256');await shot('review-changes');
+    await lightRefresh(true);
     await menuCommand(page,'Help','welcome');
     check(await page.locator('#returnedBar').isHidden()&&!/Reviewing |proposed\.ly|proposed\.pdf|Page numbers may differ/.test(await page.locator('#workspaceDialog').innerText()),'reopened Welcome hides returned-review details by page context');
     await shot('welcome-during-review');await page.locator('#closeWorkspace').click();

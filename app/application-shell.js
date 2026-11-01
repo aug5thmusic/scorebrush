@@ -92,7 +92,7 @@ export function installApplicationShell(api,layout){
     const sending=$('folderPromptDialog').open||$('handoffDialog').open&&$('promptFallback').hidden===false;
     set('proofread',free&&review,review&&!activeComparison&&!sending);set('send',free&&enabledButton('folderPromptButton'),sending);
     set('review',free&&review,activeComparison&&!sending);set('latest',free&&enabledButton('loadLatest'));set('response',filesFree&&enabledButton('importResponse'));set('task',free&&enabledButton('exportTask'));
-    set('round-summary',free&&Boolean(api.capture().returned));
+    set('round-summary',free&&Boolean(api.returnedState()));
     set('new-project',filesFree&&!api.folder.getState().selecting);
     for(const id of ['open-folder','import'])set(id,filesFree&&!api.folder.getState().busy);set('files',filesFree);
     set('connect-folder',free&&api.folder.getState().needsConnection&&enabledButton('connectWorkingFolder'));set('explorer',free&&enabledButton('showFolderFiles'));set('copy-path',free&&enabledButton('copyFolderPath'));set('versions',free&&enabledButton('openPreviousVersions'));

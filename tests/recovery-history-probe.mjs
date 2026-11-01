@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import {SourceTextModule,SyntheticModule,createContext} from 'node:vm';
 import {readFile} from 'node:fs/promises';
 import {webcrypto} from 'node:crypto';
+import * as projectIdentity from '../app/project-identity.js';
 import * as projectDirectory from '../app/project-directory.js';
 import * as pdfNames from '../app/pdf-output-names.js';
 globalThis.crypto??=webcrypto;
@@ -26,11 +27,13 @@ class Dir {
 let local=[],history=[],packageBuilds=0;
 const ctx=createContext({Blob,Map,Set,Error,Date,JSON,Object,Number,String,Array,Promise,TextEncoder,structuredClone,crypto:webcrypto,navigator:{locks:{request:async(_key,cb)=>cb()}}});
 const bindings={
+ './project-identity.js':projectIdentity,
+ './folder-task-delivery.js':{retainedFolderDelivery:async()=>{throw new Error('No folder task projection expected in this fixture');}},
  './model.js':{sha256,blobHash:blob=>blob.arrayBuffer().then(sha256)},
     './project-directory.js':projectDirectory,
  './pdf-output-names.js':pdfNames,
  './pdf-versions.js':{preparePdfOutput:async()=>({version:1,initialTranscriptionFilename:null,basename:pdfNames.UNKNOWN_TITLE,nameSource:'unknown',renderings:[]})},
- './workflow.js':{json,strictJSON:JSON.parse,fileInfo,readPackagePayloads:async p=>({review:JSON.parse(await p.get('annotations.json').text()),files:{},completionBundle:JSON.parse(await p.get('completion-history.json').text()),payloads:p}),hydrateTaskPayloads:null,readResponsePayloads:null,responseRevision:null,LIMITS:{json:25e6,file:100e6,total:512e6,count:5000}},
+ './workflow.js':{localTaskDelivery:async()=>{throw new Error('No task projection expected in this fixture');},json,strictJSON:JSON.parse,fileInfo,readPackagePayloads:async p=>({review:JSON.parse(await p.get('annotations.json').text()),files:{},completionBundle:JSON.parse(await p.get('completion-history.json').text()),payloads:p}),hydrateTaskPayloads:null,readResponsePayloads:null,responseRevision:null,LIMITS:{json:25e6,file:100e6,total:512e6,count:5000}},
  './export.js':{makeRecovery:async review=>{packageBuilds++;return new Map([['annotations.json',json(review)],['manifest.json',json({schema:'score-desk-package',version:1,build:packageBuilds})]]);},zipFiles:null},
  './returned.js':{makeReturnedBackup:async(_review,_files,returned,p)=>{p.set('returned-workspace.json',json({returned}));return p;},restoreReturnedBackup:async p=>p.payloads.has('returned-workspace.json')?{issued:{id:'task1',task:{}},entry:{id:'response1',response:{}}}:null},
  './completion.js':{addCompletionHistory:async(p,review,_round,revisionId,records)=>{p.set('completion-history.json',json({revisionId,records,stateSha256:canonical(review)}));return p;}},

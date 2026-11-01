@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fixture} from './fast-resume-fixture.mjs';
 import {installMemoryIndexedDB} from './indexeddb-memory.mjs';
-import {putSaved,getSaved,workspaceHistory} from '../app/storage.js';
+import {putSaved,getSaved,workspaceHistory,restoreMissing} from '../app/storage.js';
 import {readRecovery,saveRecovery} from '../app/folder-recovery.js';
 import {captureResumeProof,verifyFastResume} from '../app/fast-resume.js';
 import {verifySavedFolder} from '../app/folder-workspace.js';
@@ -49,3 +49,12 @@ test('a legacy record without a committed lineage ID only permits the bound fold
   assert.deepEqual(f.directory.control.writes,[]);
 });
 
+
+test('explicit project ownership rejects equal-state recovery from another project atomically',async()=>{
+  const f=await fixture(),original=await getSaved(f.record.id)??await putSaved(f.record,null),foreignProject=crypto.randomUUID();
+  const before=structuredClone(original),incoming={...original,projectId:foreignProject};
+  await assert.rejects(()=>restoreMissing([incoming],{projectIds:new Map([[original.id,foreignProject]])}),{name:'StorageConflictError'});
+  assert.deepEqual(await getSaved(original.id),before);
+  await restoreMissing([original],{projectIds:new Map([[original.id,original.projectId]])});
+  assert.deepEqual(await getSaved(original.id),before,'same-owner restore is idempotent');
+});

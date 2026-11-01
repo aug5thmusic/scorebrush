@@ -52,7 +52,7 @@ export async function importPortableHistory(parsed,inspectPdf){
   const root=new MemoryDirectory('transfer'),owned=await root.getDirectoryHandle('.scorebrush',{create:true});
   for(const [path,blob]of parsed.payloads)if(path.startsWith(prefix))await put(owned,path.slice(prefix.length),blob);
   const round=parsed.payloads.has('returned-workspace.json')?strictJSON(await parsed.payloads.get('returned-workspace.json').text()).returned:null;
-  const snapshot=await readRecovery(root),scene={workspaceId:round?.id??parsed.review.snapshotId,review:parsed.review,returned:round,revisionId:parsed.completionBundle?.revisionId,completions:parsed.completionBundle?.records??[]};
+  const snapshot=await readRecovery(root),scene={workspaceId:round?.id??parsed.workspace?.id??parsed.review.snapshotId,review:parsed.review,returned:round,revisionId:parsed.completionBundle?.revisionId,completions:parsed.completionBundle?.records??[]};
   if(!snapshot||snapshot.damaged.length||snapshot.manifest.current!==metadata.current||snapshot.manifest.id!==metadata.generation||!await recoveryMatches(snapshot,scene))throw new Error('Workspace transfer history does not match its visible review. Existing work is unchanged.');
   if(metadata.researchIndex!==undefined){
     if(metadata.researchIndex!==HISTORY_FILE||!parsed.payloads.has(HISTORY_FILE))throw new Error('Workspace research index is missing.');

@@ -17,7 +17,7 @@ export async function runPdfNames({browser,serve,evidence,root,largeOnly=false})
     await p.evaluate(async()=>{
       const modules=await Promise.all(['model','storage','workflow','export','returned','handoff-store','folder-recovery','pdf-versions','finished-pdf','project-history','portable-history','completion','folder-workspace'].map(n=>import('./'+n+'.js')));
       const h=window.historyTest=Object.assign({},...modules),pdf=await import('./vendor/pdf.mjs');
-      h.inspect=async files=>{const doc=await pdf.getDocument({data:await files.rendered.blob.arrayBuffer()}).promise,pages=[];try{for(let i=1;i<=doc.numPages;i++){const p=await doc.getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}return pages;}finally{await doc.destroy();}};
+      h.inspect=async files=>{const doc=await pdf.getDocument({data:await files.rendered.blob.arrayBuffer()}).promise,pages=[];try{for(let i=1;i<=doc.numPages;i++){const p=await doc.getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}return pages;}finally{await doc.loadingTask.destroy();}};
       const png=new Blob([Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j9B0AAAAASUVORK5CYII='),c=>c.charCodeAt(0))]);
       h.maker=async(review,files)=>{const payloads=await h.makeRecovery(review,files);for(const f of review.findings)for(const kind of ['clean','marked'])payloads.set('findings/'+String(f.number).padStart(3,'0')+'-'+f.id+'-'+kind+'.png',png);return h.seal(payloads,JSON.parse(await payloads.get('manifest.json').text()));};
       h.scene=r=>({...r,workspaceId:r.id,doc:{},persistedRevision:r.storageRevision});

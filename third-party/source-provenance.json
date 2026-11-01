@@ -2,16 +2,6 @@
   "schemaVersion": 1,
   "sourceArchives": [
     {
-      "component": "pdfjs-5.6.205",
-      "archive": "upstream-sources/pdfjs-5.6.205-source.tar.gz",
-      "sha256": "c1c7341279802db62db95e054b7d093a4e25a373ddcdc23c15ddd5a435317ff9",
-      "bytes": 2986178,
-      "sourceFileCount": 502,
-      "gitTree": "ada343803945d977b9a1be8e72184b0422f8e5d1",
-      "verification": "Every selected file matched its upstream Git blob ID; unrelated test PDF corpus omitted.",
-      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v5.6.205"
-    },
-    {
       "component": "pdf-lib-1.17.1",
       "archive": "upstream-sources/pdf-lib-1.17.1-source.tar.gz",
       "sha256": "1658e5afe32f7cede9191854410be0c4c4b8ce059ce79bdb871bc8f7f80d1779",
@@ -30,46 +20,6 @@
       "downloadSHA256": "e873e5d0d8549c78c0eafcab8fba40f4a1e27c5a9d48f4a6b2eb122470d0d88c",
       "verification": "Read a complete upstream tag archive; test/demo corpora omitted.",
       "sourceURL": "https://github.com/Stuk/jszip/tree/v3.10.1"
-    },
-    {
-      "component": "pdfjs-openjpeg-wrapper",
-      "archive": "upstream-sources/pdfjs-openjpeg-wrapper-b47d31b8355a3863ab37282ceeb5183f7ac2761c.tar.gz",
-      "sha256": "6a56c058c188ff2211cf0ac4a3f6309277ae8b4d522d832860494b451a8e27ea",
-      "bytes": 28030,
-      "sourceFileCount": 13,
-      "gitRevision": "b47d31b8355a3863ab37282ceeb5183f7ac2761c",
-      "sourceURL": "https://github.com/mozilla/pdf.js.openjpeg/tree/b47d31b8355a3863ab37282ceeb5183f7ac2761c",
-      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
-    },
-    {
-      "component": "pdfjs-jbig2-wrapper",
-      "archive": "upstream-sources/pdfjs-jbig2-wrapper-1e945e7552561c9b45e6d2c7d1a359ea82afc5b7.tar.gz",
-      "sha256": "a5505e890089a49ab6ab54c874f5c461483e54276e44aa1c7f5cfcd1bcc681e2",
-      "bytes": 23688,
-      "sourceFileCount": 12,
-      "gitRevision": "1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
-      "sourceURL": "https://github.com/mozilla/pdf.js.jbig2/tree/1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
-      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
-    },
-    {
-      "component": "pdfjs-qcms-wrapper",
-      "archive": "upstream-sources/pdfjs-qcms-wrapper-fc23a407f1ed9ccfea15875d27e0936dcc798a1f.tar.gz",
-      "sha256": "c751e8f8ed90ecf573ed4fd3240d807429003756ff8751ffe1069b3a9306bb84",
-      "bytes": 6035,
-      "sourceFileCount": 11,
-      "gitRevision": "fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
-      "sourceURL": "https://github.com/mozilla/pdf.js.qcms/tree/fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
-      "verification": "Complete upstream revision archive; matched to the corresponding decoder update in PDF.js history. Binary reproduction was not performed."
-    },
-    {
-      "component": "openjpeg-2.5.4",
-      "archive": "upstream-sources/openjpeg-6c4a29b00211eb0430fa0e5e890f1ce5c80f409f.tar.gz",
-      "sha256": "c2bb373d68286ef475713f251504f59be6e44980dc5c56314bd4a7681fc69fce",
-      "bytes": 2159835,
-      "sourceFileCount": 466,
-      "gitRevision": "6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
-      "sourceURL": "https://github.com/uclouvain/openjpeg/tree/6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
-      "verification": "Complete source archive at the commit pinned by the matching wrapper Dockerfile; the wrapper archive includes its buffer-stream patch."
     },
     {
       "component": "bumpalo-3.17.0",
@@ -207,28 +157,6 @@
       "verification": "Complete Rust source crate; SHA-256 equals the matching qcms wrapper Cargo.lock checksum."
     },
     {
-      "component": "pdfium-jbig2",
-      "archive": "upstream-sources/pdfium-0455e822-jbig2-source.tar.gz",
-      "sha256": "0ccf98d333d376ea981531021b60904dad974a3ebd0ce1d1cbc9cd945b04225b",
-      "bytes": 129937,
-      "sourceFileCount": 100,
-      "gitRevision": "0455e822ded1a5537d826703988e986a33d2d4a1",
-      "sourceURL": "https://github.com/chromium/pdfium/tree/0455e822ded1a5537d826703988e986a33d2d4a1",
-      "verification": "Compilation units named by the matching wrapper and recursively referenced available headers, plus notices. Each included file independently matches the upstream Git blob ID. Incomplete transport archive is not redistributed. Remaining nonlocal includes are the Emscripten toolchain header or guarded by PDF_USE_PARTITION_ALLOC/PDF_USE_SKIA, neither defined in the wrapper build.",
-      "toolchainIncludes": [
-        "emscripten.h (provided by Emscripten)"
-      ],
-      "disabledConditionalIncludes": {
-        "PDF_USE_PARTITION_ALLOC": [
-          "partition_alloc/partition_alloc_buildflags.h",
-          "partition_alloc/pointers/raw_ptr.h"
-        ],
-        "PDF_USE_SKIA": [
-          "third_party/skia/include/core/SkRefCnt.h"
-        ]
-      }
-    },
-    {
       "component": "javascript-embedded-source-inputs",
       "archive": "upstream-sources/javascript-embedded-source-inputs-20261026.tar.gz",
       "sha256": "a185d5cf5029346332833afd98c28d833720285fb985062d29890478b7fbd3ad",
@@ -246,16 +174,6 @@
         "https://github.com/YuzuJS/setImmediate",
         "https://github.com/microsoft/tslib/tree/1.11.1"
       ]
-    },
-    {
-      "component": "pdfjs-5.6.205-library-inputs",
-      "archive": "upstream-sources/pdfjs-5.6.205-library-inputs.tar.gz",
-      "sha256": "311608e384dedf77b1ee19df4fbaf9351d38bbd77b43aff30d58403b835c74b2",
-      "bytes": 7260,
-      "sourceFileCount": 1,
-      "gitTree": "ada343803945d977b9a1be8e72184b0422f8e5d1",
-      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v5.6.205",
-      "verification": "Supplemental l10n/en-US/viewer.ftl matches the release Git-tree blob; MPL-2.0 source notice retained. Library Webpack configuration reads this input."
     },
     {
       "component": "standard-fonts-1.0.0",
@@ -571,6 +489,107 @@
           "sha256": "dc2559462545c1a6eeb8f929db1b257fd0153789b6188f1901c9b04a67eca440"
         }
       ]
+    },
+    {
+      "component": "pdfjs-6.4.299",
+      "archive": "upstream-sources/pdfjs-6.4.299-source.tar.gz",
+      "sha256": "2f60a9ca78df9b93fd75135ad26c358b496bf06c9c538d577c5e0062566ba58a",
+      "bytes": 2893574,
+      "sourceFileCount": 519,
+      "gitTree": "d0991a0d53f3bb3a7307e3b83f279c1d117aafb3",
+      "verification": "Every selected file matched its release Git blob ID; src/, external library resources, package/lock, gulp, configuration and notices retained. Unused QuickJS viewer-scripting assets, unrelated test corpus and viewer omitted.",
+      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v6.4.299"
+    },
+    {
+      "component": "pdfjs-6.4.299-library-inputs",
+      "archive": "upstream-sources/pdfjs-6.4.299-library-inputs.tar.gz",
+      "sha256": "d1a3b3fe7b346005c298668f43c8afc84a6154b11a15564dbf13522b6d0fbe86",
+      "bytes": 8201,
+      "sourceFileCount": 1,
+      "gitTree": "d0991a0d53f3bb3a7307e3b83f279c1d117aafb3",
+      "sourceURL": "https://github.com/mozilla/pdf.js/tree/v6.4.299",
+      "verification": "Supplemental library-build Fluent input matched its release Git blob ID; MPL-2.0 source notice retained."
+    },
+    {
+      "component": "pdfjs-openjpeg-wrapper",
+      "archive": "upstream-sources/pdfjs-openjpeg-wrapper-13eaf130b252d748560569fffb83fd9432597840.tar.gz",
+      "sha256": "efe8ea9d3cd5a7702e2f98dad10843d4455239777fa7ff704bf77fa013c32914",
+      "bytes": 28254,
+      "sourceFileCount": 13,
+      "gitRevision": "13eaf130b252d748560569fffb83fd9432597840",
+      "sourceURL": "https://github.com/mozilla/pdf.js.openjpeg/tree/13eaf130b252d748560569fffb83fd9432597840",
+      "verification": "Complete wrapper revision; every file Git-blob verified. Corresponds to the decoder update recorded in PDF.js history. Binary reproduction not performed."
+    },
+    {
+      "component": "pdfjs-jbig2-wrapper",
+      "archive": "upstream-sources/pdfjs-jbig2-wrapper-15f6f9357c5e5e30285eb83aa08e5fe1a16ab77a.tar.gz",
+      "sha256": "66c848c9c9532b1486b84876c5a740a4237deffbeb3c302c99a3d64e5fe5849a",
+      "bytes": 23219,
+      "sourceFileCount": 12,
+      "gitRevision": "15f6f9357c5e5e30285eb83aa08e5fe1a16ab77a",
+      "sourceURL": "https://github.com/mozilla/pdf.js.jbig2/tree/15f6f9357c5e5e30285eb83aa08e5fe1a16ab77a",
+      "verification": "Complete wrapper revision; every file Git-blob verified. Corresponds to the decoder update recorded in PDF.js history. Binary reproduction not performed."
+    },
+    {
+      "component": "pdfjs-qcms-wrapper",
+      "archive": "upstream-sources/pdfjs-qcms-wrapper-2ae4ee72334782928210ba4050e3e77d9b2d35be.tar.gz",
+      "sha256": "bbd31221bef446f77a76ad26c37b5b68e03e751a6216b35e309d2ed87aa6e379",
+      "bytes": 9965,
+      "sourceFileCount": 11,
+      "gitRevision": "2ae4ee72334782928210ba4050e3e77d9b2d35be",
+      "sourceURL": "https://github.com/mozilla/pdf.js.qcms/tree/2ae4ee72334782928210ba4050e3e77d9b2d35be",
+      "verification": "Complete wrapper revision; every file Git-blob verified. Corresponds to the decoder update recorded in PDF.js history. Binary reproduction not performed."
+    },
+    {
+      "component": "openjpeg-2.5.4",
+      "archive": "upstream-sources/openjpeg-8314119b067c0fc77834731168daaebd379fdb12.tar.gz",
+      "sha256": "dfcf8fb62d87271fa0a0c6e9e6b902cd6f34e419c6333fa2540d6f96a0250a03",
+      "bytes": 2134914,
+      "sourceFileCount": 468,
+      "gitRevision": "8314119b067c0fc77834731168daaebd379fdb12",
+      "sourceURL": "https://github.com/uclouvain/openjpeg/tree/8314119b067c0fc77834731168daaebd379fdb12",
+      "verification": "Every selected file matched its upstream Git blob ID. Complete revision source; matching wrapper supplies the buffer-stream patch."
+    },
+    {
+      "component": "pdfium-jbig2",
+      "archive": "upstream-sources/pdfium-bb1f9f71-jbig2-source.tar.gz",
+      "sha256": "ef78f240a500abd236cefce0cbc836404bd5ccf2eb0ef2d52d6c01b284a6e9dc",
+      "bytes": 118557,
+      "sourceFileCount": 99,
+      "gitRevision": "bb1f9f71e7b15afdd5937adf8cfe5807522b882f",
+      "sourceURL": "https://github.com/chromium/pdfium/tree/bb1f9f71e7b15afdd5937adf8cfe5807522b882f",
+      "verification": "Every selected file matched its upstream Git blob ID. Compilation units named by matching wrapper, recursively referenced headers and notices; compiler supplies emscripten.h and standard headers. PartitionAlloc/Skia branches are disabled by the matching wrapper.",
+      "toolchainIncludes": [
+        "emscripten.h (provided by Emscripten)"
+      ],
+      "disabledConditionalIncludes": {
+        "PDF_USE_PARTITION_ALLOC": [
+          "partition_alloc/buildflags.h",
+          "partition_alloc/pointers/raw_ptr.h"
+        ],
+        "PDF_USE_SKIA": [
+          "third_party/skia/include/core/SkRefCnt.h"
+        ]
+      }
+    },
+    {
+      "component": "wasm-bindgen-0.2.126-source-inputs",
+      "archive": "upstream-sources/wasm-bindgen-0.2.126-source-inputs.tar.gz",
+      "sha256": "e494430b5e37cd5e9392cbc7b32bb1e434c857bfcdeb9edfc1dfc24a4dab8cf1",
+      "bytes": 1290766,
+      "sourceFileCount": 685,
+      "sourceURL": "https://crates.io/crates/wasm-bindgen/0.2.126",
+      "verification": "Published wasm-bindgen crate matches registry SHA-256; each supplemental crate matches its published Cargo.lock checksum. Actual binary producer version matches; original qcms compilation lock not established."
+    },
+    {
+      "component": "rust-src-1.97.1",
+      "archive": "upstream-sources/rust-src-1.97.1-source.tar.gz",
+      "sha256": "d21a0010b88024a4b7b025194daaad4048fce92219c9192fd64ea2bf671c1a37",
+      "bytes": 8909278,
+      "sourceFileCount": 3572,
+      "sourceURL": "https://static.rust-lang.org/dist/rust-src-1.97.1.tar.xz",
+      "downloadSHA256": "e9a1e616d04c6845895c827a178b9227f7c7199f3f4a80af81ab3aff7b80156b",
+      "verification": "Complete official Rust source component, verified against official download SHA-256; original file bytes retained while repacking gzip. Version/commit match qcms WASM producer metadata; includes standard-library sources, vendored dlmalloc0.2.13 and licenses."
     }
   ],
   "bundledSourceFiles": [
@@ -586,14 +605,14 @@
     },
     {
       "file": "PDFJS_BUILD.md",
-      "bytes": 5578,
-      "sha256": "e1df4be22dc3e720dc59dc3ad9ddcf288fd34040185e5f58c2b79f72f67c6039",
+      "bytes": 6090,
+      "sha256": "6945eeb65450d4e7fedd32d5e326631f0ce29a54a6ec08fe18d206501f638103",
       "verification": "Source build documentation/task; static review only, no dependency rebuild performed."
     },
     {
       "file": "build-support/pdfjs-library-task.mjs",
-      "bytes": 1078,
-      "sha256": "1a59efc39d0b4ab4ce8fac78b3602210b361dc2baa5a20b06e3ab2312eb276e3",
+      "bytes": 1126,
+      "sha256": "6d5ebd8fc2dc719fe0eb3044044c165d12fbb7d10d7beabfd7c336270daac992",
       "verification": "Source build documentation/task; static review only, no dependency rebuild performed."
     },
     {
@@ -620,5 +639,24 @@
       "sha256": "5f0d5197d2b5d91f41de43143b0be42fb55515bc2b894f2a9b62de9f7056c0f8",
       "verification": "Byte-identical PDFKit MIT license at 83f5f7243172a017adcf6a7faa5547c55982c57b for the copied WinAnsiCharNames table."
     }
-  ]
+  ],
+  "pdfjsDistribution": {
+    "version": "6.4.299",
+    "releaseURL": "https://github.com/mozilla/pdf.js/releases/tag/v6.4.299",
+    "publishedAt": "2026-10-03T16:40:51Z",
+    "gitRevision": "d0991a0d53f3bb3a7307e3b83f279c1d117aafb3",
+    "packageURL": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-6.4.299.tgz",
+    "packageIntegrity": "sha512-AVl138zALtfaAPvADulE0PZThbYzCBS79nL4pOSL/6Sm/4AH5A21BD9VHt97OlCuzJuCpmeZtAtkinisF4Vb1g==",
+    "packageSHA256": "86269b40170eb41740ea05ad2102d71d33de4f122b34eb2f478be0ea7779c415",
+    "advisoryURL": "https://github.com/mozilla/pdf.js/security/advisories/GHSA-hq66-cqwq-w95j",
+    "firstPatchedVersion": "6.2.108",
+    "patchedTagAncestryVerified": true,
+    "verificationDate": "2026-10-27",
+    "runtimePackageMembersVerified": 201,
+    "excludedViewerScriptingAssets": [
+      "wasm/quickjs-eval.js",
+      "wasm/quickjs-eval.wasm"
+    ],
+    "sourceRebuildPerformed": false
+  }
 }

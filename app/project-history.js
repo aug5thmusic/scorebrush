@@ -10,7 +10,7 @@ import {approvedRenderings} from './finished-pdf.js';
 import {ensureDataDirectory,readDataDirectory} from './project-directory.js';
 import {validPdfName} from './pdf-output-names.js';
 
-export const HISTORY_FILE='History.json',HISTORY_SCHEMA='scorebrush-project-history',HISTORY_VERSION=2;
+export const HISTORY_FILE='History.json',HISTORY_SCHEMA='scorebrush-project-history',HISTORY_VERSION=3;
 const RECEIPT='history-index.json',HASH=/^[a-f0-9]{64}$/;
 const fail=message=>{throw new Error('Project history: '+message);};
 const parsed=new WeakMap();
@@ -23,7 +23,7 @@ const roles=['source','rendered','ly'],inputPaths={source:'source-original.pdf',
 const refId=hash=>'sha256:'+hash;
 
 export async function buildProjectHistory(snapshot,{objectRoot='.scorebrush/recovery/objects/',pdfVersions=[],version=HISTORY_VERSION}={}){
-  if(![1,HISTORY_VERSION].includes(version))fail('unsupported research index version.');
+  if(![1,2,HISTORY_VERSION].includes(version))fail('unsupported research index version.');
   if(!snapshot||!['.scorebrush/recovery/objects/','workspace-history/recovery/objects/'].includes(objectRoot))fail('a committed project and safe object root are required.');
   for(const version of pdfVersions){
     const safePath=path=>path==null||typeof path==='string'&&path.startsWith('Versions/')&&validPdfName(path.slice(9),version.number);
@@ -159,10 +159,11 @@ export async function buildProjectHistory(snapshot,{objectRoot='.scorebrush/reco
   const byId=new Map(revisions.map(r=>[r.id,r]));
   const events=revisions.filter(r=>['durable-edit','completed-review'].includes(r.kind)).map(r=>{
     const parent=byId.get(r.parentEventId),before=revisionStates.get(r.parentEventId)?.review.findings,after=revisionStates.get(r.id).review.findings;
+    const beforeById=before&&new Map(before.map(finding=>[finding.id,finding])),afterById=new Map(after.map(finding=>[finding.id,finding]));
     const changes=before?{
-      added:after.filter(f=>!before.some(p=>p.id===f.id)).map(f=>f.id),
-      deleted:before.filter(f=>!after.some(p=>p.id===f.id)).map(f=>f.id),
-      modified:after.filter(f=>before.some(p=>p.id===f.id&&canonical(p)!==canonical(f))).map(f=>f.id)
+      added:after.filter(f=>!beforeById.has(f.id)).map(f=>f.id),
+      deleted:before.filter(f=>!afterById.has(f.id)).map(f=>f.id),
+      modified:after.filter(f=>beforeById.has(f.id)&&canonical(beforeById.get(f.id))!==canonical(f)).map(f=>f.id)
     }:null;
     if(r.parentEventId&&!parent)r.missingData.push('parent-event-not-retained');
     return {id:r.id,...(r.kind==='completed-review'?{kind:r.kind,resultingSnapshotId:r.resultingSnapshotId,resultingRenderSha256:r.resultingRenderSha256}:{}),revisionId:r.revisionId,workspaceId:r.workspaceId,parentEventId:r.parentEventId,capturedAt:r.capturedAt,coverage:r.coverage,assetIds:r.assetIds,changes,...(version===1?{decisionStates:r.reportedFindings}:{metadata:r.metadata})};
@@ -180,7 +181,7 @@ export async function buildProjectHistory(snapshot,{objectRoot='.scorebrush/reco
       current:{recordId:current.id,revisionId:current.revisionId,snapshotId:current.snapshotId,workspaceId:current.workspaceId},
       latestApprovedRevision:latest?{recordId:latest.recordId,revisionId:latest.revisionId,workspaceId:latest.workspaceId,snapshotId:latest.snapshotId,renderSha256:latest.sha256,codeSha256:latest.approval.review.files.ly.sha256,approvedAt:approvedRecord?.history&&approvedRecord.historyCoverage!=='legacy-retained-state'?latest.finishedAt:null,orderingEvidenceAt:latest.finishedAt}:null},
     committedGeneration:{id:manifest.id,sequence:manifest.sequence},assets:[...assets.values()],objects:[...objectIndex.values()],revisions,events,handoffs,
-    coverage:{guarantee:'Every captured file revision and every changed correction/review state at a durable save boundary from journalVersion 1 onward; immutable retained states, not a keystroke log.',
+    coverage:{guarantee:version<3?'Every captured file revision and every changed correction/review state at a durable save boundary from journalVersion 1 onward; immutable retained states, not a keystroke log.':'Retained revision/checkpoint evidence and the current saved review only. Intermediate edits may have been overwritten; this is not a complete action or durable-save history.',
       excludes:['External edits never loaded by ScoreBrush','External LilyPond includes not selected as the supplied .ly file','Keystrokes between durable saves','View opening, scrolling and unchanged saves'],
       pageMapping:'Source and rendered page identities are independent. No musical matches are inferred.',
       initialFilenameKnown:manifest.initialTranscriptionFilename!=null,legacyGaps:gaps,missingData:manifest.legacyGaps??[]}};

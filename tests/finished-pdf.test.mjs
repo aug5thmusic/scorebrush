@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
-import {syncFinishedPDF,syncCurrentFinishedPDF,approvedRenderings,checkFinishedPDF} from '../app/finished-pdf.js';
+import {syncFinishedPDF,syncCurrentFinishedPDF,approvedRenderings,checkFinishedPDF,checkCurrentFinishedPublication} from '../app/finished-pdf.js';
 import {identify,newReview,sha256} from '../app/model.js';
 import {stateHash} from '../app/completion-model.js';
 import {ensureDataDirectory} from '../app/project-directory.js';
@@ -64,6 +64,26 @@ test('newer working files, unchecked decisions, rejected corrections and new unr
     const s=await snapshot([{value:'first'},spec]);await syncFinishedPDF(root,s);assert.equal((await result(root)).text,'%PDF exact first');
   }
   await syncFinishedPDF(root,await snapshot([{value:'first'},{value:'next'}]));assert.deepEqual(await result(root),{names:[named(2)],text:'%PDF exact next'});
+});
+test('current approval checks reject a stale finished receipt after publication fails before recording intent',async()=>{
+  const root=new Dir(),old=await snapshot([{value:'first'}]),next=await snapshot([{value:'first'},{value:'next'}]);
+  await syncFinishedPDF(root,old);
+  const latest=next.manifest.records.at(-1),checkpoint={manifest:{...next.manifest,current:latest.id,records:[latest]},objects:new Map(Object.values(latest.payloads).map(info=>[info.sha256,next.objects.get(info.sha256)]))};
+  const data=await root.getDirectoryHandle('.scorebrush'),receipt=await data.getFileHandle('finished-pdf.json'),create=receipt.createWritable;
+  receipt.createWritable=async()=>{throw Error('SYNTHETIC failure before approval intent');};
+  await assert.rejects(syncFinishedPDF(root,next),/SYNTHETIC failure before approval intent/);receipt.createWritable=create;
+  assert.equal((await checkFinishedPDF(root,projectId)).state,'match','the earlier approved copy is still valid historical output');
+  const checked=await checkCurrentFinishedPublication(root,checkpoint);
+  assert.equal(checked.state,'unavailable');assert.equal(checked.reason,'different-approval');assert.match(checked.message,/earlier approved revision/);
+  assert.equal((await result(root)).text,'%PDF exact first','checking never replaces the earlier approved file');
+  await syncFinishedPDF(root,next);
+  assert.equal((await checkCurrentFinishedPublication(root,checkpoint)).sha256,latest.payloads['rendered-original.pdf'].sha256,'explicit retry publishes the exact current approval');
+});
+test('unfinished current work needs no publication and checks no historical objects or files',async()=>{
+  const s=await snapshot([{value:'older'},{value:'current',status:'unchecked'}]),current=s.manifest.records.at(-1);
+  const checkpoint={manifest:{...s.manifest,current:current.id},objects:new Map(Object.values(current.payloads).map(info=>[info.sha256,s.objects.get(info.sha256)]))};
+  const noDisk=new Proxy({},{get(){throw Error('Unfinished review must not access publication files');}});
+  assert.deepEqual(await checkCurrentFinishedPublication(noDisk,checkpoint),{state:'not-required'});
 });
 test('a blank or unchecked project has no finished PDF; ordinary notes do not promote an older approved rendering',async()=>{
   const root=new Dir(),s=await snapshot([{status:'unchecked'}]);assert.equal((await syncFinishedPDF(root,s)).ready,false);assert(!root.children.has('Latest'));

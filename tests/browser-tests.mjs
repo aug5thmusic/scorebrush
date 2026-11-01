@@ -58,7 +58,7 @@ async function runSuite(context,url,name){
   await record(page,name);await page.close();
 }
 try{
-  for(const name of selected)assert([...defaultSuites,'races','pdf-names','clean-resume','startup-typography','startup-storage','findings-editor','review-note-enter','integrated-audit','save-progress','fast-resume','startup-core','current-review','current-handoff','current-completion','current-baseline','current-baseline-legacy','storage-evidence','storage-inputs','large-history','pdf-decoder','project-source','interrupted-save','interrupted-archive','folder-settings','recovery-edit'].includes(name),'Unknown browser suite: '+name);
+  for(const name of selected)assert(['research-export','folder-access-denial',...defaultSuites,'races','pdf-names','clean-resume','startup-typography','startup-storage','findings-editor','review-note-enter','integrated-audit','save-progress','fast-resume','startup-core','current-review','current-handoff','current-completion','current-baseline','current-baseline-legacy','storage-evidence','storage-inputs','capture-core','capture-adapter','capture-publication','capture-reader-2e','capture-repair','capture-pool','large-history','pdf-decoder','project-source','interrupted-save','interrupted-archive','folder-settings','recovery-edit','export-limits','finished-resume','pending-baseline','project-isolation','rendering-limits','zero-finding-recovery','recent-project-selection'].includes(name),'Unknown browser suite: '+name);
   {
     const server=await serve(root);services.push(server);
     const context=await browser.newContext({viewport:{width:1440,height:1000}});
@@ -78,6 +78,15 @@ try{
       results.push(await runComparison({browser,serve,evidence,root}));
     }
   }
+  if(included('research-export')){const {runResearchExport}=await import('./research-export-browser-tests.mjs');results.push(await runResearchExport({browser,serve,evidence,root}));}
+  if(included('folder-access-denial')){const {runFolderAccessDenial}=await import('./folder-access-denial-browser-tests.mjs');results.push(await runFolderAccessDenial({browser,serve,evidence,root}));}
+  if(included('export-limits')){const {runExportLimits}=await import('./export-limits-browser-tests.mjs');results.push(await runExportLimits({browser,serve,evidence,root}));}
+  if(included('rendering-limits')){const {runRenderingLimits}=await import('./rendering-limits-browser-tests.mjs');results.push(await runRenderingLimits({browser,serve,evidence,root}));}
+  if(included('finished-resume')){const {runFinishedResume}=await import('./finished-resume-browser-tests.mjs');results.push(await runFinishedResume({browser,serve,evidence,root}));}
+  if(included('pending-baseline')){const {runPendingBaseline}=await import('./pending-baseline-browser-tests.mjs');results.push(await runPendingBaseline({browser,serve,evidence,root}));}
+  if(included('project-isolation')){const {runProjectIsolation}=await import('./project-isolation-browser-tests.mjs');results.push(await runProjectIsolation({browser,serve,evidence,root}));}
+  if(included('recent-project-selection')){const {runRecentProjectSelection}=await import('./recent-project-selection-browser-tests.mjs');results.push(await runRecentProjectSelection({browser,serve,evidence,root}));}
+  if(included('zero-finding-recovery')){const {runZeroFindingRecovery}=await import('./zero-finding-recovery-browser-tests.mjs');results.push(await runZeroFindingRecovery({browser,serve,evidence,root}));}
   if(included('empty-evidence')){const {runEmptyEvidence}=await import('./empty-evidence-browser-tests.mjs');results.push(await runEmptyEvidence({browser,serve,evidence,root}));}
   if(included('load-progress')){const {runLoadProgress}=await import('./load-progress-browser-tests.mjs');results.push(await runLoadProgress({browser,serve,evidence,root}));}
   if(included('startup-paint')){const {runStartupPaint}=await import('./startup-paint-browser-tests.mjs');results.push(await runStartupPaint({browser,serve,evidence,root}));}
@@ -85,6 +94,12 @@ try{
   if(included('annotation-undo')){const {runAnnotationUndo}=await import('./annotation-undo-browser-tests.mjs');results.push(await runAnnotationUndo({browser,serve,evidence,root}));}
   if(included('storage-evidence')){const {runStorageEvidence}=await import('./storage-evidence-browser-tests.mjs');results.push(await runStorageEvidence({browser,serve,evidence,root}));}
   if(included('storage-inputs')){const {runStorageInputs}=await import('./storage-inputs-browser-tests.mjs');results.push(await runStorageInputs({browser,serve,evidence,root}));}
+  if(included('capture-core')){const {runCaptureCore}=await import('./capture-core-browser-tests.mjs');results.push(await runCaptureCore({browser,serve,evidence,root}));}
+  if(included('capture-adapter')){const {runCaptureAdapter}=await import('./capture-adapter-browser-tests.mjs');results.push(await runCaptureAdapter({browser,serve,evidence,root}));}
+  if(included('capture-publication')){const {runCapturePublication}=await import('./capture-publication-browser-tests.mjs');results.push(await runCapturePublication({browser,serve,evidence,root}));}
+  if(included('capture-reader-2e')){const {runCaptureReader2E}=await import('./capture-reader-2e-browser-tests.mjs');results.push(await runCaptureReader2E({browser,serve,evidence,root}));}
+  if(included('capture-repair')){const {runCaptureRepair}=await import('./capture-repair-browser-tests.mjs');results.push(await runCaptureRepair({browser,serve,evidence,root}));}
+  if(included('capture-pool')){const {runCapturePool}=await import('./capture-pool-browser-tests.mjs');results.push(await runCapturePool({browser,serve,evidence,root}));}
   if(included('pdf-decoder')){const {runPdfDecoder}=await import('./pdf-decoder-browser-tests.mjs');results.push(await runPdfDecoder({browser,serve,evidence,root}));}
   if(included('folder-location')){const {runFolderLocation}=await import('./folder-location-browser-tests.mjs');results.push(await runFolderLocation({browser,serve,evidence,root}));}
   if(included('revision-views')){const {runRevisionViews}=await import('./revision-views-browser-tests.mjs');results.push(await runRevisionViews({browser,serve,evidence,root}));}

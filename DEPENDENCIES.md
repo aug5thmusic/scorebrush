@@ -95,3 +95,26 @@ build tools are distinct from application source and embedded runtime code.
 Preserve the notices required by each component's terms and supply exact matching
 source with any binary distribution. Hash verification establishes integrity, not
 source completeness or legal certification.
+
+## PDF.js security update (October 27, 2026)
+
+The local candidate uses PDF.js **6.4.299**, official stable release dated
+October 3, 2026, at `d0991a0d53f3bb3a7307e3b83f279c1d117aafb3`.
+The official npm package integrity matches its published SHA-512; library,
+worker, CMaps, standard fonts, ICC profile and decoder assets were updated
+together. The source and runtime inventories record the matching bytes.
+
+[GHSA-hq66-cqwq-w95j / CVE-2026-16633](https://github.com/mozilla/pdf.js/security/advisories/GHSA-hq66-cqwq-w95j)
+identifies 6.2.108 as patched; the selected 6.4.299 release descends from that
+tag. ScoreBrush retains its CSP and disabled evaluation. It uses the PDF.js
+library, with no viewer scripting manager or QuickJS viewer assets. The
+upstream library-only resource task supports omitting QuickJS.
+
+The bundled decoder sources and licenses were refreshed too, including the
+actual qcms WASM producer versions. Its wrapper Cargo.lock predates the
+shipped wasm-bindgen; matching 0.2.126 source inputs and Rust 1.97.1 sources
+are supplied separately. See `third-party/PDFJS_BUILD.md` for the documented
+original-toolchain/rebuild limits. This update does not establish readiness
+for public distribution; the exact candidate requires its recorded regression
+and release acceptance checks. Existing distributed 0.1.0 builds remain
+affected by the advisory until replaced by a verified published update.

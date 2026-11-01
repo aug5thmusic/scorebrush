@@ -1,13 +1,14 @@
-# Installing ScoreBrush 0.1.0
+# Installing ScoreBrush
+
+**Version 0.1.1 (2026-11-01).** Verify the Windows ZIP and its matching source
+archive against the release checksums before use.
 
 [Back to README](../README.md) · [User guide](USER_GUIDE.md)
 
 ## Download and requirements
 
-The intended publication links are the
-[Windows x64 download](https://github.com/aug5thmusic/scorebrush/releases/download/v0.1.0/ScoreBrush-0.1.0-Windows-x64.zip)
-and the [v0.1.0 release page](https://github.com/aug5thmusic/scorebrush/releases/tag/v0.1.0).
-They target the planned release and may not be available yet.
+Get the [Windows x64 download](https://github.com/aug5thmusic/scorebrush/releases/download/v0.1.1/ScoreBrush-0.1.1-Windows-x64.zip)
+and matching source from the [v0.1.1 release page](https://github.com/aug5thmusic/scorebrush/releases/tag/v0.1.1).
 
 ScoreBrush supports Windows 10 22H2 x64 and Windows 11 x64 with .NET Framework
 4.8 or compatible 4.8.1. It uses Microsoft's shared **Stable Evergreen WebView2
@@ -15,8 +16,8 @@ Runtime**. Python, Node.js and a local web server are not needed to run it.
 
 The release attachments are:
 
-- `ScoreBrush-0.1.0-Windows-x64.zip`: the Windows application.
-- `scorebrush-0.1.0.zip`: its exact matching source archive.
+- `ScoreBrush-0.1.1-Windows-x64.zip`: the Windows application.
+- `scorebrush-0.1.1.zip`: its exact matching source archive.
 - `SHA256SUMS.txt`: checksums for those two attached ZIPs.
 
 GitHub's automatic **Source code** archives are separately generated containers;
@@ -30,8 +31,8 @@ Download the ZIPs and `SHA256SUMS.txt` from the official release. Open PowerShel
 in the directory containing your downloads and calculate their SHA-256 hashes:
 
 ```powershell
-Get-FileHash -LiteralPath '.\ScoreBrush-0.1.0-Windows-x64.zip' -Algorithm SHA256
-Get-FileHash -LiteralPath '.\scorebrush-0.1.0.zip' -Algorithm SHA256
+Get-FileHash -LiteralPath '.\ScoreBrush-0.1.1-Windows-x64.zip' -Algorithm SHA256
+Get-FileHash -LiteralPath '.\scorebrush-0.1.1.zip' -Algorithm SHA256
 ```
 
 Compare each `Hash` with the matching filename in `SHA256SUMS.txt`. A match

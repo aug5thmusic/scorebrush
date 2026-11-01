@@ -24,10 +24,11 @@ async function connectionHead(entry){
   return {key:'head:'+await sha256(new TextEncoder().encode(canonical(identity))),entry};
 }
 async function hydrateConnection(value){
-  if(!value)return value;const next={...value};
+  if(!value)return value;const next={...value},heads=new Map();
   for(const field of ['head','pendingHead'])if(value[field+'Ref']){
     const key=value[field+'Ref'];if(!/^head:[a-f0-9]{64}$/.test(key))fail('Saved folder handoff reference is invalid.');
-    const row=await settingsOperation('readonly',store=>store.get(key));
+    if(!heads.has(key))heads.set(key,await settingsOperation('readonly',store=>store.get(key)));
+    const row=heads.get(key);
     if(!row||row.kind!=='folder-head'||row.version!==1||!row.entry||row.entry.kind!=='task'||!(row.entry.payloads instanceof Map))fail('Saved folder handoff is missing. Existing project files were kept.');
     next[field]=row.entry;delete next[field+'Ref'];
   }return next;
@@ -35,6 +36,12 @@ async function hydrateConnection(value){
 async function writeConnection(value,{activate=true}={}){
   value.connectionId??=crypto.randomUUID();const next={...value},heads=[];
   for(const field of ['head','pendingHead']){
+    // Lightweight recent-project rows retain immutable references. Metadata
+    // updates must not erase those references merely because bytes are deferred.
+    if(!Object.hasOwn(value,field)&&value[field+'Ref']){
+      if(!/^head:[a-f0-9]{64}$/.test(value[field+'Ref']))fail('Saved folder handoff reference is invalid.');
+      continue;
+    }
     delete next[field+'Ref'];if(!value[field])continue;
     const head=await connectionHead(value[field]);heads.push(head);next[field+'Ref']=head.key;delete next[field];
   }
@@ -57,6 +64,7 @@ async function settings(mode,value){
   if(mode==='list'){
     const rows=(await settingsOperation('readonly',store=>store.getAll(globalThis.IDBKeyRange?.bound('folder:','folder:\uffff')))).filter(item=>item?.directory&&item?.paths);
     const legacy=await settingsOperation('readonly',store=>store.get('current'));if(legacy?.directory&&!rows.some(row=>row.connectionId===legacy.connectionId))rows.push(legacy);
+    if(value?.hydrate===false)return rows;
     const result=[];for(const row of rows){try{result.push(await hydrateConnection(row));}catch(error){if(!(error instanceof FolderHandoffError))throw error;result.push({...row,folderStorageError:error.message});}}return result;
   }
   if(mode==='readonly'){const saved=await settingsOperation('readonly',store=>store.get('current'));return hydrateConnection(saved?.connectionId&&!saved.directory?await settingsOperation('readonly',store=>store.get('folder:'+saved.connectionId)):saved);}
@@ -66,6 +74,7 @@ export const readFolderSettings=async({existingOnly=false}={})=>{
   if(existingOnly&&!database&&!await databaseMayExist('private-score-desk-folders-v1')&&!database)return undefined;
   return settings('readonly');
 };
-export const listFolderSettings=()=>settings('list');
+export const listFolderSettings=({hydrate=true}={})=>settings('list',{hydrate});
+export const hydrateFolderConnection=value=>hydrateConnection(value);
 export const saveFolderSettings=value=>settings('readwrite',value);
 export const saveFolderConnection=value=>writeConnection(value,{activate:false});

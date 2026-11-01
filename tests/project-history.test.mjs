@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
 import {identify,newReview,sha256} from '../app/model.js';
 import {makeRecovery} from '../app/export.js';
 import {addCompletionHistory} from '../app/completion.js';
@@ -12,6 +13,7 @@ import {buildProjectHistory,syncProjectHistory,readPublishedHistory,checkProject
 import {canonical} from '../app/completion-model.js';
 import {ensureDataDirectory} from '../app/project-directory.js';
 import {HistoryDirectory,put,get} from './history-memory.mjs';
+import {prepareResearchExport} from '../app/research-export.js';
 globalThis.crypto??=webcrypto;
 Object.defineProperty(globalThis,'navigator',{value:{locks:{request:async(_key,fn)=>fn()}},configurable:true});
 const projectId=crypto.randomUUID(),pages=[{page:1,view:[0,0,600,800],rotation:0,userUnit:1}];
@@ -59,6 +61,16 @@ test('repeated historical references validate each exact annotation object once 
   assert.equal(canonical(legacy.revisions.find(r=>r.kind==='historical-task-evidence').annotations),canonical(JSON.parse(await s.objects.get(bundle.payloads['annotations.json'].sha256).text())));
 });
 
+test('large event diffs preserve finding order and distinguish added, deleted and modified IDs',async()=>{
+  const before=Array.from({length:2000},(_,i)=>({...note('Original '+i),id:'finding-'+i,number:i+1}));
+  const after=before.map((finding,i)=>i%5===0?{...finding,id:'replacement-'+i}:i%2===0?{...finding,comment:'Changed '+i}:finding).reverse();
+  const retained=await snapshot([{findings:before},{findings:after}]),index=await buildProjectHistory(retained),changes=index.events.at(-1).changes;
+  assert.equal(changes.added.length,400);assert.deepEqual(changes.added.slice(0,3),['replacement-1995','replacement-1990','replacement-1985']);assert.equal(changes.added.at(-1),'replacement-0');
+  assert.equal(changes.deleted.length,400);assert.deepEqual(changes.deleted.slice(0,3),['finding-0','finding-5','finding-10']);assert.equal(changes.deleted.at(-1),'finding-1995');
+  assert.equal(changes.modified.length,800);assert.deepEqual(changes.modified.slice(0,3),['finding-1998','finding-1996','finding-1994']);assert.equal(changes.modified.at(-1),'finding-2');
+  assert(!changes.modified.includes('finding-1999'),'reordering alone is not an edit');
+});
+
 test('history validation never trusts a shared snapshot ID or a previous build',async()=>{
   const {s,task,bundle}=await withRepeatedHistoricalReview();await buildProjectHistory(s);
   const invalid=JSON.parse(await s.objects.get(bundle.payloads['annotations.json'].sha256).text());invalid.findings[0].bounds=[0,0,0,0];
@@ -76,7 +88,7 @@ test('research JSON retains exact three-file identities, text/type/deletion stat
   const index=await buildProjectHistory(s,{pdfVersions:[{number:1,path:'Versions/0001 - Initial transcription.pdf',sha256:(await fileInfo(rendered)).sha256,size:rendered.size}]});
   assert.equal(index.project.id,projectId);assert.equal(index.project.initialTranscriptionFilename,'Initial transcription.pdf');
   assert.equal(index.events.length,4);assert.equal(index.project.latestApprovedRevision,null);
-  assert.equal(index.version,2);const reviews=await Promise.all(index.revisions.map(r=>resolveMetadata(index,s,r.metadata.annotations)));
+  assert.equal(index.version,3);const reviews=await Promise.all(index.revisions.map(r=>resolveMetadata(index,s,r.metadata.annotations)));
   assert.equal(reviews[0].findings[0].comment,'Exact original text');assert.equal(reviews[1].findings[0].type,'source_footnote');
   assert.deepEqual(index.events[2].changes.deleted,['stable-note']);
   assert.deepEqual(reviews[0].findings[0].strokes,[note('').strokes[0]]);
@@ -148,7 +160,7 @@ test('an owned v1 index upgrades once in the same generation and then passes cle
     current:{...info,generation:s.manifest.id,sequence:s.manifest.sequence,presentationSha256:(await fileInfo(new Blob([canonical([])]))).sha256},pending:null}));
   assert.equal((await readPublishedHistory(root,projectId)).version,1);assert.equal(await checkProjectHistory(root,s,[]),false);
   const before=JSON.stringify(s.manifest),objects=new Map(s.objects);
-  assert.equal((await syncProjectHistory(root,s)).written,1);assert.equal((await readPublishedHistory(root,projectId)).version,2);
+  assert.equal((await syncProjectHistory(root,s)).written,1);assert.equal((await readPublishedHistory(root,projectId)).version,3);
   assert.equal(await checkProjectHistory(root,s,[]),true);const writes=root.control.writes.length;
   assert.equal((await syncProjectHistory(root,s)).written,0);assert.equal(root.control.writes.length,writes);
   assert.equal(JSON.stringify(s.manifest),before);assert.deepEqual(s.objects,objects);
@@ -171,7 +183,7 @@ test('928 captured states retain exact metadata references in a compact research
 test('completed-review events expose their resulting rendering identities without changing legacy event output',async()=>{
   const s=await snapshot([{text:'SYNTHETIC existing legacy edit'},{text:'SYNTHETIC completed review'}]),legacy=await buildProjectHistory(s),completed=s.manifest.records[1];
   completed.resultingSnapshotId='a'.repeat(64);completed.resultingRenderSha256='b'.repeat(64);
-  for(const version of [1,2]){
+  for(const version of [1,2,3]){
     const index=await buildProjectHistory(s,{version}),revision=index.revisions.find(r=>r.id===completed.id),event=index.events.find(r=>r.id===completed.id);
     assert.equal(revision.kind,'completed-review');assert.equal(event.kind,'completed-review');assert.equal(event.resultingSnapshotId,completed.resultingSnapshotId);assert.equal(event.resultingRenderSha256,completed.resultingRenderSha256);assert.equal(revision.resultingSnapshotId,event.resultingSnapshotId);
     assert.equal(index.events[0].resultingSnapshotId,undefined);assert.equal(index.revisions[0].kind,'durable-edit');
@@ -180,4 +192,29 @@ test('completed-review events expose their resulting rendering identities withou
   for(const mutate of [r=>delete r.resultingSnapshotId,r=>r.resultingRenderSha256='invalid',r=>r.resultingRenderSha256=r.payloads['rendered-original.pdf'].sha256]){
     const invalid={...s,manifest:structuredClone(s.manifest)};mutate(invalid.manifest.records[1]);await assert.rejects(buildProjectHistory(invalid),/completed-review rendering identity/);
   }
+});
+
+test('new history corrects coverage while version 2 retains its exact compatibility representation',async()=>{
+  const s=await snapshot([{}]),current=await buildProjectHistory(s),legacy=await buildProjectHistory(s,{version:2});
+  assert.equal(current.version,3);assert.match(current.coverage.guarantee,/Intermediate edits may have been overwritten/);
+  const equivalent=structuredClone(current);equivalent.version=2;equivalent.coverage.guarantee=legacy.coverage.guarantee;
+  assert.match(legacy.coverage.guarantee,/every changed correction\/review state at a durable save boundary/);
+  assert.deepEqual(equivalent,legacy,'no other v2 representation changes');
+});
+
+test('research export uses exact allowlisted snapshot bytes and rejects incomplete, changed or cancelled input',async()=>{
+  const s=await snapshot([{text:'SYNTHETIC retained annotation'}]),index=await buildProjectHistory(s,{objectRoot:'workspace-history/recovery/objects/'});
+  const payloads=new Map([['History.json',json(index)],['profile-secret.txt',new Blob(['DO NOT EXPORT'])],...index.objects.map(o=>[o.path,s.objects.get(o.sha256)])]);
+  const notices=new Map(await Promise.all(['LICENSE','LICENSING.md'].map(async name=>[name,new Blob([await readFile(new URL('../'+name,import.meta.url))])])));
+  const result=await prepareResearchExport({payloads},{readerText:'# SYNTHETIC reader fixture',notices});
+  assert(!result.payloads.has('profile-secret.txt'));assert.equal(result.payloads.size,index.objects.length+7);
+  const manifest=JSON.parse(await result.payloads.get('research-manifest.json').text());assert.equal(manifest.version,1);
+  for(const item of manifest.files)assert.deepEqual({size:item.size,sha256:item.sha256},await fileInfo(result.payloads.get(item.path)));
+  const episodes=(await result.payloads.get('episodes.jsonl').text()).trim().split('\n').map(JSON.parse);
+  assert(episodes.every(e=>e.humanJudgment===null&&e.issuedFinding===null&&e.retainedFinding.comment==='SYNTHETIC retained annotation'&&e.missing.includes('response-package-unavailable')));
+  const changed=new Map(payloads);changed.set(index.objects[0].path,new Blob(['CORRUPTION']));
+  await assert.rejects(prepareResearchExport({payloads:changed},{readerText:''}),/missing or changed/);
+  await assert.rejects(prepareResearchExport({payloads,warning:'Recovery conflict'},{readerText:''}),/complete validated/);
+  const missing=new Map(payloads);missing.delete('History.json');await assert.rejects(prepareResearchExport({payloads:missing},{readerText:''}),/complete validated/);
+  const cancelled=new AbortController();cancelled.abort();await assert.rejects(prepareResearchExport({payloads},{signal:cancelled.signal,readerText:''}),/abort/i);
 });

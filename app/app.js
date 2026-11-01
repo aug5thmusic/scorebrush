@@ -6,9 +6,12 @@ import {currentAssociation} from './comparison-model.js';
 import {findingRows,findingRowKey,sortFindingRows} from './findings-model.js';
 import * as pdfjs from './vendor/pdf.mjs';
 import {pdfResourceUrls,pdfWorkerUrl} from './pdf-resources.js';
+import {pdfDisplayScale,pdfRenderPlan,sizePdfCanvas} from './pdf-rendering.js';
 import {clone,annotationSnapshot,identify,newReview,bounds,paint,hitFinding,validateReview,roles,PALETTE,FINDING_TYPES,findingType,findingTypeLabel,isComment} from './model.js';
 import {getSaved,getSavedState,putSaved,listSaved,recoveryIdentity,StorageConflictError} from './storage.js';
 import {makeRecovery,makePackage,zipFiles} from './export.js';
+import {projectWorkspaceId,addWorkspaceIdentity} from './project-identity.js';
+import {validateExportPayloads,validateExportZip} from './package-limits.js';
 import {installHandoff} from './handoff-ui.js';
 import {retain,retained} from './handoff-store.js';
 import {makeReturnedBackup,restoreInstructionHistory} from './returned.js';
@@ -49,9 +52,9 @@ const dialogOpen=()=>Boolean(document.querySelector('dialog[open]'));
 const canEdit=()=>Boolean(review&&!busy&&!comparison&&!dialogOpen());
 let revisionId=crypto.randomUUID(),completions=[];
 let projectContext={};
-const recordKey=()=>returned?.id??review?.snapshotId;
-const stamp=()=>({snapshotId:review?.snapshotId,workspaceId:returned?.id??null,revision});
-const matchesStamp=value=>value?.snapshotId===review?.snapshotId&&(value?.workspaceId??null)===(returned?.id??null)&&value?.revision===revision;
+const recordKey=()=>returned?.id??projectContext.workspaceId??review?.snapshotId;
+const stamp=()=>({snapshotId:review?.snapshotId,workspaceId:recordKey()??null,revision});
+const matchesStamp=value=>value?.snapshotId===review?.snapshotId&&(value?.workspaceId??null)===(recordKey()??null)&&value?.revision===revision;
 const unprotectedWork=()=>Boolean(review&&(dirty||saveFailed)&&!matchesStamp(recoveryStamp));
 for(const entry of PALETTE)$('highlightColor').add(new Option(entry.name,entry.color));
 const views=Object.fromEntries(['source','rendered'].map(kind=>[kind,{kind,doc:null,page:1,viewport:null,serial:0,task:null}]));
@@ -120,7 +123,7 @@ async function openPdfPair(nextFiles){
   // both loads on failure before abandoning the newly opened documents.
   const results=await Promise.allSettled(['source','rendered'].map(role=>openPdf(nextFiles[role].blob)));
   const failure=results.find(result=>result.status==='rejected');
-  if(failure){await Promise.allSettled(results.filter(result=>result.status==='fulfilled').map(result=>result.value.destroy()));throw failure.reason;}
+  if(failure){await Promise.allSettled(results.filter(result=>result.status==='fulfilled').map(result=>result.value.loadingTask.destroy()));throw failure.reason;}
   return results.map(result=>result.value);
 }
 async function openSnapshot(nextFiles=null,targetId=null,imported=null,seed=null,force=false,completionBundle=null,lineage={}){
@@ -141,8 +144,11 @@ async function openSnapshot(nextFiles=null,targetId=null,imported=null,seed=null
     // over their paths. Keep owned bytes for previous-render comparisons.
     nextFiles=Object.fromEntries(await Promise.all(roles.map(async role=>{const entry=nextFiles[role];return [role,entry.blob instanceof File?{...entry,blob:new Blob([await entry.blob.arrayBuffer()],{type:entry.blob.type})}:entry];})));
     const {identity,snapshotId}=await identify(nextFiles);
-    if(!force&&!seed&&!returned&&!stored?.returned&&!imported&&snapshotId===review?.snapshotId){message('Reopened the current snapshot: latest edits and undo history kept.');return;}
-    if(!stored)try{stored=await getSaved(seed?.returned.id??snapshotId);}catch(error){readFailure=error;}
+    const requestedProjectId=lineage.newProject?crypto.randomUUID():lineage.projectId;
+    const requestedWorkspaceId=lineage.workspaceId??(requestedProjectId?projectWorkspaceId(requestedProjectId,snapshotId):snapshotId);
+    if(!force&&!seed&&!returned&&!stored?.returned&&!imported&&requestedWorkspaceId===recordKey()){message('Reopened the current snapshot: latest edits and undo history kept.');return;}
+    if(!stored)try{stored=await getSaved(seed?.returned.id??requestedWorkspaceId);}catch(error){readFailure=error;}
+    if(stored&&requestedProjectId&&stored.projectId&&stored.projectId!==requestedProjectId)throw new Error('This backup belongs to a different project that has identical inputs. Neither project was changed. Restore it in a separate browser profile.');
     // Renaming byte-identical picker inputs resumes the retained snapshot,
     // including the original names recorded in its exact annotation evidence.
     const retainedReview=!imported&&!seed&&Boolean(stored);
@@ -156,10 +162,12 @@ async function openSnapshot(nextFiles=null,targetId=null,imported=null,seed=null
     const bundle=completionBundle??seed?.completionBundle,nextCompletions=mergeCompletions(stored?.completions,bundle?.records);
     const nextRevisionId=bundle?.revisionId??((!imported||seed&&stored)?stored?.revisionId:null)??crypto.randomUUID();
     const issued=seed?await retained(nextReturned.taskId):null;
-    const parentWorkspaceId=stored?.parentWorkspaceId??lineage.parentWorkspaceId??nextReturned?.recoveredFrom??issued?.task.parent?.workspaceId??issued?.task.baseline.snapshotId??null;
+    const parentWorkspaceId=stored?.parentWorkspaceId??lineage.parentWorkspaceId??nextReturned?.recoveredFrom??issued?.task.workspace?.id??issued?.task.parent?.workspaceId??issued?.task.baseline.snapshotId??null;
     const parent=parentWorkspaceId?await getSaved(parentWorkspaceId):null;
+    const declaredProject=requestedProjectId??issued?.task.workspace?.projectId;
+    if(declaredProject&&parent?.projectId&&parent.projectId!==declaredProject)throw new Error('This package links to a different local project. Neither project was changed.');
     const initialName=stored&&Object.hasOwn(stored,'initialTranscriptionFilename')?stored.initialTranscriptionFilename:Object.hasOwn(lineage,'initialTranscriptionFilename')?lineage.initialTranscriptionFilename:parent&&Object.hasOwn(parent,'initialTranscriptionFilename')?parent.initialTranscriptionFilename:seed?(issued?.task.version===1?issued.review.files.rendered.name:null):stored||imported?null:nextFiles.rendered.name;
-    const nextProject={projectId:stored?.projectId??lineage.projectId??parent?.projectId,
+    const nextProject={workspaceId:stored?.id??nextReturned?.id??requestedWorkspaceId,projectId:stored?.projectId??requestedProjectId??parent?.projectId??issued?.task.workspace?.projectId,
       initialTranscriptionFilename:initialName,pdfOutput:stored?.pdfOutput??parent?.pdfOutput??lineage.pdfOutput,parentWorkspaceId};
     // Portable revision metadata hashes exact annotation bytes, even when it
     // contains no legacy completion records. Reopening is not an annotation edit.
@@ -172,13 +180,13 @@ async function openSnapshot(nextFiles=null,targetId=null,imported=null,seed=null
     }
     if(imported&&readFailure)throw new Error('Local storage could not be read. The current review is unchanged. Download recovery and retry.');
     if(window.chrome?.webview&&imported&&stored&&(canonical(stored.review)!==canonical(nextReview)||bundle?.revisionId&&stored.revisionId!==bundle.revisionId))throw new Error('This backup differs from an existing desktop review of the same revision. Neither was replaced. Keep both backups and recover the other copy in a separate browser profile for comparison.');
-    if(imported&&!seed&&stored)await retain({id:crypto.randomUUID(),kind:'review-backup',createdAt:new Date().toISOString(),review:stored.review,files:stored.files});
+    if(imported&&!seed&&stored)await retain({id:crypto.randomUUID(),kind:'review-backup',projectId:stored.projectId,workspaceId:stored.id,initialTranscriptionFilename:stored.initialTranscriptionFilename,parentWorkspaceId:stored.parentWorkspaceId,createdAt:new Date().toISOString(),review:stored.review,files:stored.files});
     // A backup import must pass its global immutable-ID checks and CAS
     // before replacing the visible ordinary review, just like returned seeds.
-    if(bundle&&!seed)stored=await operations.putSaved({...nextProject,id:snapshotId,review:nextReview,files:nextFiles,returned:nextReturned,revisionId:nextRevisionId,completions:nextCompletions},stored?(stored.storageRevision??0):null);
+    if(bundle&&!seed)stored=await operations.putSaved({...nextProject,id:nextProject.workspaceId,review:nextReview,files:nextFiles,returned:nextReturned,revisionId:nextRevisionId,completions:nextCompletions},stored?(stored.storageRevision??0):null);
     await clearLeftDisplay();
-    if(comparison){views.rendered.doc=comparison.current;await comparison.previous.destroy();comparison=null;}
-    for(const v of Object.values(views)){v.serial++;v.task?.cancel();if(v.task)try{await v.task.promise;}catch{}await v.doc?.destroy();}
+    if(comparison){views.rendered.doc=comparison.current;await comparison.previous.loadingTask.destroy();comparison=null;}
+    for(const v of Object.values(views)){v.serial++;v.task?.cancel();if(v.task)try{await v.task.promise;}catch{}await v.doc?.loadingTask.destroy();}
     files=nextFiles;review=nextReview;returned=clone(nextReturned);revision++;dirty=restoredInstructions||(seed||bundle?false:Boolean(imported)||!stored);persistedRevision=stored?(stored.storageRevision??0):null;
     projectContext={...nextProject,projectId:stored?.projectId??nextProject.projectId};
     revisionId=stored?.returned&&!bundle?stored.revisionId??nextRevisionId:nextRevisionId;completions=mergeCompletions(stored?.completions,nextCompletions);
@@ -194,7 +202,7 @@ async function openSnapshot(nextFiles=null,targetId=null,imported=null,seed=null
     $('filesPanel').open=false;$('workspaceDialog').close();document.body.classList.add('review-open');setMode('navigate');renderFindings();await Promise.all(Object.values(views).map(renderPage));if(readFailure)storageFailure(readFailure);await saveNow();
     try{localStorage.setItem(activeReviewKey,recordKey());}catch{/* Review storage still works if preference storage is unavailable. */}
     message(returned?'Returned revision ready. Check each correction against the previous rendering; use Check printed source when needed.':imported?'Package opened. Exact inputs, comments, and marks restored; prior saved review retained.':stored?'Reopened the review for these exact file bytes.':'Ready. Draw a passage or choose New finding to type a correction.');
-  }catch(e){for(const doc of docs)if(doc!==views.source.doc&&doc!==views.rendered.doc)await doc.destroy();throw e;}
+  }catch(e){for(const doc of docs)if(doc!==views.source.doc&&doc!==views.rendered.doc)await doc.loadingTask.destroy();throw e;}
   finally{busy=false;controls();}
 }
 function cancelWheelZoom(v){cancelAnimationFrame(v.wheelFrame);v.wheelFrame=0;delete v.wheelZoom;}
@@ -207,13 +215,13 @@ async function renderPage(v,{wheelZoom}={}){
   const serial=++v.serial;v.viewport=null;$(`${v.kind}Paper`).setAttribute('aria-busy','true');document.dispatchEvent(new Event('score-desk-render'));
   let page;try{page=await v.doc.getPage(v.page);}catch(error){if(serial!==v.serial)return;throw error;}if(serial!==v.serial)return;
   const base=page.getViewport({scale:1}),z=$(`${v.kind}Zoom`).value;
-  const scale=z==='fit'?Math.max(.15,($(`${v.kind}Scroll`).clientWidth-38)/base.width):Number(z);
-  const viewport=page.getViewport({scale});
+  const plan=pdfRenderPlan(base,{zoom:z,availableWidth:$(`${v.kind}Scroll`).clientWidth-38,devicePixelRatio:window.devicePixelRatio});
+  const viewport=page.getViewport({scale:plan.scale});
   v.task?.cancel();if(v.task)try{await v.task.promise;}catch{}
   if(serial!==v.serial)return;
-  const canvas=$(`${v.kind}Canvas`),paper=$(`${v.kind}Paper`),dpr=Math.min(window.devicePixelRatio||1,3);
-  canvas.width=Math.ceil(viewport.width*dpr);canvas.height=Math.ceil(viewport.height*dpr);canvas.style.width=`${viewport.width}px`;canvas.style.height=`${viewport.height}px`;paper.style.width=`${viewport.width}px`;paper.style.height=`${viewport.height}px`;paper.hidden=false;
-  if(v.kind==='rendered'){$('overlay').width=canvas.width;$('overlay').height=canvas.height;$('overlay').style.width=canvas.style.width;$('overlay').style.height=canvas.style.height;}
+  const canvas=$(`${v.kind}Canvas`),paper=$(`${v.kind}Paper`),dpr=plan.pixelRatio;
+  sizePdfCanvas(canvas,plan);canvas.style.width=`${viewport.width}px`;canvas.style.height=`${viewport.height}px`;paper.style.width=`${viewport.width}px`;paper.style.height=`${viewport.height}px`;paper.hidden=false;
+  if(v.kind==='rendered'){sizePdfCanvas($('overlay'),plan);$('overlay').style.width=canvas.style.width;$('overlay').style.height=canvas.style.height;}
   v.task=page.render({canvasContext:canvas.getContext('2d'),viewport,transform:[dpr,0,0,dpr,0,0]});
   try{await v.task.promise;}catch(e){if(e.name!=='RenderingCancelledException'&&serial===v.serial)throw e;return;}
   if(serial!==v.serial)return;v.viewport=viewport;v.dpr=dpr;$(`${v.kind}Paper`).setAttribute('aria-busy','false');drawOverlay();drawHistorical();clearMessage('render-'+v.kind);
@@ -257,7 +265,7 @@ async function clearLeftDisplay(){
   const display=leftDisplay;leftDisplay=null;
   views.source.serial++;views.source.task?.cancel();if(views.source.task)try{await views.source.task.promise;}catch{}
   views.source.doc=display.source;
-  for(const doc of display.documents.values())await doc.destroy();
+  for(const doc of display.documents.values())await doc.loadingTask.destroy();
   $('historicalOverlay').hidden=true;
 }
 async function showHistorical(asset,position,showOthers=false){
@@ -267,7 +275,7 @@ async function showHistorical(asset,position,showOthers=false){
   let doc=display.source;
   if(asset){
     doc=display.documents.get(asset.sha256);
-    if(!doc){doc=await openPdf(asset.blob);if(leftDisplay!==display){await doc.destroy();return;}display.documents.set(asset.sha256,doc);}
+    if(!doc){doc=await openPdf(asset.blob);if(leftDisplay!==display){await doc.loadingTask.destroy();return;}display.documents.set(asset.sha256,doc);}
   }
   v.serial++;v.task?.cancel();if(v.task)try{await v.task.promise;}catch{}
   if(leftDisplay!==display)return;
@@ -278,11 +286,11 @@ async function showHistorical(asset,position,showOthers=false){
 function drawHistorical(){
   const canvas=$('historicalOverlay'),v=views.source,asset=leftDisplay?.asset;
   canvas.hidden=!asset||$('hide').checked;canvas.dataset.findingIds='';if(canvas.hidden||!v.viewport){canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);return;}
-  canvas.width=$('sourceCanvas').width;canvas.height=$('sourceCanvas').height;canvas.style.width=$('sourceCanvas').style.width;canvas.style.height=$('sourceCanvas').style.height;
+  sizePdfCanvas(canvas,{canvasWidth:$('sourceCanvas').width,canvasHeight:$('sourceCanvas').height});canvas.style.width=$('sourceCanvas').style.width;canvas.style.height=$('sourceCanvas').style.height;
   const ctx=canvas.getContext('2d');ctx.setTransform(v.dpr,0,0,v.dpr,0,0);
   const selected=asset.marks.filter(f=>f.id===asset.selectedId);
   if(leftDisplay.showOthers){ctx.globalAlpha=.3;paint(ctx,v.viewport,asset.marks.filter(f=>f.id!==asset.selectedId),v.page);ctx.globalAlpha=1;}
-  for(const f of selected)if(f.page===v.page&&f.bounds){const [x0,y0,x1,y1]=v.viewport.convertToViewportRectangle(f.bounds);ctx.strokeStyle='#443dd0';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.strokeRect(Math.min(x0,x1)-5,Math.min(y0,y1)-5,Math.abs(x1-x0)+10,Math.abs(y1-y0)+10);}
+  for(const f of selected)if(f.page===v.page&&f.bounds){const [x0,y0,x1,y1]=[...v.viewport.convertToViewportPoint(...f.bounds.slice(0,2)),...v.viewport.convertToViewportPoint(...f.bounds.slice(2))];ctx.strokeStyle='#443dd0';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.strokeRect(Math.min(x0,x1)-5,Math.min(y0,y1)-5,Math.abs(x1-x0)+10,Math.abs(y1-y0)+10);}
   ctx.setLineDash([]);paint(ctx,v.viewport,selected,v.page);
   canvas.dataset.findingIds=(leftDisplay.showOthers?asset.marks:selected).filter(f=>f.page===v.page).map(f=>f.id).join(',');
 }
@@ -291,7 +299,7 @@ function drawOverlay(){
   if(comparison||!review||!v.viewport||$('hide').checked)return;
   ctx.setTransform(v.dpr,0,0,v.dpr,0,0);
   if(findingFocus?.isCurrent()&&findingFocus.expires>performance.now()){
-    const box=v.viewport.convertToViewportRectangle(findingFocus.bounds),x=Math.min(box[0],box[2])-5,y=Math.min(box[1],box[3])-5,w=Math.abs(box[2]-box[0])+10,h=Math.abs(box[3]-box[1])+10;
+    const box=[...v.viewport.convertToViewportPoint(...findingFocus.bounds.slice(0,2)),...v.viewport.convertToViewportPoint(...findingFocus.bounds.slice(2))],x=Math.min(box[0],box[2])-5,y=Math.min(box[1],box[3])-5,w=Math.abs(box[2]-box[0])+10,h=Math.abs(box[3]-box[1])+10;
     ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.strokeRect(x,y,w,h);ctx.strokeStyle='#443dd0';ctx.lineWidth=2;ctx.strokeRect(x,y,w,h);ctx.restore();c.dataset.focusedFindingId=findingFocus.id;
   }
   paint(ctx,v.viewport,review.findings,v.page,gesture?.stroke);
@@ -382,7 +390,7 @@ async function selectFinding(id){
   const isCurrent=()=>sequence===findingFocusSequence&&matchesStamp(selected)&&active===id&&v.doc===doc&&v.page===f.page&&$('renderedZoom').value===zoom&&canEdit();
   findingFocus={id,bounds:box,isCurrent,expires:0,scroll:[scroll.scrollLeft,scroll.scrollTop]};
   const point=[(box[0]+box[2])/2,(box[1]+box[3])/2],vp=v.viewport;
-  const fitChanged=zoom==='fit'&&vp&&Math.abs(vp.scale-Math.max(.15,(scroll.clientWidth-38)/(vp.width/vp.scale)))>.001;
+  const fitChanged=zoom==='fit'&&vp&&Math.abs(vp.scale-pdfDisplayScale({width:vp.width/vp.scale,height:vp.height/vp.scale},'fit',scroll.clientWidth-38))>.001;
   if(pageChanged||!vp||fitChanged){try{await positionView('rendered',{page:f.page,point},{isCurrent});}catch(error){if(isCurrent())throw error;}}
   else centerView(v,point);
   if(!isCurrent())return;
@@ -644,12 +652,12 @@ for(const kind of ['source','rendered']){
     if(busy||dialogOpen()||!event.deltaY)return;
     const pending=v.wheelZoom,viewport=pending?.viewport??v.viewport;
     if(!viewport)return;
-    const current=viewport.scale,direction=Math.sign(event.deltaY);
+    const current=zoom.value==='fit'?viewport.scale:Number(zoom.value),direction=Math.sign(event.deltaY);
     const next=direction<0?levels.find(level=>level>current+.001):levels.findLast(level=>level<current-.001);
     // Crossing either numeric limit returns to Fit width. When fitting is already
     // outside the numeric range, only a wheel step toward that range leaves Fit.
     if(next===undefined&&zoom.value==='fit')return;
-    const nextScale=next??Math.max(.15,(scroll.clientWidth-38)/(viewport.width/viewport.scale));
+    const nextScale=pdfDisplayScale({width:viewport.width/viewport.scale,height:viewport.height/viewport.scale},next??'fit',scroll.clientWidth-38);
     if(kind==='rendered')cancelFindingFocus();
     cancelGesture();delete v.position;
     // Reuse a pending zoom's passage even when its canvas has not finished.
@@ -727,10 +735,10 @@ $('reopen').onclick=guard(async()=>{if(!$('saved').value)throw new Error('Choose
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('emergency').onclick=guard(async()=>{
   if(!review)throw new Error('Load input files first.');if(busy||recoveryJob)return;
-  const job={...stamp()},snapshot=clone(review),snapshotFiles=files,round=clone(returned);recoveryJob=job;noticeLayout();
+  const job={...stamp()},snapshot=clone(review),snapshotFiles=files,round=clone(returned),identityContext={...projectContext,workspaceId:recordKey(),review:snapshot};recoveryJob=job;noticeLayout();
   try{
     const savedCompletions=clone(completions),savedRevisionId=revisionId;
-    message('Preparing immediate recovery ZIP…');let payloads=round?await makeReturnedBackup(snapshot,snapshotFiles,round):await operations.makeRecovery(snapshot,snapshotFiles);payloads=await addCompletionHistory(payloads,snapshot,round,savedRevisionId,savedCompletions);const zip=await operations.zipFiles(payloads);
+    message('Preparing immediate recovery ZIP…');let payloads=round?await makeReturnedBackup(snapshot,snapshotFiles,round):await operations.makeRecovery(snapshot,snapshotFiles);validateExportPayloads(payloads);payloads=await addCompletionHistory(payloads,snapshot,round,savedRevisionId,savedCompletions,{preserveRevision:true});payloads=await addWorkspaceIdentity(payloads,identityContext);validateExportPayloads(payloads);const zip=validateExportZip(await operations.zipFiles(payloads));
     await operations.download(zip,'scorebrush-recovery.zip');
     if(matchesStamp(job)){recoveryStamp=job;message('Recovery ZIP download requested for the current revision. Confirm it finished before closing this tab.');}
     else {message('Recovery ZIP contains an earlier revision. Newer edits are still unprotected; save them or download another recovery ZIP.',true,'recovery');return false;}
@@ -755,13 +763,13 @@ const appApi={
   associatedFindingId:id=>review?currentAssociation(returned,id,review)?.id??null:null,
   leaveComparison:async()=>{await clearLeftDisplay();await positionView('source',{page:1,zoom:'fit'});appApi.corrections.close();},
   capture:()=>({...projectContext,review:clone(review),files,returned:clone(returned),active,doc:comparison?.current??views.rendered.doc,comparison:Boolean(comparison),stamp:stamp(),revisionId,workspaceId:recordKey(),persistedRevision,completions:clone(completions)}),matches:matchesStamp,status:sessionStatus,message,clearMessage,
-  openImported:parsed=>openSnapshot(parsed.files,null,parsed.review,null,false,parsed.completionBundle),
+  openImported:parsed=>openSnapshot(parsed.files,null,parsed.review,null,false,parsed.completionBundle,parsed.workspace?{...parsed.workspace,workspaceId:parsed.workspace.id}:{}),
   openFiles:(nextFiles,lineage={})=>openSnapshot(nextFiles,null,null,null,false,null,lineage),
   openSaved:(id,{force=false}={})=>openSnapshot(null,id,null,null,force),
   showFindings:()=>setComments(true),toggleFindings:()=>workspaceLayout.toggleFindings(),
   clearFindingSelection:()=>{endAnnotationEdit({flush:true});active=null;prepared=false;pendingReportedId=null;setMode('navigate');renderFindings();drawOverlay();},
   refreshControls:()=>{cancelGesture();controls();},
-  openReturned:seed=>openSnapshot(seed.files,null,seed.review,seed),
+  openReturned:seed=>openSnapshot(seed.files,null,seed.review,seed,false,null,seed.lineage??{}),
   reloadReturned:()=>openSnapshot(null,recordKey(),null,null,true),
   updateReturned:mutate=>{if(!canEdit()||!returned)return;mutate(returned);changed({draft:true,typing:true});},
   newRegion:reportedId=>newFinding(reportedId),
@@ -782,11 +790,11 @@ const appApi={
   compare:async blob=>{
     if(!review||busy)return;busy=true;controls();cancelGesture();try{
       if(blob&&!comparison){const previous=await openPdf(blob);setMode('navigate');comparison={current:views.rendered.doc,previous,currentPage:views.rendered.page,currentScroll:[$('renderedScroll').scrollLeft,$('renderedScroll').scrollTop]};views.rendered.doc=previous;views.rendered.page=1;}
-      else if(!blob&&comparison){views.rendered.restoreScroll=comparison.currentScroll;views.rendered.doc=comparison.current;views.rendered.page=comparison.currentPage;await comparison.previous.destroy();comparison=null;}
+      else if(!blob&&comparison){views.rendered.restoreScroll=comparison.currentScroll;views.rendered.doc=comparison.current;views.rendered.page=comparison.currentPage;await comparison.previous.loadingTask.destroy();comparison=null;}
       $('renderedPage').max=views.rendered.doc.numPages;$('renderedPage').value=views.rendered.page;$('renderedCount').textContent=`/ ${views.rendered.doc.numPages}`;await renderPage(views.rendered);if(views.rendered.restoreScroll){$('renderedScroll').scrollTo(...views.rendered.restoreScroll);delete views.rendered.restoreScroll;}
     }finally{busy=false;controls();}
   },
-  inspectPdf:async nextFiles=>{const docs=[];try{docs.push(...await openPdfPair(nextFiles));const pages=[];for(let i=1;i<=docs[1].numPages;i++){const p=await docs[1].getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}return pages;}finally{for(const doc of docs)await doc.destroy();}},
+  inspectPdf:async nextFiles=>{const docs=[];try{docs.push(...await openPdfPair(nextFiles));const pages=[];for(let i=1;i<=docs[1].numPages;i++){const p=await docs[1].getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}return pages;}finally{for(const doc of docs)await doc.loadingTask.destroy();}},
   lock:async action=>{if(busy)throw new Error('Wait for the current operation to finish.');busy=true;cancelGesture();controls();try{return await action();}finally{busy=false;controls();}},
   flush:async()=>{await saveNow();if(unprotectedWork())throw new Error('The latest review could not be saved. Protect your edits with a recovery ZIP before finishing.');},
   packageMaker:(...args)=>operations.makePackage(...args),zip:(...args)=>operations.zipFiles(...args),download:(...args)=>operations.download(...args)

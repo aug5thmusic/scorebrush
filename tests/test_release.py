@@ -51,7 +51,11 @@ class ReleaseTests(unittest.TestCase):
    self.assertEqual(m['runtime'],release.LOCK)
    self.assertFalse(any(n.startswith('ScoreBrush/runtime/') for n in names))
    self.assertEqual(hashlib.sha256(z.read('ScoreBrush/setup/MicrosoftEdgeWebview2Setup.exe')).hexdigest(),release.BOOTSTRAPPER['sha256'])
-   self.assertFalse(any(n.lower().endswith(('python.exe','pythonw.exe','node.exe','stop scorebrush.exe','.py','.cmd')) for n in names))
+   self.assertFalse(any(n.lower().endswith(('python.exe','pythonw.exe','node.exe','stop scorebrush.exe','.cmd')) for n in names))
+   # One inert reader resource is exported for researchers; the host never runs Python.
+   self.assertEqual({n for n in names if n.lower().endswith('.py')},{'ScoreBrush/app/research-reader.py'})
+   for name in ['LICENSE','LICENSING.md']:
+    self.assertEqual(z.read('ScoreBrush/app/licenses/scorebrush/'+name),(ROOT/name).read_bytes())
  def test_gui_host_repeatable_and_manifest(self):
   first=release.launcher_bytes(ROOT);self.assertEqual(first,release.launcher_bytes(ROOT))
   with ZipFile(ZIP) as z:self.assertEqual(first,z.read('ScoreBrush/ScoreBrush.exe'))

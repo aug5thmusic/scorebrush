@@ -16,7 +16,7 @@ export async function comparisonFixture({types={},sourcePdf='source.pdf'}={}){
   const pages=[];for(let i=1;i<=doc.numPages;i++){const p=await doc.getPage(i);pages.push({page:i,view:[...p.view],rotation:p.rotate,userUnit:p.userUnit});}
   const review=newReview(identity,snapshotId,pages);
   review.findings=[1,2,3,4].map((number)=>{const strokes=number===2?[]:[{points:[[70,650],[150,650]],width:12,color:'#ffd34d',opacity:.35}];return {id:'comparison-'+number,number,page:number,color:'#ffd34d',comment:number===4?Array(12).fill('SIMULATED longer report: compare the printed notes and articulation in this passage.').join('\n'):number===1?'SIMULATED report: The last note in bar 2 should be E. Keep the printed slur.':number===2?'SIMULATED text-only comment':'SIMULATED marked problem '+number,state:'open',strokes,bounds:bounds(strokes)};});for(const finding of review.findings)if(types[finding.number])finding.type=types[finding.number];review.nextNumber=5;
-  const issued=await makeTask(review,files,doc,'page',()=>{});await doc.destroy();await retain(issued);
+  const issued=await makeTask(review,files,doc,'page',()=>{});await doc.loadingTask.destroy();await retain(issued);
   const pdf=await PDFLib.PDFDocument.load(await (await fixtureBlob('rendered.pdf')).arrayBuffer());pdf.getPages()[0].setCropBox(12,24,580,740);pdf.getPages()[0].setRotation(PDFLib.degrees(90));
   const after=new Blob([await pdf.save()],{type:'application/pdf'}),code=new Blob(['% SYNTHETIC changed code; no music\n']);
   const template=JSON.parse(await issued.payloads.get('response-template.json').text());
@@ -40,7 +40,7 @@ export async function manyProblemsFixture(issuedId){
   const descriptions=['Check the violin accidental against the print','The piano slur ends one note too early','Check the rest duration in the lower staff','The printed dynamic is missing'];
   review.findings=Array.from({length:100},(_,i)=>({id:`large-problem-${i+1}`,number:i+1,page:i%4+1,color:'#ffd34d',comment:`SIMULATED bar ${i+1}: ${descriptions[i%4]}.`,state:'open',strokes:[],bounds:null}));review.nextNumber=101;
   const doc=await pdfjs.getDocument({data:new Uint8Array(await previous.files.rendered.blob.arrayBuffer()),isEvalSupported:false}).promise;
-  const issued=await makeTask(review,previous.files,doc,'page',()=>{});await doc.destroy();await retain(issued);
+  const issued=await makeTask(review,previous.files,doc,'page',()=>{});await doc.loadingTask.destroy();await retain(issued);
   const response=JSON.parse(await issued.payloads.get('response-template.json').text());response.code={status:'unchanged',path:null};response.rendering={status:'pending',path:null,producer:'SIMULATED scale fixture',compiler:null};response.files={};response.results.forEach(result=>{result.status='unchanged_with_reason';result.explanation='SIMULATED navigation fixture; no musical review.';});
   const entry=responseRevision(await readResponse(await zipFiles(new Map([['response.json',json(response)]])),async()=>issued));await retain(entry);await handoff.returnedUI.open(entry);
 }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
-  "reviewDate": "2026-10-26",
+  "reviewDate": "2026-10-27",
   "status": "reviewed-source-and-notices-complete",
   "binaryPublicationReady": false,
   "runtimeIntegrity": "Bundled PDF.js, PDF-lib and JSZip bytes matched the official versioned npm distributions; see vendor-inventory.json.",
-  "includedSourceArchives": 27,
-  "scope": "Technical source and notice preparation; not legal certification. No runtime library version or implementation update.",
+  "includedSourceArchives": 29,
+  "scope": "Technical source and notice preparation refreshed for PDF.js6.4.299; not legal certification. Runtime upgrade regression evidence is maintained separately.",
   "embeddedSourceMap": {
     "file": "bundled-sources/pdf-lib.min.js.map",
     "sourceContents": 179,
@@ -166,55 +166,61 @@
     }
   ],
   "pdfjsLibrary": {
-    "version": "5.6.205",
-    "release": "ada343803945d977b9a1be8e72184b0422f8e5d1",
-    "status": "source-input-gap-closed-static-review",
-    "releaseFilesVerifiedAgainstGitBlobs": 502,
-    "staticLibraryImportGraphFiles": 178,
+    "version": "6.4.299",
+    "release": "d0991a0d53f3bb3a7307e3b83f279c1d117aafb3",
+    "status": "source-inputs-reviewed-static-review",
+    "releaseFilesVerifiedAgainstGitBlobs": 520,
+    "staticLibraryImportGraphFiles": 182,
     "missingStaticImports": 0,
     "material": [
-      "upstream-sources/pdfjs-5.6.205-source.tar.gz",
-      "upstream-sources/pdfjs-5.6.205-library-inputs.tar.gz",
+      "upstream-sources/pdfjs-6.4.299-source.tar.gz",
+      "upstream-sources/pdfjs-6.4.299-library-inputs.tar.gz",
       "PDFJS_BUILD.md",
       "build-support/pdfjs-library-task.mjs"
     ],
+    "omitted": "Unshipped viewer, test corpus and QuickJS viewer scripting assets.",
     "rebuildPerformed": false
   },
   "decoderSources": [
     {
       "component": "OpenJPEG",
-      "version": "2.5.4",
-      "sourceRevision": "6c4a29b00211eb0430fa0e5e890f1ce5c80f409f",
-      "wrapperRevision": "b47d31b8355a3863ab37282ceeb5183f7ac2761c",
+      "version": "2.5.4 development revision",
+      "sourceRevision": "8314119b067c0fc77834731168daaebd379fdb12",
+      "wrapperRevision": "13eaf130b252d748560569fffb83fd9432597840",
+      "sourceFilesVerifiedAgainstGitBlobs": 468,
       "status": "source-patch-and-build-scripts-retained",
       "uncertainty": "Original Emscripten version/container digest unknown; no byte-identical rebuild."
     },
     {
       "component": "PDFium JBIG2/CCITT",
-      "sourceRevision": "0455e822ded1a5537d826703988e986a33d2d4a1",
-      "wrapperRevision": "1e945e7552561c9b45e6d2c7d1a359ea82afc5b7",
+      "sourceRevision": "bb1f9f71e7b15afdd5937adf8cfe5807522b882f",
+      "wrapperRevision": "15f6f9357c5e5e30285eb83aa08e5fe1a16ab77a",
+      "sourceFilesVerifiedAgainstGitBlobs": 99,
       "status": "source-and-build-scripts-retained",
-      "sourceFilesVerifiedAgainstGitBlobs": 100,
       "uncertainty": "Original Emscripten version/container digest unknown; no byte-identical rebuild."
     },
     {
       "component": "qcms",
       "version": "0.3.0",
-      "wrapperRevision": "fc23a407f1ed9ccfea15875d27e0936dcc798a1f",
-      "status": "source-lock-and-build-scripts-retained",
-      "verifiedRegistryCrates": 15,
+      "wrapperRevision": "2ae4ee72334782928210ba4050e3e77d9b2d35be",
+      "status": "source-lock-and-build-scripts-with-actual-producer-version-supplement-retained",
+      "verifiedCheckedInLockCrates": 15,
+      "supplementalActualVersionMaterial": [
+        "upstream-sources/wasm-bindgen-0.2.126-source-inputs.tar.gz",
+        "upstream-sources/rust-src-1.97.1-source.tar.gz"
+      ],
       "binaryProducerVersions": {
-        "rustc": "1.87.0 (17067e9ac 2025-05-09)",
-        "walrus": "0.23.3",
-        "wasm-bindgen": "0.2.100"
+        "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+        "walrus": "0.26.4",
+        "wasm-bindgen": "0.2.126"
       },
-      "uncertainty": "Original wasm-pack version/container digest unknown; upstream Dockerfile runs cargo update; no byte-identical rebuild."
+      "uncertainty": "Wrapper checked-in Cargo.lock retains wasm-bindgen0.2.100; not the binary compilation lock. Actual0.2.126 source and its published lock inputs supplied separately. Original wasm-pack/container digest and exact compilation lock unknown; upstream Dockerfile runs cargo update; no byte-identical rebuild."
     }
   ],
   "openItems": [],
   "reproducibilityLimits": [
     "PDF.js library task and source closure reviewed statically; no dependency installation or whole-library compilation performed.",
-    "Unknown original Emscripten/wasm-pack versions and byte-identical rebuilds are recorded separately from missing preferred source and notices.",
+    "Unknown original Emscripten/wasm-pack versions, qcms compilation lock and byte-identical rebuilds are recorded separately from retained source and notices. Actual qcms producer-version sources supplement its outdated checked-in lock.",
     "Unmodified general-purpose build tools are distinct from covered source and runtime code incorporated into output.",
     "standard-fonts data generation is byte-identical; original TypeScript 2.9.2/ES5 compiler output and whole PDF-lib build have not been reproduced. Its release-associated revision has no publisher gitHead/tag attestation."
   ],

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Auggie (@aug5thmusic).
 // Additional permissions: see LICENSING.md at the source root.
+import {addWorkspaceIdentity} from './project-identity.js';
 import {COMPLETION_EXTENSION,SCOPES,createCompletion,mergeCompletions,completionSummary,jsonBlob,stateHash,validateCompletionBundle} from './completion-model.js';
 import {makeReturnedBackup} from './returned.js';
 import {returnedHistory} from './storage.js';
@@ -19,7 +20,7 @@ export async function prepareBackup(scene,progress,packageMaker,{signal,lookup}=
   if(scene.returned)payloads=await makeReturnedBackup(scene.review,scene.files,scene.returned,payloads,{lookup});check();
   const manifest=JSON.parse(await payloads.get('manifest.json').text());manifest.kind='review-backup';delete manifest.completionId;payloads.set('manifest.json',jsonBlob(manifest));
   payloads=await addCompletionHistory(payloads,scene.review,scene.returned,scene.revisionId,scene.completions??[],{preserveRevision:true});check();
-  await seal(payloads,JSON.parse(await payloads.get('manifest.json').text()));check();
+  await addWorkspaceIdentity(payloads,scene);await seal(payloads,JSON.parse(await payloads.get('manifest.json').text()));check();
   if(payloads.size>LIMITS.count||[...payloads.values()].some(b=>b.size>LIMITS.file)||[...payloads.values()].reduce((n,b)=>n+b.size,0)>LIMITS.total)throw new Error('Backup exceeds the supported import size limits.');
   return {payloads};
 }

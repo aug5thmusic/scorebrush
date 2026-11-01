@@ -5,9 +5,10 @@
 // content-addressed assets are shared by three committed generations. Every
 // generation also carries all prior score revisions. Shared objects are never
 // collected online: Web Locks cannot exclude another browser profile's writer.
+import {addWorkspaceIdentity} from './project-identity.js';
 import {sha256,blobHash} from './model.js';
 import {readDataDirectory,ensureDataDirectory,DATA_DIRECTORY,LEGACY_DIRECTORY} from './project-directory.js';
-import {json,strictJSON,fileInfo,readPackagePayloads,hydrateTaskPayloads,readResponsePayloads,responseRevision,LIMITS} from './workflow.js';
+import {json,strictJSON,fileInfo,readPackagePayloads,hydrateTaskPayloads,readResponsePayloads,responseRevision,localTaskDelivery,LIMITS} from './workflow.js';
 import {makeRecovery} from './export.js';
 import {makeReturnedBackup,restoreReturnedBackup} from './returned.js';
 import {addCompletionHistory} from './completion.js';
@@ -16,6 +17,7 @@ import {retained,retainedList,retain} from './handoff-store.js';
 import {canonical,stateHash} from './completion-model.js';
 import {preparePdfOutput} from './pdf-versions.js';
 import {validatePdfOutput} from './pdf-output-names.js';
+import {retainedFolderDelivery} from './folder-task-delivery.js';
 
 const SCHEMA='private-score-desk-recovery', HASH=/^[a-f0-9]{64}$/, ID=/^[a-f0-9-]{36}$/,EVENT_ID=/^(returned|review)-event:[a-f0-9-]{36}$/;
 const matches=(pattern,value)=>typeof value==='string'&&pattern.test(value);
@@ -188,7 +190,7 @@ async function packageRecord(record){
   const key=record.id+':'+recoveryIdentity(record);if(packageCache.has(key))return packageCache.get(key);
   let payloads=await makeRecovery(record.review,record.files);if(record.returned)payloads=await makeReturnedBackup(record.review,record.files,record.returned,payloads);
   payloads=await addCompletionHistory(payloads,record.review,record.returned??null,record.revisionId,record.completions??[],{preserveRevision:true});
-  await capturedPackage(payloads,record);packageCache.clear();packageCache.set(key,payloads);return payloads;
+  await addWorkspaceIdentity(payloads,record);await capturedPackage(payloads,record);packageCache.clear();packageCache.set(key,payloads);return payloads;
 }
 // Traverse the current round's exact parent links. This migrates earlier browser
 // rounds on the next save without copying unrelated reviews of the same source.
@@ -198,8 +200,9 @@ async function lineage(current){
   // project/parent relationships join them; equal PDF bytes are not a lineage.
   for(const item of all)if(current.projectId&&item.projectId===current.projectId&&item.id!==current.id){result.set(item.id,item);pending.push(item);}
   while(pending.length){const r=pending.pop();let parent=r.parentWorkspaceId;
-    if(r.returned){const task=await retained(r.returned.taskId);if(!task)fail('A retained task needed by recovery is missing. Save a backup before continuing.');parent??=task.task.parent?.workspaceId??task.task.baseline.snapshotId;}
-    const match=byId.get(parent);if(match&&!result.has(match.id)){if(match.review.files.source.sha256!==current.review.files.source.sha256)fail('Recovery source lineage mismatch.');result.set(match.id,match);pending.push(match);}
+    if(r.returned){const task=await retained(r.returned.taskId);if(!task)fail('A retained task needed by recovery is missing. Save a backup before continuing.');parent??=task.task.workspace?.id??task.task.parent?.workspaceId??task.task.baseline.snapshotId;}
+    const match=byId.get(parent);if(match&&r.id.startsWith('project:')&&match.projectId!==r.projectId)fail('Recovery parent belongs to a different project. No project history was copied.');
+    if(match&&!result.has(match.id)){if(match.review.files.source.sha256!==current.review.files.source.sha256)fail('Recovery source lineage mismatch.');result.set(match.id,match);pending.push(match);}
   }
   // Hydrate input bytes and retained evidence only for this project's lineage.
   const related=[];for(const item of result.values())related.push(item!==current&&(item.inputFilesId||item.retainedEvidenceId)?await getSaved(item.id):item);
@@ -226,7 +229,7 @@ async function backfillLegacy(dir,previous,sourceSha256,knownCapture=async()=>fa
     const blob=entry.getFile?await entry.getFile():await read(objects,hash);if(!blob?.size||blob.size>LIMITS.json)return;
     if(!(await blob.slice(0,200).text()).includes('"score-desk-package"'))return;
     let manifest;try{manifest=strictJSON(await blob.text());}catch{return;}
-    if(manifest.schema!=='score-desk-package'||manifest.version!==1||manifest.inputs?.source?.sha256!==sourceSha256||!manifest.payloads||typeof manifest.payloads!=='object'||Array.isArray(manifest.payloads))return;
+    if(manifest.schema!=='score-desk-package'||![1,2].includes(manifest.version)||manifest.inputs?.source?.sha256!==sourceSha256||!manifest.payloads||typeof manifest.payloads!=='object'||Array.isArray(manifest.payloads))return;
     if(Object.keys(manifest.payloads).length>LIMITS.count||await blobHash(blob)!==hash)return;
     candidates[index]={hash,blob,manifest};
   },{isCurrent,onProgress,phase:'backfill',size:([hash])=>Math.min(sizes.get(hash)??0,LIMITS.json)});
@@ -290,7 +293,10 @@ export async function saveRecovery(directory,scene,paths,{expected=null,projectI
     const reserve=await objectBudget(dir,options);reserve();const objectDirectory=reserve.directory??await dir.getDirectoryHandle('objects',{create:true});
     const related=await lineage(currentRecord),events=[...(await workspaceHistories(related.map(record=>record.id))).values()].flat(),history=await retainedList();
     const snapshots=new Set([...records.values(),...related,...events].map(r=>r.snapshotId??r.review.snapshotId));
-    const backupCandidates=history.filter(e=>e.kind==='review-backup'&&e.review?.files.source.sha256===sourceSha256&&snapshots.has(e.review.snapshotId));
+    const workspaceIds=new Set(related.map(r=>r.id)),legacySnapshots=new Set(related.filter(r=>r.id===r.review.snapshotId).map(r=>r.review.snapshotId));
+    const belongs=e=>e.task?.workspace?e.task.workspace.projectId===currentRecord.projectId&&workspaceIds.has(e.task.workspace.id):e.projectId?e.projectId===currentRecord.projectId&&workspaceIds.has(e.workspaceId):legacySnapshots.has(e.review?.snapshotId);
+    const explicitTasks=new Set(related.filter(r=>r.returned).map(r=>r.returned.taskId));
+    const backupCandidates=history.filter(e=>e.kind==='review-backup'&&e.review?.files.source.sha256===sourceSha256&&snapshots.has(e.review.snapshotId)&&belongs(e));
     const preparedPackages=new Map(),captures=new Map();
     for(const record of [...related,...events,...backupCandidates])captures.set(canonical(captureIdentity(record)),record);
     async function preparedPackage(record){
@@ -328,7 +334,7 @@ export async function saveRecovery(directory,scene,paths,{expected=null,projectI
       if(!prior)inheritedEvidence.set(evidence.bundle.id,evidence);
     }
     const backups=backupCandidates.filter(e=>!legacyEvidence.some(b=>b.legacyRecordId===e.id));
-    const tasks=history.filter(e=>e.kind==='task'&&!e.task.shared&&e.review?.files.source.sha256===sourceSha256&&snapshots.has(e.review.snapshotId));if(head)tasks.push(head);
+    const tasks=history.filter(e=>e.kind==='task'&&!e.task.shared&&e.review?.files.source.sha256===sourceSha256&&snapshots.has(e.review.snapshotId)&&(belongs(e)||explicitTasks.has(e.id)));if(head)tasks.push(head);
     const handoffs=new Map((previous?.manifest.handoffs??[]).map(h=>[h.id,h]));
     // Keep the exact committed task packages through a fresh-folder/ZIP restore,
     // even when this profile already retained a validated folder delivery.
@@ -435,7 +441,7 @@ export async function decodeRecovery(snapshot,inspectPdf,{isCurrent=()=>true,onP
     if(!inspections.has(key))inspections.set(key,Promise.resolve().then(()=>inspect(files)));
     return structuredClone(await inspections.get(key));
   };
-  const records=[],entries=new Map(),entryVariants=[];let done=0;const total=(snapshot.manifest.handoffs?.length??0)+snapshot.manifest.records.length;
+  const records=[],entries=new Map(),entryVariants=[],declaredParents=[],projectIds=new Map();let done=0;const total=(snapshot.manifest.handoffs?.length??0)+snapshot.manifest.records.length;
   const decoding=item=>{fresh(isCurrent);context={generationId:snapshot.manifest.id,phase:'decode',recordId:item.id};onProgress({phase:'decode',done,total});};
   const decoded=()=>{fresh(isCurrent);onProgress({phase:'decode',done:++done,total});};
   const payloadsFor=item=>new Map(Object.entries(item.payloads).map(([path,info])=>[path,snapshot.objects.get(info.sha256)]));
@@ -455,8 +461,11 @@ export async function decodeRecovery(snapshot,inspectPdf,{isCurrent=()=>true,onP
         if(!prior)entries.set(entry.id,entry);else entryVariants.push(entry);
       }
     }
-    const history=item.history===true;if(history&&(!EVENT_ID.test(item.id)||item.id.startsWith('returned-event:')!==Boolean(round)||item.workspaceId!==(round?.id??parsed.review.snapshotId)||!Number.isSafeInteger(item.storageRevision)||item.storageRevision<1||typeof item.createdAt!=='string'||!Number.isFinite(Date.parse(item.createdAt))||item.parentHistoryId!==null&&!EVENT_ID.test(item.parentHistoryId)))fail('Invalid recovery decision history.');
-    if(parsed.review.files.source.sha256!==snapshot.manifest.sourceSha256||parsed.review.snapshotId!==item.snapshotId||parsed.completionBundle?.revisionId!==item.revisionId||!history&&item.id!==(round?.id??parsed.review.snapshotId)||round&&(!/^returned:[\w:-]{1,180}$/.test(round.id)))fail('Recovery project or revision identity differs.');
+    const workspaceId=round?.id??parsed.workspace?.id??parsed.review.snapshotId;
+    if(parsed.workspace){projectIds.set(item.id,parsed.workspace.projectId);if(parsed.workspace.parentWorkspaceId)declaredParents.push(parsed.workspace);}
+    if(parsed.workspace&&parsed.workspace.projectId!==(item.projectId??snapshot.manifest.projectId))fail('Recovery package project differs from its declared project.');
+    const history=item.history===true;if(history&&(!EVENT_ID.test(item.id)||item.id.startsWith('returned-event:')!==Boolean(round)||item.workspaceId!==workspaceId||!Number.isSafeInteger(item.storageRevision)||item.storageRevision<1||typeof item.createdAt!=='string'||!Number.isFinite(Date.parse(item.createdAt))||item.parentHistoryId!==null&&!EVENT_ID.test(item.parentHistoryId)))fail('Invalid recovery decision history.');
+    if(parsed.review.files.source.sha256!==snapshot.manifest.sourceSha256||parsed.review.snapshotId!==item.snapshotId||parsed.completionBundle?.revisionId!==item.revisionId||!history&&item.id!==workspaceId||round&&(!/^returned:[\w:-]{1,180}$/.test(round.id)))fail('Recovery project or revision identity differs.');
     if(!history&&(item.storageRevision!==undefined&&(!Number.isSafeInteger(item.storageRevision)||item.storageRevision<1)||[item.historyId,item.historyPredecessorId].some(id=>id!=null&&!EVENT_ID.test(id))||item.historyId!=null&&item.historyPredecessorId!=null))fail('Invalid recovery history position.');
     if(['resultingSnapshotId','resultingRenderSha256'].some(field=>item[field]!==undefined&&!matches(HASH,item[field]))||item.projectId!==undefined&&!ID.test(item.projectId)||item.journalVersion!==undefined&&item.journalVersion!==1||item.parentWorkspaceId!=null&&(typeof item.parentWorkspaceId!=='string'||item.parentWorkspaceId.length>200)||item.initialTranscriptionFilename!=null&&(typeof item.initialTranscriptionFilename!=='string'||item.initialTranscriptionFilename.length>1000)||item.historyCoverage!==undefined&&!['durable-save','legacy-retained-state'].includes(item.historyCoverage))fail('Invalid recovery journal metadata.');
     records.push({id:item.id,review:parsed.review,files:parsed.files,returned:round,revisionId:item.revisionId,completions:parsed.completionBundle.records,
@@ -464,6 +473,11 @@ export async function decodeRecovery(snapshot,inspectPdf,{isCurrent=()=>true,onP
       ...Object.fromEntries(['projectId','initialTranscriptionFilename','parentWorkspaceId','journalVersion','historyCoverage','resultingSnapshotId','resultingRenderSha256'].filter(k=>item[k]!==undefined).map(k=>[k,item[k]])),
       ...(!history?{projectId:item.projectId??snapshot.manifest.projectId,initialTranscriptionFilename:item.initialTranscriptionFilename??snapshot.manifest.initialTranscriptionFilename??null,...(snapshot.manifest.pdfOutput?{pdfOutput:snapshot.manifest.pdfOutput}:{}),...(item.id===snapshot.manifest.current&&snapshot.manifest.legacyEvidence?.length?{retainedLegacyEvidence:snapshot.manifest.legacyEvidence.map(bundle=>({bundle,payloads:payloadsFor(bundle)}))}:{})}:{}),
       ...(history?{kind:round?'returned-event':'review-event',workspaceId:item.workspaceId,historyId:item.id,storageRevision:item.storageRevision,createdAt:item.createdAt,parentHistoryId:item.parentHistoryId}:{storageRevision:item.storageRevision,historyId:item.historyId,historyPredecessorId:item.historyPredecessorId})});decoded();
+  }
+  const recoveredIds=new Set(records.filter(r=>!r.kind).map(r=>r.id));
+  for(const identity of declaredParents)if(!recoveredIds.has(identity.parentWorkspaceId)){
+    const localParent=await getSaved(identity.parentWorkspaceId);
+    if(localParent?.projectId&&localParent.projectId!==identity.projectId)fail('Recovery links to a different local project outside its retained history. Neither project was changed.');
   }
   for(const record of records.filter(r=>!r.kind)){
     fresh(isCurrent);context={generationId:snapshot.manifest.id,phase:'decode-history',recordId:record.id};
@@ -478,7 +492,7 @@ export async function decodeRecovery(snapshot,inspectPdf,{isCurrent=()=>true,onP
     if(record.historyId==null&&record.historyPredecessorId==null&&last){if(last.storageRevision===record.storageRevision&&recoveryIdentity(last)===recoveryIdentity(record))record.historyId=last.id;else record.historyPredecessorId=last.id;}
     record.historyId??=null;
   }
-  return {records,entries:[...entries.values()],entryVariants};
+  return {records,entries:[...entries.values()],entryVariants,projectIds};
   }catch(error){throw recoveryContext(error,context);}
 }
 export async function restoreRecovery(snapshot,inspectPdf,{allowLocal=false,isCurrent=()=>true,onProgress=()=>{}}={}){
@@ -486,7 +500,7 @@ export async function restoreRecovery(snapshot,inspectPdf,{allowLocal=false,isCu
   try{
   const decoded=await decodeRecovery(snapshot,inspectPdf,{isCurrent,onProgress}),missing=[];let checked=0;
   onProgress({phase:'reconcile',done:0,total:decoded.records.length});
-  for(const record of decoded.records){fresh(isCurrent);context={generationId:snapshot.manifest.id,phase:'reconcile',recordId:record.id};const local=await getSaved(record.id);if(local&&recoveryIdentity(local)!==recoveryIdentity(record)){if(!allowLocal)throw new RecoveryConflict();}else missing.push(record);onProgress({phase:'reconcile',done:++checked,total:decoded.records.length});}
+  for(const record of decoded.records){fresh(isCurrent);context={generationId:snapshot.manifest.id,phase:'reconcile',recordId:record.id};const local=await getSaved(record.id);if(local?.projectId&&decoded.projectIds.has(record.id)&&local.projectId!==decoded.projectIds.get(record.id))throw new RecoveryConflict();if(local&&recoveryIdentity(local)!==recoveryIdentity(record)){if(!allowLocal)throw new RecoveryConflict();}else missing.push(record);onProgress({phase:'reconcile',done:++checked,total:decoded.records.length});}
   context={generationId:snapshot.manifest.id,phase:'legacy-import'};
 
   // Reject inconsistent legacy imports before adding anything to either store.
@@ -505,9 +519,16 @@ export async function restoreRecovery(snapshot,inspectPdf,{allowLocal=false,isCu
     // Older profiles retained the actual folder delivery. Accept only a
     // byte-exact variant validated from this recovery, never overwrite it.
     if(!matches)for(const variant of decoded.entryVariants.filter(v=>v.id===entry.id))if(await sameEntry(existing,variant)){matches=true;break;}
+    // Some earlier saves archived the original task but retained its safe
+    // delivery projection locally, without a returned backup carrying that
+    // variant. Derive only the installed app's exact projection of the validated
+    // archive entry. Never normalize arbitrary local bytes into a match or
+    // replace either immutable package; the archive stays retained as evidence.
+    if(!matches&&entry.kind==='task'&&existing.kind==='task')try{matches=await sameEntry(existing,await localTaskDelivery(entry));}catch{/* An invalid projection cannot authorize a conflicting immutable ID. */}
+    if(!matches&&entry.kind==='task'&&existing.kind==='task')try{matches=await sameEntry(existing,await retainedFolderDelivery(entry,existing));}catch{/* Only the exact app-generated folder prefix and canonical inert path are admissible. */}
     if(!matches)throw new RecoveryConflict();onProgress({phase:'handoffs',done:++handoffs,total:decoded.entries.length});
   }
   fresh(isCurrent);context={generationId:snapshot.manifest.id,phase:'restore'};onProgress({phase:'restore',done:0,total:missing.length});
-  await restoreMissing(missing);onProgress({phase:'restore',done:missing.length,total:missing.length});return snapshot.manifest.current;
+  await restoreMissing(missing,{projectIds:decoded.projectIds});onProgress({phase:'restore',done:missing.length,total:missing.length});return snapshot.manifest.current;
   }catch(error){throw recoveryContext(error,context);}
 }

@@ -56,7 +56,7 @@ export async function followupTask(scene,context,progress,packageMaker,{lookup=r
   });
   for(const f of review.findings)if(!associated.has(f.id)&&(isComment(f)||f.state!=='resolved')){current.findings.push(clone(f));requests.push({id:f.id,number:f.number,page:f.page,comment:f.comment,...findingTypeFields(f),origin:{taskId:null,findingId:f.id,page:f.page,renderSha256:review.files.rendered.sha256,comment:f.comment},reviewer:{state:f.state,explanation:f.comment},instructionHistory:[],currentAnchor:{findingId:f.id,page:f.page,bounds:f.bounds,comment:f.comment},historicalContext:{page:f.page,renderSha256:review.files.rendered.sha256}});}
   if(!requests.length)throw new Error('There are no outstanding or new findings to send back.');
-  const task=await makeTask(current,files,doc,context,progress,packageMaker);task.task.version=2;task.task.findings=requests;task.task.parent={workspaceId:round.id,responseId:round.responseId,taskId:round.taskId,contentSnapshotId:round.contentSnapshotId};
+  const task=await makeTask(current,files,doc,context,progress,packageMaker,scene);task.task.version=2;task.task.findings=requests;task.task.parent={workspaceId:round.id,responseId:round.responseId,taskId:round.taskId,contentSnapshotId:round.contentSnapshotId};
   // Findings often share one exact historical review. Serialize its complete
   // geometry once for this task, rather than replacing the same payload with
   // an equal Blob for every finding. Never retain mutable reviews across sends.
@@ -140,5 +140,5 @@ export async function restoreReturnedBackup(parsed,inspectPdf){
   // Do not add an empty field to old completed evidence: its state hash covers
   // the exact historical sidecar, including the absence of optional properties.
   if(round.locations!==undefined)round.locations=validateLocations(round.locations,round,parsed.review);
-  return {issued,entry,seed:{files:parsed.files,review:parsed.review,completionBundle:parsed.completionBundle,returned:{...round,id:'returned:recovery:'+crypto.randomUUID(),recoveredFrom:round.id}}};
+  return {issued,entry,seed:{files:parsed.files,review:parsed.review,completionBundle:parsed.completionBundle,lineage:parsed.workspace?{projectId:parsed.workspace.projectId,initialTranscriptionFilename:parsed.workspace.initialTranscriptionFilename,parentWorkspaceId:parsed.workspace.parentWorkspaceId}:{},returned:{...round,id:'returned:recovery:'+crypto.randomUUID(),recoveredFrom:round.id}}};
 }

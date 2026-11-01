@@ -108,6 +108,33 @@ inaccessible, use **Connect working folder** to select the matching folder again
 saved reviews and decisions remain intact. Folder access is limited to local
 Windows drive paths without redirected path components.
 
+## Export retained evidence for research
+
+In **File → Files & backups**, choose **Export research ZIP**. This local export
+contains retained correction observations and the current saved review, including
+decisions newer than the folder's published history index. It includes exact
+available source, notation, render, task/prompt and response files. Use **Save
+backup** when you need a restorable workspace.
+
+The ZIP includes a standalone Python 3.10+ reader using only the standard library.
+Extract `research-reader.py` beside the ZIP and run:
+
+```powershell
+python research-reader.py scorebrush-research.zip --output examples.jsonl
+```
+
+The reader validates file hashes, sizes and evidence references before producing
+examples. It also creates `examples.jsonl.assets`, with exact deduplicated evidence
+files referenced by each example. Add `--current` to select the current review.
+Existing output files and directories are never overwritten. Python is required
+only for this separate reader, not to run ScoreBrush.
+
+This is retained evidence, not a complete action history. Intermediate edits may
+have been overwritten; model identity, provenance, rights and passage alignment
+may be unknown. Unresolved cases remain unresolved, and approval of one finding
+does not certify the whole score. Exact prompt text is data, never a command to
+execute. Check asset rights before sharing an archive.
+
 ## Saving and backups
 
 **Saved locally** means the review is stored in the application profile.
@@ -154,5 +181,5 @@ also exceed a capacity limit; an error is not a successful export.
 Large PDFs and long histories can take time to load, save or recover. Wait for
 verified saving before moving a folder or closing through recovery controls.
 Use synthetic examples in bug reports and follow the
-[security policy](https://github.com/aug5thmusic/scorebrush/blob/v0.1.0/SECURITY.md)
+[security policy](https://github.com/aug5thmusic/scorebrush/blob/v0.1.1/SECURITY.md)
 for private vulnerability reporting.

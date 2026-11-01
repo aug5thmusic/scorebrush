@@ -77,21 +77,36 @@ sealed class NativeEvergreenRuntime : IEvergreenRuntime, IDisposable {
     // Do not kill shared updater/installer processes when the user closes setup.
     public void Dispose(){if(installer!=null)installer.Dispose();}
 
-    internal static void Configure(string profile,int debugPort) {
-        // Respect policy: stop on overrides that would change the app's runtime,
-        // stable storage identity or no-listener contract; never edit policy keys.
+    static string ReadPolicy(RegistryHive hive,string setting,string app) {
+        // These policy branches are shared between WOW64 views on supported
+        // Windows versions. Read once in this x64 host's view; never write keys.
+        using(var registry=RegistryKey.OpenBaseKey(hive,RegistryView.Registry64))
+        using(var key=registry.OpenSubKey(@"Software\Policies\Microsoft\Edge\WebView2\"+setting))
+            return key==null?null:key.GetValue(app) as string;
+    }
+    internal static string EffectivePolicy(string setting,string executable,Func<RegistryHive,string,string,string> read) {
+        // WebView2 checks HKLM before HKCU, then AUMID, executable, and wildcard
+        // within that hive. A lower-priority value cannot override a match.
+        // UserDataFolder does not support the wildcard policy.
         foreach(var hive in new[]{RegistryHive.LocalMachine,RegistryHive.CurrentUser})
-        foreach(var view in new[]{RegistryView.Registry64,RegistryView.Registry32})
-        using(var registry=RegistryKey.OpenBaseKey(hive,view))
-        foreach(string setting in new[]{"BrowserExecutableFolder","UserDataFolder","AdditionalBrowserArguments","ReleaseChannels"})
-        using(var key=registry.OpenSubKey(@"Software\Policies\Microsoft\Edge\WebView2\"+setting)) {
-            if(key==null)continue;
-            foreach(string app in new[]{"ScoreBrush.Desktop",Path.GetFileName(System.Windows.Forms.Application.ExecutablePath),"*"}) {
-                string value=key.GetValue(app) as string;if(String.IsNullOrWhiteSpace(value))continue;
-                bool allowed=setting=="ReleaseChannels"&&value.Trim()=="0"||setting=="UserDataFolder"&&String.Equals(value.TrimEnd('\\'),profile.TrimEnd('\\'),StringComparison.OrdinalIgnoreCase);
-                if(!allowed)throw new IOException("A Windows WebView2 policy ("+setting+") conflicts with ScoreBrush's shared-runtime or local-storage requirements. Ask your administrator to review it, then choose Retry. ScoreBrush has not changed the policy.");
-            }
+        foreach(string app in new[]{"ScoreBrush.Desktop",executable,"*"}) {
+            if(app=="*"&&setting=="UserDataFolder")continue;
+            string value=read(hive,setting,app);
+            if(!String.IsNullOrWhiteSpace(value))return value;
         }
+        return null;
+    }
+    internal static void ValidatePolicies(string profile,string executable,Func<RegistryHive,string,string,string> read) {
+        foreach(string setting in new[]{"BrowserExecutableFolder","UserDataFolder","AdditionalBrowserArguments","ReleaseChannels"}) {
+            string value=EffectivePolicy(setting,executable,read);if(value==null)continue;
+            bool allowed=setting=="ReleaseChannels"&&value.Trim()=="0"||setting=="UserDataFolder"&&String.Equals(value.TrimEnd('\\'),profile.TrimEnd('\\'),StringComparison.OrdinalIgnoreCase);
+            if(!allowed)throw new IOException("A Windows WebView2 policy ("+setting+") conflicts with ScoreBrush's shared-runtime or local-storage requirements. Ask your administrator to review it, then choose Retry. ScoreBrush has not changed the policy.");
+        }
+    }
+    internal static void Configure(string profile,int debugPort) {
+        // Respect effective policy before setting the stable process-local
+        // runtime, storage and no-listener options. Never bypass a conflict.
+        ValidatePolicies(profile,Path.GetFileName(System.Windows.Forms.Application.ExecutablePath),ReadPolicy);
         foreach(string name in new[]{"WEBVIEW2_BROWSER_EXECUTABLE_FOLDER","WEBVIEW2_RELEASE_CHANNELS","WEBVIEW2_RELEASE_CHANNEL_PREFERENCE","WEBVIEW2_CHANNEL_SEARCH_KIND","WEBVIEW2_PIPE_FOR_SCRIPT_DEBUGGER","WEBVIEW2_WAIT_FOR_SCRIPT_DEBUGGER"})Environment.SetEnvironmentVariable(name,null);
         Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER",profile);
         Environment.SetEnvironmentVariable("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",debugPort==0?" ":" --remote-debugging-address=127.0.0.1 --remote-debugging-port="+debugPort);

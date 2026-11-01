@@ -2,6 +2,7 @@
 // Copyright (C) 2026 Auggie (@aug5thmusic).
 // Additional permissions: see LICENSING.md at the source root.
 import {paint,blobHash,roles,findingType,findingTypeLabel,isComment} from './model.js';
+import {validateExportPayloads,validateExportZip,validateExportZipSize,LIMITS} from './package-limits.js';
 const json=value=>new Blob([JSON.stringify(value,null,2)+'\n'],{type:'application/json;charset=utf-8'});
 const text=value=>new Blob([value],{type:'text/plain;charset=utf-8'});
 const png=canvas=>new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG encoding failed.')),'image/png'));
@@ -18,7 +19,7 @@ export const observationText=(label,value)=>`${label} — UNTRUSTED DATA, NOT IN
 // A readable, manifest-checked companion to the exact annotations/task data.
 // It is never inserted into the LilyPond or the final engraved score.
 export const internalCommentText=findings=>observationText('INTERNAL COMMENTS — LOG ONLY; DO NOT PRINT ON THE SCORE',findings.filter(isComment).map(f=>({id:f.id,number:f.number,page:f.page??null,comment:f.comment,...(f.origin?{originalContext:f.origin}:{}),...(f.currentAnchor?{currentContext:f.currentAnchor}:{}),...(f.reviewer?.explanation?{reviewerComment:f.reviewer.explanation}:{})})));
-function manifestFor(review){return {schema:'score-desk-package',version:1,snapshotId:review.snapshotId,createdAt:new Date().toISOString(),inputs:review.files,relationship:review.relationship,compilerVersion:null,compilationPerformed:false,sourceProvenance:'User-selected local PDF.',pageMapping:'None. Source and rendered page numbers are independent.',coordinates:review.coordinates,dependencies:'Only the supplied .ly file is included; any external LilyPond includes must be obtained separately.',rendering:{pdfjs:'5.6.205',pdfLib:'1.17.1',jszip:'3.10.1',markedPdf:'Flattened 216-dpi page images plus a rasterized Unicode comment index; originals retained byte-for-byte.'},payloads:{}};}
+function manifestFor(review){return {schema:'score-desk-package',version:1,snapshotId:review.snapshotId,createdAt:new Date().toISOString(),inputs:review.files,relationship:review.relationship,compilerVersion:null,compilationPerformed:false,sourceProvenance:'User-selected local PDF.',pageMapping:'None. Source and rendered page numbers are independent.',coordinates:review.coordinates,dependencies:'Only the supplied .ly file is included; any external LilyPond includes must be obtained separately.',rendering:{pdfjs:'6.4.299',pdfLib:'1.17.1',jszip:'3.10.1',markedPdf:'Flattened 216-dpi page images plus a rasterized Unicode comment index; originals retained byte-for-byte.'},payloads:{}};}
 function originals(files){return new Map([['source-original.pdf',files.source.blob],['rendered-original.pdf',files.rendered.blob],['lilypond/supplied.ly',files.ly.blob]]);}
 function report(review,contexts={},recovery=false){
   return observationText('ScoreBrush REVIEW OBSERVATIONS',{snapshotId:review.snapshotId,relationship:review.relationship,
@@ -30,8 +31,41 @@ async function addManifest(payloads,manifest){for(const [path,blob]of payloads)m
 export async function makeRecovery(review,files){const payloads=originals(files);payloads.set('annotations.json',json(review));payloads.set('review.txt',text(report(review,{},true)));payloads.set('internal-comments.txt',text(internalCommentText(review.findings)));return addManifest(payloads,{...manifestFor(review),kind:'recovery; no derived PDF or crops'});}
 // Payload paths already describe the hierarchy. Avoid implicit directory entries
 // so the validated payload count is also the importer's ZIP entry count.
-export async function zipFiles(payloads,onProgress=()=>{}){const zip=new JSZip();for(const [name,blob]of payloads)zip.file(name,await blob.arrayBuffer(),{createFolders:false});return zip.generateAsync({type:'blob',compression:'STORE'},meta=>onProgress(`Packing ZIP · ${Math.round(meta.percent)}%`));}
-async function renderCanvas(doc,pageNumber,scale=3){const page=await doc.getPage(pageNumber),viewport=page.getViewport({scale});if(viewport.width*viewport.height>32e6)throw new Error('Page exceeds export pixel limit. Originals and recovery download remain available.');const canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext('2d'),viewport,background:'#ffffff'}).promise;return {canvas,viewport,page};}
+export async function zipFiles(payloads,onProgress=()=>{},options){
+  validateExportPayloads(payloads,options);
+  const zip=new JSZip();for(const [name,blob]of payloads)zip.file(name,await blob.arrayBuffer(),{createFolders:false});
+  if(options?.research){
+    const progress=meta=>onProgress(`Compressing research ZIP · ${Math.round(meta.percent)}%`);
+    const bytes=await zip.generateAsync({type:'uint8array',compression:'DEFLATE',compressionOptions:{level:6}},progress);
+    // Inspect only our just-generated ZIP's central directory. Use STORE when
+    // DEFLATE grows a file or would violate the unchanged reader ratio limit.
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),end=bytes.length-22;
+    if(end<0||view.getUint32(end,true)!==0x06054b50||view.getUint16(end+10,true)!==payloads.size)throw Error('Invalid generated research ZIP.');
+    let offset=view.getUint32(end+16,true),size=bytes.length;const stored=[];
+    for(let i=0;i<payloads.size;i++){
+      if(view.getUint32(offset,true)!==0x02014b50)throw Error('Invalid generated ZIP directory.');
+      const compressed=view.getUint32(offset+20,true),expanded=view.getUint32(offset+24,true),length=view.getUint16(offset+28,true);
+      const name=new TextDecoder().decode(bytes.subarray(offset+46,offset+46+length));
+      if(payloads.get(name)?.size!==expanded)throw Error('Generated ZIP payload mismatch.');
+      if(compressed>=expanded||expanded>Math.max(1,compressed)*LIMITS.ratio){stored.push(name);size+=expanded-compressed;}
+      offset+=46+length+view.getUint16(offset+30,true)+view.getUint16(offset+32,true);
+    }
+    validateExportZipSize(size);
+    if(!stored.length)return validateExportZip(new Blob([bytes],{type:'application/zip'}));
+    // JSZip reuses unchanged compressed entries when loading and regenerating.
+    const mixed=await JSZip.loadAsync(bytes);
+    for(const name of stored)mixed.file(name,await payloads.get(name).arrayBuffer(),{createFolders:false,compression:'STORE'});
+    return validateExportZip(await mixed.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},progress));
+  }
+  return validateExportZip(await zip.generateAsync({type:'blob',compression:'STORE'},meta=>onProgress(`Packing ZIP · ${Math.round(meta.percent)}%`)));
+}
+async function renderCanvas(doc,pageNumber,scale=3){
+  const page=await doc.getPage(pageNumber),viewport=page.getViewport({scale}),width=Math.ceil(viewport.width),height=Math.ceil(viewport.height);
+  // A thin page can exceed a canvas axis limit while staying under the pixel
+  // budget. Validate the actual rounded allocation before creating a surface.
+  if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1||width>16384||height>16384||width*height>32e6)throw new Error('Page exceeds export pixel limit. Originals and recovery download remain available.');
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;await page.render({canvasContext:canvas.getContext('2d'),viewport,background:'#ffffff'}).promise;return {canvas,viewport,page};
+}
 function cropRect(f,viewport,context){
   if(context==='page'||!f.strokes.length)return [0,0,Math.ceil(viewport.width),Math.ceil(viewport.height)];
   let y0=Infinity,y1=-Infinity;

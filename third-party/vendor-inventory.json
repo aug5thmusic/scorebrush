@@ -2,6 +2,23 @@
   "schemaVersion": 1,
   "files": [
     {
+      "file": "app/vendor/JSZIP-LICENSE.md",
+      "bytes": 33753,
+      "sha256": "566c953c6090b1218ca6217dd7359d45dde46581968586dc607d59a78af6a9c4"
+    },
+    {
+      "file": "app/vendor/PDF-LIB-LICENSE.md",
+      "bytes": 1070,
+      "sha256": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb"
+    },
+    {
+      "file": "app/vendor/PDFJS-LICENSE",
+      "bytes": 10174,
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "pdfjsPackageMember": "package/LICENSE",
+      "matchesUpstream": true
+    },
+    {
       "file": "app/vendor/cmaps/78-EUC-H.bcmap",
       "bytes": 2404,
       "sha256": "d92a261336dc18b8c03a46eb4d462382d33f4338fa195d303256b2031434c874",
@@ -394,6 +411,20 @@
       "matchesUpstream": true
     },
     {
+      "file": "app/vendor/cmaps/ETHK-B5-H.bcmap",
+      "bytes": 4426,
+      "sha256": "d2f10fa519336bc4efcc7b6deb9604b75429946b40d82e311cb3a97a1994c89a",
+      "pdfjsPackageMember": "package/cmaps/ETHK-B5-H.bcmap",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/cmaps/ETHK-B5-V.bcmap",
+      "bytes": 158,
+      "sha256": "1fea3fd0d9f0f679f80505800851ef2e4131d81127e18c006938ffa2f4c8b247",
+      "pdfjsPackageMember": "package/cmaps/ETHK-B5-V.bcmap",
+      "matchesUpstream": true
+    },
+    {
       "file": "app/vendor/cmaps/ETen-B5-H.bcmap",
       "bytes": 1125,
       "sha256": "87ee6b3f5bfda5fe26fa35431264c7d73070d10dbbf398a75185d63ae322c18d",
@@ -419,20 +450,6 @@
       "bytes": 172,
       "sha256": "18252fca90f472f479af1bddd60d6ab51c8e1b55dcf6845951426504934543e0",
       "pdfjsPackageMember": "package/cmaps/ETenms-B5-V.bcmap",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/cmaps/ETHK-B5-H.bcmap",
-      "bytes": 4426,
-      "sha256": "d2f10fa519336bc4efcc7b6deb9604b75429946b40d82e311cb3a97a1994c89a",
-      "pdfjsPackageMember": "package/cmaps/ETHK-B5-H.bcmap",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/cmaps/ETHK-B5-V.bcmap",
-      "bytes": 158,
-      "sha256": "1fea3fd0d9f0f679f80505800851ef2e4131d81127e18c006938ffa2f4c8b247",
-      "pdfjsPackageMember": "package/cmaps/ETHK-B5-V.bcmap",
       "matchesUpstream": true
     },
     {
@@ -548,20 +565,6 @@
       "matchesUpstream": true
     },
     {
-      "file": "app/vendor/cmaps/GBpc-EUC-H.bcmap",
-      "bytes": 557,
-      "sha256": "3c4a4eb82f05abe51f6650985c630e180438bfdd491318f5d20d2ec29236e1c3",
-      "pdfjsPackageMember": "package/cmaps/GBpc-EUC-H.bcmap",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/cmaps/GBpc-EUC-V.bcmap",
-      "bytes": 181,
-      "sha256": "215bdfa2842705624b4cf4cd29b8e3c720f1e192365e0305c11030a424c84d7c",
-      "pdfjsPackageMember": "package/cmaps/GBpc-EUC-V.bcmap",
-      "matchesUpstream": true
-    },
-    {
       "file": "app/vendor/cmaps/GBT-EUC-H.bcmap",
       "bytes": 7290,
       "sha256": "dc5f44e48a39f3367ae28665027d8ab1d8cedb5a9dcc5068a900acd6709f60f9",
@@ -604,24 +607,24 @@
       "matchesUpstream": true
     },
     {
+      "file": "app/vendor/cmaps/GBpc-EUC-H.bcmap",
+      "bytes": 557,
+      "sha256": "3c4a4eb82f05abe51f6650985c630e180438bfdd491318f5d20d2ec29236e1c3",
+      "pdfjsPackageMember": "package/cmaps/GBpc-EUC-H.bcmap",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/cmaps/GBpc-EUC-V.bcmap",
+      "bytes": 181,
+      "sha256": "215bdfa2842705624b4cf4cd29b8e3c720f1e192365e0305c11030a424c84d7c",
+      "pdfjsPackageMember": "package/cmaps/GBpc-EUC-V.bcmap",
+      "matchesUpstream": true
+    },
+    {
       "file": "app/vendor/cmaps/H.bcmap",
       "bytes": 553,
       "sha256": "a0233e21047ec00b852125b243cbcf30abee511155b6d8159c24f944384bc9ee",
       "pdfjsPackageMember": "package/cmaps/H.bcmap",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/cmaps/Hankaku.bcmap",
-      "bytes": 132,
-      "sha256": "b454701f7aecd7856769016dfd04ca64280a060f2c67a2466d50b4395d24974e",
-      "pdfjsPackageMember": "package/cmaps/Hankaku.bcmap",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/cmaps/Hiragana.bcmap",
-      "bytes": 124,
-      "sha256": "2ed669394756dd9458651cd9995ab29ab691ecb7686659003306cdf22767a414",
-      "pdfjsPackageMember": "package/cmaps/Hiragana.bcmap",
       "matchesUpstream": true
     },
     {
@@ -709,10 +712,17 @@
       "matchesUpstream": true
     },
     {
-      "file": "app/vendor/cmaps/Katakana.bcmap",
-      "bytes": 100,
-      "sha256": "3b6ca6642fbf8822da00d5e58a8aa275216d5c32dbf2bd73e934197fc9fc5c53",
-      "pdfjsPackageMember": "package/cmaps/Katakana.bcmap",
+      "file": "app/vendor/cmaps/Hankaku.bcmap",
+      "bytes": 132,
+      "sha256": "b454701f7aecd7856769016dfd04ca64280a060f2c67a2466d50b4395d24974e",
+      "pdfjsPackageMember": "package/cmaps/Hankaku.bcmap",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/cmaps/Hiragana.bcmap",
+      "bytes": 124,
+      "sha256": "2ed669394756dd9458651cd9995ab29ab691ecb7686659003306cdf22767a414",
+      "pdfjsPackageMember": "package/cmaps/Hiragana.bcmap",
       "matchesUpstream": true
     },
     {
@@ -797,6 +807,13 @@
       "bytes": 166,
       "sha256": "031707887d6fc2378a36cdb6775334fd7a236c3f95048d8436abf43fe26fc49d",
       "pdfjsPackageMember": "package/cmaps/KSCpc-EUC-V.bcmap",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/cmaps/Katakana.bcmap",
+      "bytes": 100,
+      "sha256": "3b6ca6642fbf8822da00d5e58a8aa275216d5c32dbf2bd73e934197fc9fc5c53",
+      "pdfjsPackageMember": "package/cmaps/Katakana.bcmap",
       "matchesUpstream": true
     },
     {
@@ -1224,19 +1241,9 @@
       "matchesUpstream": true
     },
     {
-      "file": "app/vendor/JSZIP-LICENSE.md",
-      "bytes": 33753,
-      "sha256": "566c953c6090b1218ca6217dd7359d45dde46581968586dc607d59a78af6a9c4"
-    },
-    {
       "file": "app/vendor/jszip.min.js",
       "bytes": 97630,
       "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
-    },
-    {
-      "file": "app/vendor/PDF-LIB-LICENSE.md",
-      "bytes": 1070,
-      "sha256": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb"
     },
     {
       "file": "app/vendor/pdf-lib.min.js",
@@ -1245,23 +1252,16 @@
     },
     {
       "file": "app/vendor/pdf.mjs",
-      "bytes": 430304,
-      "sha256": "2221020ea508479dcc1221f36f2731656339230097c69ba1f78802832c0ad685",
+      "bytes": 458904,
+      "sha256": "57456c8e0c81e46be31174b499ef77f2b9f5ee46d04412ba627320a36755d4c2",
       "pdfjsPackageMember": "package/build/pdf.min.mjs",
       "matchesUpstream": true
     },
     {
       "file": "app/vendor/pdf.worker.mjs",
-      "bytes": 1244253,
-      "sha256": "51a2fd1ea47f1a9b0814e65e0c336c739c54957795ee774e8f93cb81e8028dd1",
+      "bytes": 1264342,
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18",
       "pdfjsPackageMember": "package/build/pdf.worker.min.mjs",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/PDFJS-LICENSE",
-      "bytes": 10174,
-      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
-      "pdfjsPackageMember": "package/LICENSE",
       "matchesUpstream": true
     },
     {
@@ -1335,6 +1335,20 @@
       "matchesUpstream": true
     },
     {
+      "file": "app/vendor/standard_fonts/LICENSE_FOXIT",
+      "bytes": 1553,
+      "sha256": "b578cdd2345840ada550bd12519533812320d5f1d21cf4c1c7e1b1b0a31c98b7",
+      "pdfjsPackageMember": "package/standard_fonts/LICENSE_FOXIT",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/standard_fonts/LICENSE_LIBERATION",
+      "bytes": 22154,
+      "sha256": "d2c4d5b3e115a519cb58eb691aa64538397e2611f9ebe801392cf9667997e7dc",
+      "pdfjsPackageMember": "package/standard_fonts/LICENSE_LIBERATION",
+      "matchesUpstream": true
+    },
+    {
       "file": "app/vendor/standard_fonts/LiberationSans-Bold.ttf",
       "bytes": 137052,
       "sha256": "361c61b82d575c5c35fd9157fda8b0194bcfcd0d88ea8521a4fb5dd53d33dddc",
@@ -1363,25 +1377,10 @@
       "matchesUpstream": true
     },
     {
-      "file": "app/vendor/standard_fonts/LICENSE_FOXIT",
-      "bytes": 1553,
-      "sha256": "b578cdd2345840ada550bd12519533812320d5f1d21cf4c1c7e1b1b0a31c98b7",
-      "pdfjsPackageMember": "package/standard_fonts/LICENSE_FOXIT",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/standard_fonts/LICENSE_LIBERATION",
-      "bytes": 4414,
-      "sha256": "93fed46019c38bbe566b479d22148e2e8a1e85ada614accb0211c37b2c61c19b",
-      "pdfjsPackageMember": "package/standard_fonts/LICENSE_LIBERATION",
-      "matchesUpstream": true
-    },
-    {
-      "file": "app/vendor/wasm/jbig2.wasm",
-      "bytes": 104852,
-      "sha256": "e6bee67724a7b5436fe8162638e3708cfc8d52b6342db69a49715e30ff27cfdc",
-      "pdfjsPackageMember": "package/wasm/jbig2.wasm",
-      "matchesUpstream": true
+      "file": "app/vendor/wasm/LICENSE_DLMALLOC",
+      "bytes": 11968,
+      "sha256": "3e7ba68f57d5cd77e81b2cda3e6ada6a44d8e66f5d31766917b1e325d0a80675",
+      "sourceNotice": "Verbatim copyright/license files from matching source archives; member names identify the originals."
     },
     {
       "file": "app/vendor/wasm/LICENSE_JBIG2",
@@ -1413,8 +1412,8 @@
     },
     {
       "file": "app/vendor/wasm/LICENSE_PDFJS_QCMS",
-      "bytes": 1285,
-      "sha256": "eb5104ca33552be007857a28351bc408f379ddd4bfacab1226b09c6d1e9fd7c4",
+      "bytes": 1036,
+      "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
       "pdfjsPackageMember": "package/wasm/LICENSE_PDFJS_QCMS",
       "matchesUpstream": true
     },
@@ -1426,23 +1425,55 @@
       "matchesUpstream": true
     },
     {
+      "file": "app/vendor/wasm/LICENSE_QCMS_RUST_DEPENDENCIES",
+      "bytes": 636392,
+      "sha256": "fe6adaca0c85101d9126e006307784b91cf26606bf862c89bee946e55fa130f7",
+      "sourceNotice": "Verbatim constituent notices from the retained official Rust1.97.1 source component and published wasm-bindgen0.2.126 source inputs; member labels preserve attribution. Includes build-source notices, without claiming every package is linked."
+    },
+    {
+      "file": "app/vendor/wasm/LICENSE_RUST",
+      "bytes": 12455,
+      "sha256": "514459455e93db18826e91b496c681e48ff39f5a761d2d5234e61621653af451",
+      "sourceNotice": "Verbatim copyright/license files from matching source archives; member names identify the originals."
+    },
+    {
+      "file": "app/vendor/wasm/LICENSE_WASM_BINDGEN",
+      "bytes": 11978,
+      "sha256": "e4dccb5a1451a13e8f81c4e410181804ba53752772bd5d43a698dc2c013e9e82",
+      "sourceNotice": "Verbatim copyright/license files from matching source archives; member names identify the originals."
+    },
+    {
+      "file": "app/vendor/wasm/jbig2.wasm",
+      "bytes": 103671,
+      "sha256": "466f45c2a61a698152fb5400c27e56ff2ceb73dcb71fde3fc366a502308eaab0",
+      "pdfjsPackageMember": "package/wasm/jbig2.wasm",
+      "matchesUpstream": true
+    },
+    {
+      "file": "app/vendor/wasm/jbig2_nowasm_fallback.js",
+      "bytes": 152009,
+      "sha256": "68686ced624a48c42f84cdaa482ec44b72b0de4dc84a0df903af1fb7b45b5d9a",
+      "pdfjsPackageMember": "package/wasm/jbig2_nowasm_fallback.js",
+      "matchesUpstream": true
+    },
+    {
       "file": "app/vendor/wasm/openjpeg.wasm",
-      "bytes": 250009,
-      "sha256": "67b8e2b162da472e98cb48d3d32e3e38fff481b9b32ff4818e78bb248af88ab2",
+      "bytes": 251131,
+      "sha256": "95e5002597af0824004aa57b1900fe019715db389e37640b1e58395e42f00cc5",
       "pdfjsPackageMember": "package/wasm/openjpeg.wasm",
       "matchesUpstream": true
     },
     {
       "file": "app/vendor/wasm/openjpeg_nowasm_fallback.js",
-      "bytes": 451777,
-      "sha256": "07c3c3361827308741bc31c561b59e705ebb4d1e8efb84e4d24884e230dbb894",
+      "bytes": 445781,
+      "sha256": "9047b34b6bc142d85e4b0aa1b08b0b9baad4c6f8b7ac87641b9e8f90eb6fd23e",
       "pdfjsPackageMember": "package/wasm/openjpeg_nowasm_fallback.js",
       "matchesUpstream": true
     },
     {
       "file": "app/vendor/wasm/qcms_bg.wasm",
-      "bytes": 94519,
-      "sha256": "6017eca5939cde1836e88e6d8cd27ae039246f206515ea4487bdfd0e3fb16e26",
+      "bytes": 96589,
+      "sha256": "663d86126d5f5fcb1c61490f94353e2a8375660b8c5498ab3ebab5a34b08800e",
       "pdfjsPackageMember": "package/wasm/qcms_bg.wasm",
       "matchesUpstream": true
     }
